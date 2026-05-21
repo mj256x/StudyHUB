@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHUB - Get Started</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%);
+            min-height: 100vh;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        .blue-side {
+            background: linear-gradient(180deg, #5d51ff 0%, #4338ca 100%);
+            padding: 3rem;
+        }
+
+        .custom-input {
+            border: none;
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 0;
+            padding-left: 2.5rem;
+        }
+
+        .custom-input:focus {
+            box-shadow: none;
+            border-color: #5d51ff;
+        }
+
+        .input-group-custom {
+            position: relative;
+        }
+
+        .input-group-custom i {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+    </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card main-card shadow-lg">
+                    <div class="row g-0">
+
+                        <div
+                            class="col-md-5 blue-side text-white d-flex flex-column justify-content-between text-center text-md-start">
+                            <div class="my-5 text-center">
+                                <h1 class="display-4 fw-bold mb-4">Get Started</h1>
+                                <p class="text-white-50 mb-4">You don't have an account?</p>
+                                <a href="/register" class="btn btn-outline-light rounded-pill px-5">Register</a>
+                            </div>
+                            <div class="text-center mb-2">
+                                <span class="badge rounded-circle bg-white p-2 mx-1"></span>
+                                <span class="border border-white rounded-circle p-2 mx-1 d-inline-block"></span>
+                                <span class="border border-white rounded-circle p-2 mx-1 d-inline-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-7 p-5 bg-white text-center">
+                            <div class="mb-4">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow"
+                                    style="width: 100px; height: 100px;">
+                                    <i class="bi bi-person-fill" style="font-size: 3.5rem;"></i>
+                                </div>
+                            </div>
+
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show text-start mb-4"
+                                role="alert" style="font-size: 14px; border-radius: 10px;">
+                                <i
+                                    class="bi {% if category == 'danger' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}
+
+                            <h3 class="fw-bold text-primary mb-5">Log in to Your Account</h3>
+
+                            <form action="/login" method="POST" class="text-start px-md-4">
+                                <div class="mb-4 input-group-custom">
+                                    <i class="bi bi-person"></i>
+                                    <input type="text" name="username" class="form-control custom-input"
+                                        placeholder="Username" required>
+                                </div>
+
+                                <div class="mb-4 input-group-custom">
+                                    <i class="bi bi-envelope"></i>
+                                    <input type="email" name="email" class="form-control custom-input"
+                                        placeholder="E-mail" required>
+                                </div>
+
+                                <div class="mb-4 input-group-custom">
+                                    <i class="bi bi-lock"></i>
+                                    <input type="password" name="password" class="form-control custom-input"
+                                        placeholder="Password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm"
+                                    style="background-color: #5d51ff; border: none;">Sign in</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+</body>
+
+</html>

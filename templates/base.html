@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>StudyHUB: {% block title %}{% endblock %}</title>
 </head>
 
@@ -38,35 +37,21 @@
                         </ul>
                     </li>
                 </ul>
-
                 <form class="d-flex me-3" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search" />
+                    <input class="form-control me-2" style="width: 400px;" type="search"
+                        placeholder="Search for Subjects, Tasks, Sessions..." aria-label="Search" />
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
                 <div class="d-flex align-items-center ms-auto">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav gap-2">
                         <li class="nav-item">
-                            <a class="nav-link text-danger fw-bold btn btn-outline-secondary" href="/index">Switch
-                                User</a>
+                            <a class="btn btn-outline-primary" href="/index">Switch User</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-danger fw-bold btn btn-outline-danger" href="/logout">Logout</a>
+                            <a class="btn btn-outline-primary" href="/logout">Logout</a>
                         </li>
                     </ul>
                 </div>
-
-                {% else %}
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">StudyHUB</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Log in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">Register</a>
-                    </li>
-                </ul>
                 {% endif %}
             </div>
         </div>
@@ -75,7 +60,7 @@
     <main class="container py-5 text-center">
         {% block main %}{% endblock %}
     </main>
-
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
 </body>
 
 </html>
