@@ -1,6 +1,6 @@
 import os
 import pyodbc
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -10,17 +10,31 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
 def db_connection():
-    conn_str = (
-        f"DRIVER={os.getenv('DB_DRIVER')};"
-        f"SERVER={os.getenv('DB_SERVER')};"
-        f"DATABASE={os.getenv('DB_DATABASE')};"
-        f"UID={os.getenv('DB_USERNAME')};"
-        f"PWD={os.getenv('DB_PASSWORD')};"
-        "Encrypt=yes;"
-        "TrustServerCertificate=no;"
-        "Connection Timeout=30;"
-    )
+    driver = "ODBC Driver 18 for SQL Server"
+    server = os.getenv('DB_SERVER')
+    database = os.getenv('DB_DATABASE')
+    username = os.getenv('DB_USERNAME')
+    password = os.getenv('DB_PASSWORD')
+    
+    conn_str = f"DRIVER={{{driver}}};SERVER={server},1433;DATABASE={database};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;"
+    
     return pyodbc.connect(conn_str)
+
+# Database connection management
+def get_db():
+    if 'db' not in g:
+        g.db = db_connection()
+    return g.db
+
+# Close the database connection at the end of each request
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop('db', None)
+    if db is not None:
+        try:
+            db.close()
+        except Exception as e:
+            print(f"Error closing database connection: {e}")
 
 @app.after_request
 def after_request(response):
@@ -32,7 +46,7 @@ def after_request(response):
 @app.route('/')
 def index():
     if 'user_id' not in session:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     return render_template('index.html')
 
 # User login
@@ -43,31 +57,29 @@ def login():
         return redirect(url_for('index'))
     # Handle login form submission
     if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
+        username_email = request.form['username']
         password = request.form['password']
 
-        if not username or not password or not email:
-            flash('Please enter all fields', 'danger')
+        if not username_email or not password:
+            flash('Please enter both username/email and password', 'danger')
             return redirect(url_for('login'))
         # Fetch user from database
         try:
-            conn = db_connection()
+            conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT id, password_hash, email FROM users WHERE username = ?", (username,))
+            cursor.execute("SELECT id, password_hash FROM users WHERE username = ? OR email = ?", (username_email, username_email))
             user = cursor.fetchone()
             cursor.close()
-            conn.close()
         except Exception as e:
             flash('Error occurred while fetching user data, Please try refreshing the page.', 'danger')
             print(f"Database error: {e}")
             return redirect(url_for('login'))
-        # Verify password and email
-        if user and check_password_hash(user.password_hash, password) and email == user.email:
+        # Verify password
+        if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
             return redirect(url_for('index'))
         else:
-            flash('Invalid username, email, or password', 'danger')
+            flash('Invalid username/email or password', 'danger')
 
     return render_template('login.html')
 
@@ -96,12 +108,15 @@ def register():
 
         # Insert the new user into the database
         try:
-            conn = db_connection()
+            conn = get_db()
             cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (username,))
+            if cursor.fetchone():
+                flash('Username already exists', 'danger')
+                return redirect(url_for('register'))
             cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)", (username, password_hash, email))
             conn.commit()
             cursor.close()
-            conn.close()
         except Exception as e:
             flash('Error occurred while registering user, Please try again.', 'danger')
             print(f"Database error: {e}")
@@ -118,7 +133,29 @@ def logout():
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
+@app.route('/subjects')
+def subjects():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('subjects.html')
 
+@app.route('/profile')
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('profile.html')
+
+@app.route('/sessions')
+def sessions():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('sessions.html')
+
+@app.route('/tasks')
+def tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('tasks.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

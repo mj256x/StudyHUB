@@ -65,12 +65,7 @@
                             <div class="my-5 text-center">
                                 <h1 class="display-4 fw-bold mb-4">Get Started</h1>
                                 <p class="text-white-50 mb-4">You don't have an account?</p>
-                                <a href="/register" class="btn btn-outline-light rounded-pill px-5">Register</a>
-                            </div>
-                            <div class="text-center mb-2">
-                                <span class="badge rounded-circle bg-white p-2 mx-1"></span>
-                                <span class="border border-white rounded-circle p-2 mx-1 d-inline-block"></span>
-                                <span class="border border-white rounded-circle p-2 mx-1 d-inline-block"></span>
+                                <a href="/register" class="btn btn-outline-light rounded-pill px-5">Sign up</a>
                             </div>
                         </div>
 
@@ -97,19 +92,13 @@
                             {% endif %}
                             {% endwith %}
 
-                            <h3 class="fw-bold text-primary mb-5">Log in to Your Account</h3>
+                            <h3 class="fw-bold text-primary mb-5">Sign in to StudyHUB</h3>
 
-                            <form action="/login" method="POST" class="text-start px-md-4">
+                            <form action="/login" method="POST" class="text-start px-md-4" autocomplete="off">
                                 <div class="mb-4 input-group-custom">
                                     <i class="bi bi-person"></i>
                                     <input type="text" name="username" class="form-control custom-input"
-                                        placeholder="Username" required>
-                                </div>
-
-                                <div class="mb-4 input-group-custom">
-                                    <i class="bi bi-envelope"></i>
-                                    <input type="email" name="email" class="form-control custom-input"
-                                        placeholder="E-mail" required>
+                                        placeholder="Username or Email" required>
                                 </div>
 
                                 <div class="mb-4 input-group-custom">
