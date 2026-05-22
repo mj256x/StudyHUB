@@ -65,7 +65,6 @@ def login():
         # Verify password and email
         if user and check_password_hash(user.password_hash, password) and email == user.email:
             session['user_id'] = user.id
-            flash('Login successful!', 'success')
             return redirect(url_for('index'))
         else:
             flash('Invalid username, email, or password', 'danger')
@@ -107,7 +106,6 @@ def register():
             flash('Error occurred while registering user, Please try again.', 'danger')
             print(f"Database error: {e}")
             return redirect(url_for('register'))
-
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
 

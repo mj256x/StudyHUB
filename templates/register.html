@@ -86,7 +86,7 @@
                             {% if messages %}
                             {% for category, message in messages %}
                             <div class="alert alert-{{ category }} alert-dismissible fade show text-start mb-4"
-                                role="alert" style="font-size: 14px; border-radius: 10px;">
+                                role="alert" style="font-size: 14px; border-radius: 10px;" id="flash">
                                 <i
                                     class="bi {% if category == 'danger' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
                                 {{ message }}
@@ -133,6 +133,14 @@
     </div>
 
     <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+    <script>
+        setTimeout(function () {
+            const flashMessage = document.getElementById('flash');
+            if (flashMessage) {
+                flashMessage.style.display = 'none';
+            }
+        }, 2000);
+    </script>
 </body>
 
 </html>
