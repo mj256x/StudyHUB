@@ -110,9 +110,9 @@ def register():
         try:
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (username,))
+            cursor.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
             if cursor.fetchone():
-                flash('Username already exists', 'danger')
+                flash('Username or email already exists', 'danger')
                 return redirect(url_for('register'))
             cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)", (username, password_hash, email))
             conn.commit()
