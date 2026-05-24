@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
-    <title>StudyHUB: {% block title %}{% endblock %}</title>
+    <title>StudyHUB: Homepage</title>
 </head>
 
 <body>
@@ -22,25 +22,6 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarScroll">
-                {% if session.get('user_id') %}
-                <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/subjects">Subjects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tasks">Tasks</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Sessions
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item " href="/new-session">Start New Session</a></li>
-                            <li><a class="dropdown-item" href="/history">History & Stats</a></li>
-                        </ul>
-                    </li>
-                </ul>
                 <form class="d-flex me-3" role="search">
                     <input class="form-control me-2 search-input"
                         style="width: 400px; background-color: #ac9eea; border-color: #675e8d;" type="search"
@@ -50,15 +31,14 @@
                 <div class="d-flex align-items-center ms-auto">
                     <ul class="navbar-nav gap-2">
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary my-custom-btn"
-                                href="/profile"><strong>Profile</strong></a>
+                            <a class="btn btn-outline-primary my-custom-btn" href="/login"><strong>Log in</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary my-custom-btn" href="/logout"><strong>Logout</strong></a>
+                            <a class="btn btn-outline-primary my-custom-btn"
+                                href="/register"><strong>Register</strong></a>
                         </li>
                     </ul>
                 </div>
-                {% endif %}
             </div>
         </div>
     </nav>

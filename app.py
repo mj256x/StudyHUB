@@ -44,6 +44,12 @@ def after_request(response):
     return response
 
 @app.route('/')
+def homepage():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('homepage.html')
+
+@app.route('/index')
 def index():
     if 'user_id' not in session:
         return redirect(url_for('login'))

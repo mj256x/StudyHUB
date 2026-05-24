@@ -1,0 +1,30 @@
+body {
+    background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%);
+    min-height: 100vh;
+}
+
+.custom-navbar {
+    background-color: #bdb5e1 !important;
+}
+
+.my-custom-btn {
+    color: #000000 !important;
+    border-color: #bdb5e1 !important;
+}
+
+.my-custom-btn:hover {
+    color: #000000 !important;
+    border-color: #bdb5e1 !important;
+    background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%) !important;
+}
+
+.my-custom-btn:active,
+.my-custom-btn:focus {
+    background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%) !important;
+    box-shadow: 0 0 0 0.25rem rgba(103, 202, 164, 0.5) !important;
+}
+
+.search-input:active,
+.search-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(135, 112, 166, 0.5) !important;
+}
