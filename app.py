@@ -145,10 +145,26 @@ def logout():
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
-@app.route('/subjects')
+@app.route('/subjects', methods=['GET', 'POST'])
 def subjects():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    if request.method == 'POST':
+        subject_name = request.form['subject_name']
+        if not subject_name:
+            flash('Please enter a subject name', 'danger')
+            return redirect(url_for('subjects'))
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
+            conn.commit()
+            cursor.close()
+            flash('Subject added successfully!', 'success')
+        except Exception as e:
+            flash('Error occurred while adding subject, Please try again.', 'danger')
+            print(f"Database error: {e}")
+        return redirect(url_for('subjects'))
     return render_template('subjects.html')
 
 @app.route('/profile')

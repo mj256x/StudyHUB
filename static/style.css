@@ -9,7 +9,7 @@ body {
 
 .my-custom-btn {
     color: #000000 !important;
-    border-color: #bdb5e1 !important;
+    border-color: #675e8d !important;
 }
 
 .my-custom-btn:hover {
@@ -26,5 +26,48 @@ body {
 
 .search-input:active,
 .search-input:focus {
-    box-shadow: 0 0 0 0.25rem rgba(135, 112, 166, 0.5) !important;
+    box-shadow: 0 0 0 0.25rem #8770a680 !important;
+}
+
+.btn-close:hover {
+    background-color: #ff0000 !important;
+}
+
+.btn-close:active,
+.btn-close:focus {
+    box-shadow: 0 0 0 0.25rem #ff0000 !important;
+}
+
+.add-folder-btn {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    line-height: 1 !important;
+    background-color: #bdb5e1 !important;
+    color: #3c3b3d80 !important;
+    border-color: #3c3b3d80 !important;
+}
+
+.add-folder-btn:hover {
+    border-color: #000000 !important;
+}
+
+.modal-content {
+    background-color: #bdb5e1 !important;
+}
+
+.modal.show .modal-dialog {
+    animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

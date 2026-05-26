@@ -3,4 +3,45 @@
 {% block title %}HomePage{% endblock %}
 
 {% block main %}
+<button class="btn btn-primary shadow-lg add-folder-btn"
+    style="position: fixed; bottom: 30px; left: 30px; width: 56px; height: 56px; font-size: 35px;"
+    data-bs-toggle="modal" data-bs-target="#addFolderModal">
+    +
+</button>
+
+<div class="modal fade" id="addFolderModal" tabindex="-1">
+    <div class="modal-dialog" style="margin-top: 15%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add new Subject</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/subjects" method="POST">
+                <div class="modal-body">
+                    <input type="text" name="subject_name" class="form-control search-input"
+                        style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Subject Name"
+                        autocomplete="off" required>
+
+                    <h6></h6>You can change the name of the subject later.</h6>
+                </div>
+                <div class="modal-footer" style="justify-content: center; align-items: center;">
+                    <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show text-start mb-4" role="alert"
+    style="font-size: 14px; border-radius: 10px;" id="flash">
+    <i
+        class="bi {% if category == 'danger' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 {% endblock %}
