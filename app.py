@@ -1,6 +1,7 @@
 import os
 import pyodbc
 from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+from supabase import create_client, Client
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 
@@ -8,6 +9,11 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
+
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
 
 def db_connection():
     driver = "ODBC Driver 18 for SQL Server"
