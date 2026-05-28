@@ -38,7 +38,7 @@ body {
     box-shadow: 0 0 0 0.25rem #ff0000 !important;
 }
 
-.add-folder-btn {
+.add-subject-btn {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -48,8 +48,8 @@ body {
     border-color: #3c3b3d80 !important;
 }
 
-.add-folder-btn:hover {
-    border-color: #000000 !important;
+.add-subject-btn:hover {
+    background-color: #ac9eea !important;
 }
 
 .modal-content {
@@ -70,4 +70,20 @@ body {
         transform: scale(1);
         opacity: 1;
     }
+}
+
+.custom-card {
+    background-color: #bdb5e1 !important;
+}
+
+.card-header:hover {
+    background-color: #ac9eea !important;
+}
+
+.card-body:hover {
+    background-color: #ac9eea !important;
+}
+
+.card-footer:hover {
+    background-color: #ac9eea !important;
 }

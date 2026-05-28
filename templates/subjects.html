@@ -3,7 +3,7 @@
 {% block title %}HomePage{% endblock %}
 
 {% block main %}
-<button class="btn btn-primary shadow-lg add-folder-btn"
+<button class="btn btn-primary shadow-lg add-subject-btn"
     style="position: fixed; bottom: 30px; left: 30px; width: 56px; height: 56px; font-size: 35px;"
     data-bs-toggle="modal" data-bs-target="#addFolderModal">
     +
@@ -39,9 +39,27 @@
     <i
         class="bi {% if category == 'danger' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
     {{ message }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 {% endfor %}
 {% endif %}
 {% endwith %}
+<div class="container">
+    <div class="row">
+        {% for subject in subjects %}
+        <div class="col-12 col-md-3 mb-4">
+            <div class="card h-100 custom-card">
+                <div class="card-header bg-transparent" style="color: black; text-align: left;">{{ subject[1] }}</div>
+                <div class="card-body text-success">
+                    <h5 class="card-title" style="color: black;">Success card title</h5>
+                    <p class="card-text" style="color: black;">Some quick example text to build on the card title.</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="/subjects/{{ subject[0] }}" class="btn btn-outline-primary my-custom-btn">View</a>
+                    <a href="/subjects/{{ subject[0] }}/edit" class="btn btn-outline-secondary my-custom-btn">Edit</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

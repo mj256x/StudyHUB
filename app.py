@@ -160,12 +160,24 @@ def subjects():
             cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
             conn.commit()
             cursor.close()
+            supabase.table('folder').insert({'folder_name': subject_name, 'user_id': session['user_id']}).execute()
             flash('Subject added successfully!', 'success')
-        except Exception as e:
+        except Exception as e:       
             flash('Error occurred while adding subject, Please try again.', 'danger')
             print(f"Database error: {e}")
         return redirect(url_for('subjects'))
-    return render_template('subjects.html')
+    else:
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, name FROM subjects WHERE user_id = ?", (session['user_id'],))
+            subjects = cursor.fetchall()
+            cursor.close()
+        except Exception as e:
+            flash('Error occurred while fetching subjects, Please try refreshing the page.', 'danger')
+            print(f"Database error: {e}")
+            subjects = []
+        return render_template('subjects.html' , subjects=subjects)
 
 @app.route('/profile')
 def profile():

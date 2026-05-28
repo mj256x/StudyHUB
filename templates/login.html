@@ -83,14 +83,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
-    <script>
-        setTimeout(function () {
-            const flashMessage = document.getElementById('flash');
-            if (flashMessage) {
-                flashMessage.style.display = 'none';
-            }
-        }, 2000);
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 
 </html>
