@@ -176,6 +176,12 @@ def subjects():
             print(f"Database error: {e}")
             subjects = []
         return render_template('subjects.html' , subjects=subjects)
+    
+@app.route('/subjects_files/<int:subject_id>')
+def subject_files(subject_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('subject_files.html')
 
 @app.route('/profile')
 def profile():
