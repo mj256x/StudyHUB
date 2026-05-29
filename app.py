@@ -11,9 +11,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+
 
 def db_connection():
     driver = "ODBC Driver 18 for SQL Server"
@@ -160,7 +158,7 @@ def subjects():
             cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
             conn.commit()
             cursor.close()
-            supabase.table('folder').insert({'folder_name': subject_name, 'user_id': session['user_id']}).execute()
+            
             flash('Subject added successfully!', 'success')
         except Exception as e:       
             flash('Error occurred while adding subject, Please try again.', 'danger')
