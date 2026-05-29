@@ -87,3 +87,12 @@ body {
 .card-footer:hover {
     background-color: #ac9eea !important;
 }
+
+.dropdown-menu {
+    background-color: #bdb5e1 !important;
+
+}
+
+.dropdown-item:hover {
+    background-color: #ac9eea !important;
+}
