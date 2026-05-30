@@ -93,3 +93,8 @@ body {
 .btn-outline-primary:hover {
     background-color: #ac9eea !important;
 }
+
+.sessions-link::after {
+    display: none !important;
+    content: none !important;
+}
