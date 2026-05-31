@@ -6,7 +6,10 @@
 <button class="btn btn-primary shadow-lg add-subject-btn"
     style="position: fixed; bottom: 30px; left: 30px; width: 56px; height: 56px; font-size: 20px;"
     data-bs-toggle="modal" data-bs-target="#addFolderModal" onclick="document.getElementById('fileInput').click()">
-    Add File
+    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 3H3M12 21V7M12 7L5 14M12 7L19 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+    </svg>
 </button>
 <form id="uploadForm" action="{{ url_for('upload_file', subject_id=subject_id) }}" method="POST"
     enctype="multipart/form-data">
@@ -34,8 +37,17 @@
                     <a href="{{ file[1] }}" target="_blank" class="text-decoration-none text-dark">
                         <h6 class="card-title mb-0">{{ file[0] }}</h6>
                     </a>
-                    <button class="done-button rounded-circle" onclick="markAsDone(this)">
-                        <span class="icon">✔️</span>
+                    <button
+                        class="ms-auto bg-transparent border-0 d-flex align-items-center justify-content-center rounded-circle"
+                        style="width: 30px; height: 30px;" onclick="markAsDone(this)">
+                        <span class="icon"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </span>
                     </button>
                 </div>
             </div>

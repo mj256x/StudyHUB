@@ -29,13 +29,13 @@ body {
     box-shadow: 0 0 0 0.25rem #8770a680 !important;
 }
 
-.btn-close:hover {
-    background-color: #ff0000 !important;
+.custom-btn-close:hover:hover {
+    background-color: #b04343 !important;
 }
 
-.btn-close:active,
-.btn-close:focus {
-    box-shadow: 0 0 0 0.25rem #ff0000 !important;
+.custom-btn-close:active,
+.custom-btn-close:focus {
+    box-shadow: 0 0 0 0.25rem #b04343 !important;
 }
 
 .add-subject-btn {
@@ -119,4 +119,16 @@ body {
 .done-button.active {
     background-color: #198754;
     color: white;
+}
+
+.list-button {
+    background-color: #bdb5e1;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
