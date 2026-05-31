@@ -99,36 +99,21 @@ body {
     content: none !important;
 }
 
-.done-button {
-    background-color: #bdb5e1;
-    border: none;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.done-btn {
     transition: all 0.3s ease;
-    cursor: pointer;
+    background-color: transparent;
+    color: #000000;
+    border: 2px solid #000000;
 }
 
-.done-button:hover {
-    background-color: #d1e7dd;
-    color: #0f5132;
+.done-btn:hover {
+    background-color: #56b58a;
+    border-color: #56b58a;
+    color: #56b58a;
 }
 
-.done-button.active {
-    background-color: #198754;
-    color: white;
-}
-
-.list-button {
-    background-color: #bdb5e1;
-    border: none;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
+.done-btn.active {
+    background-color: #188050;
+    color: #188050;
+    border-color: #188050;
 }

@@ -212,21 +212,66 @@ def upload_file(subject_id):
             file=file.read(),
             file_options={"content-type": file.content_type}
         )
-
-        file_url = supabase.storage.from_("files").get_public_url(filename)
         
+    except Exception as e:
+        flash(f'Error uploading file: {e}', 'danger')
+
+    file_url = supabase.storage.from_("files").get_public_url(filename)
+
+    try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
-                       (subject_id, file.filename, file_url, session['user_id']))
+                   (subject_id, file.filename, file_url, session['user_id']))
         conn.commit()
-        cursor.close()
-        
+        cursor.close()        
         flash('File uploaded successfully!', 'success')
     except Exception as e:
-        flash(f'Error uploading file: {e}', 'danger')
-        
+        flash(f'Error occurred while uploading file: {e}', 'danger')
+
     return redirect(url_for('subject_files', subject_id=subject_id))
+
+
+@app.route('/delete_subject/<int:subject_id>', methods=['POST'])
+def delete_subject(subject_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        files = cursor.fetchall()
+        for file in files:
+            supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
+        cursor.execute("DELETE FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Subject deleted successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while deleting subject, Please try again.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('subjects'))
+
+@app.route('/edit_subject/<int:subject_id>', methods=['POST'])
+def edit_subject(subject_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    new_name = request.form['new_name']
+    if not new_name:
+        flash('Please enter a new subject name', 'danger')
+        return redirect(url_for('subjects'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?", (new_name, subject_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Subject updated successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while updating subject, Please try again.', 'danger')
+        print(f"Database error: {e}")
+    return redirect(url_for('subjects'))
 
 @app.route('/profile')
 def profile():
