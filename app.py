@@ -202,7 +202,7 @@ def subject_files(subject_id):
 def upload_file(subject_id):
     file = request.files['file']
     if not file:
-        flash('No file selected!')
+        flash('No file selected!', 'danger')
         return redirect(request.url)
 
     try:
@@ -222,9 +222,9 @@ def upload_file(subject_id):
         conn.commit()
         cursor.close()
         
-        flash('File uploaded successfully!')
+        flash('File uploaded successfully!', 'success')
     except Exception as e:
-        flash(f'Error uploading file: {e}')
+        flash(f'Error uploading file: {e}', 'danger')
         
     return redirect(url_for('subject_files', subject_id=subject_id))
 
