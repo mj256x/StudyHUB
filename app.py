@@ -187,7 +187,7 @@ def subject_files(subject_id):
         cursor.execute("SELECT file_name, file_url FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
-        subject_name = cursor.fetchone()
+        subject = cursor.fetchone()
         cursor.close()
         if not files:
             flash('No files found for this subject', 'danger')
@@ -195,7 +195,7 @@ def subject_files(subject_id):
         flash('Error occurred while fetching subject files, Please try refreshing the page.', 'danger')
         print(f"Database error: {e}")
         return redirect(url_for('subjects'))
-    return render_template('subject_files.html', files=files, subject=subject_name, subject_id=subject_id)
+    return render_template('subject_files.html', files=files, subject=subject, subject_id=subject_id)
 
 
 @app.route('/upload_file/<int:subject_id>', methods=['POST'])
@@ -217,8 +217,8 @@ def upload_file(subject_id):
         
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO files (subject_id, file_name, file_url) VALUES (?, ?, ?)", 
-                       (subject_id, file.filename, file_url))
+        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
+                       (subject_id, file.filename, file_url, session['user_id']))
         conn.commit()
         cursor.close()
         

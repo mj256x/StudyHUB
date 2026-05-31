@@ -98,3 +98,25 @@ body {
     display: none !important;
     content: none !important;
 }
+
+.done-button {
+    background-color: #bdb5e1;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.done-button:hover {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.done-button.active {
+    background-color: #198754;
+    color: white;
+}
