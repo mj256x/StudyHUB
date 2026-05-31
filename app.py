@@ -10,8 +10,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 
-
-
+url: str = os.getenv('SUPABASE_URL')
+key: str = os.getenv('SUPABASE_KEY')
+supabase: Client = create_client(url, key)
 
 def db_connection():
     driver = "ODBC Driver 18 for SQL Server"
@@ -158,7 +159,6 @@ def subjects():
             cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
             conn.commit()
             cursor.close()
-            
             flash('Subject added successfully!', 'success')
         except Exception as e:       
             flash('Error occurred while adding subject, Please try again.', 'danger')
@@ -181,7 +181,52 @@ def subjects():
 def subject_files(subject_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('subject_files.html')
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name, file_url FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        files = cursor.fetchall()
+        cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        subject_name = cursor.fetchone()
+        cursor.close()
+        if not files:
+            flash('No files found for this subject', 'danger')
+    except Exception as e:
+        flash('Error occurred while fetching subject files, Please try refreshing the page.', 'danger')
+        print(f"Database error: {e}")
+        return redirect(url_for('subjects'))
+    return render_template('subject_files.html', files=files, subject=subject_name, subject_id=subject_id)
+
+
+@app.route('/upload_file/<int:subject_id>', methods=['POST'])
+def upload_file(subject_id):
+    file = request.files['file']
+    if not file:
+        flash('No file selected!')
+        return redirect(request.url)
+
+    try:
+        filename = f"{subject_id}/{file.filename}"
+        supabase.storage.from_("files").upload(
+            path=filename,
+            file=file.read(),
+            file_options={"content-type": file.content_type}
+        )
+
+        file_url = supabase.storage.from_("files").get_public_url(filename)
+        
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO files (subject_id, file_name, file_url) VALUES (?, ?, ?)", 
+                       (subject_id, file.filename, file_url))
+        conn.commit()
+        cursor.close()
+        
+        flash('File uploaded successfully!')
+    except Exception as e:
+        flash(f'Error uploading file: {e}')
+        
+    return redirect(url_for('subject_files', subject_id=subject_id))
 
 @app.route('/profile')
 def profile():
