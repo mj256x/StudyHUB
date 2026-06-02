@@ -117,3 +117,21 @@ body {
     color: #188050;
     border-color: #188050;
 }
+
+.list-dots:hover {
+    background-color: #b5b4c1 !important;
+}
+
+.list-dots::after {
+    display: none !important;
+    content: none !important;
+}
+
+.dropdown-menu li {
+    border: 2px transparent solid;
+    transition: border-color 0.2s ease;
+}
+
+.dropdown-menu li:hover {
+    border-color: #bdb5e1;
+}

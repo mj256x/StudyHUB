@@ -190,7 +190,7 @@ def subject_files(subject_id):
         subject = cursor.fetchone()
         cursor.close()
         if not files:
-            flash('No files found for this subject', 'danger')
+            flash('No files found for this subject, please upload some files.', 'danger')
     except Exception as e:
         flash('Error occurred while fetching subject files, Please try refreshing the page.', 'danger')
         print(f"Database error: {e}")

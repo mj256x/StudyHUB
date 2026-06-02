@@ -4,4 +4,4 @@ setTimeout(function () {
     if (flashMessage) {
         flashMessage.style.display = 'none';
     }
-}, 2000);
+}, 3000);
