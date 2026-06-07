@@ -76,6 +76,11 @@ body {
     background-color: #bdb5e1 !important;
 }
 
+.custom-card.mark-done {
+    background-color: #90EE90 !important;
+    box-shadow: 0 0 10px rgba(144, 238, 144, 0.5) !important;
+}
+
 .card-header:hover {
     background-color: #ac9eea !important;
 }
@@ -99,25 +104,6 @@ body {
     content: none !important;
 }
 
-.done-btn {
-    transition: all 0.3s ease;
-    background-color: transparent;
-    color: #000000;
-    border: 2px solid #000000;
-}
-
-.done-btn:hover {
-    background-color: #56b58a;
-    border-color: #56b58a;
-    color: #56b58a;
-}
-
-.done-btn.active {
-    background-color: #188050;
-    color: #188050;
-    border-color: #188050;
-}
-
 .list-dots:hover {
     background-color: #b5b4c1 !important;
 }
@@ -134,4 +120,8 @@ body {
 
 .dropdown-menu li:hover {
     border-color: #bdb5e1;
+}
+
+.dropdown-menu li:active {
+    border-color: #8770a680 !important;
 }
