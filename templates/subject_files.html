@@ -84,17 +84,17 @@
                                 </button>
                             </li>
                             <li>
-                                <button class="dropdown-item" onclick="moveToAnotherFolder(this)">
+                                <button class="dropdown-item" onclick="moveToAnotherFolder('{{ file[2] }}')">
                                     <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path d="M21 21V3M3 12H17M17 12L10 5M17 12L10 19" stroke="currentColor"
                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    Move to another folder
+                                    Move to another subject
                                 </button>
                             </li>
                             <li>
-                                <button class="dropdown-item" onclick="copyToAnotherFolder(this)">
+                                <button class="dropdown-item" onclick="copyToAnotherFolder('{{ file[2] }}')">
                                     <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -102,7 +102,7 @@
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
-                                    Copy to another folder
+                                    Copy to another subject
                                 </button>
                             </li>
                             <li>
@@ -123,6 +123,34 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+</div>
+<div class="modal fade" id="moveFileModal" tabindex="-1">
+    <div class="modal-dialog" style="margin-top: 15%;">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title">Choose a new subject</h5>
+                <button type="button"
+                    class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                    data-bs-dismiss="modal">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="moveForm" action="/move_file" method="POST">
+                    <input type="hidden" name="file_id" id="fileIdToMove">
+                    <select name="new_subject_id" class="form-select">
+                        {% for sub in all_subjects %}
+                        <option value="{{ sub[1] }}">{{ sub[0] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary my-custom-btn mt-3">Move File</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -6,7 +6,7 @@ setTimeout(function () {
     }
 }, 3000);
 
-async function downloadFile(btn, fileUrl, fileName) {
+async function downloadFile(fileUrl, fileName) {
     try {
         const response = await fetch(fileUrl);
         const blob = await response.blob();
@@ -23,4 +23,10 @@ async function downloadFile(btn, fileUrl, fileName) {
         console.error('Error downloading file:', error);
         alert('Failed to download file. Please try again later.');
     }
+}
+
+function moveToAnotherFolder(fileId) {
+    document.getElementById('fileIdToMove').value = fileId;
+    var myModal = new bootstrap.Modal(document.getElementById('moveFileModal'));
+    myModal.show();
 }

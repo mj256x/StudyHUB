@@ -184,10 +184,12 @@ def subject_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, file_url FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name, file_url, id FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         subject = cursor.fetchone()
+        cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        all_subjects = cursor.fetchall()
         cursor.close()
         if not files:
             flash('No files found for this subject, please upload some files.', 'danger')
@@ -195,7 +197,7 @@ def subject_files(subject_id):
         flash('Error occurred while fetching subject files, Please try refreshing the page.', 'danger')
         print(f"Database error: {e}")
         return redirect(url_for('subjects'))
-    return render_template('subject_files.html', files=files, subject=subject, subject_id=subject_id)
+    return render_template('subject_files.html', files=files, subject=subject, subject_id=subject_id, all_subjects=all_subjects)
 
 
 @app.route('/upload_file/<int:subject_id>', methods=['POST'])
@@ -203,6 +205,10 @@ def upload_file(subject_id):
     file = request.files['file']
     if not file:
         flash('No file selected!', 'danger')
+        return redirect(request.url)
+        
+    if len(file.filename) > 40:
+        flash('File name is too long. Try to rename it first.', 'danger')
         return redirect(request.url)
 
     try:
@@ -272,6 +278,53 @@ def edit_subject(subject_id):
         flash('Error occurred while updating subject, Please try again.', 'danger')
         print(f"Database error: {e}")
     return redirect(url_for('subjects'))
+
+@app.route('/move_file', methods=['POST'])
+def move_file():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    file_id = request.form.get('file_id')
+    new_subject_id = request.form.get('new_subject_id')
+    
+    if not file_id or not new_subject_id:
+        flash('Invalid file or subject selected.', 'danger')
+        return redirect(url_for('subjects'))
+        
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects'))
+            
+        file_name = file_record[0]
+        old_subject_id = file_record[1]
+        
+        old_path = f"{old_subject_id}/{file_name}"
+        new_path = f"{new_subject_id}/{file_name}"
+        if old_path != new_path:
+            supabase.storage.from_("files").move(old_path, new_path)
+        else:
+            flash('File is already in the selected subject.', 'danger')
+            return redirect(url_for('subject_files', subject_id=old_subject_id))
+        
+        new_file_url = supabase.storage.from_("files").get_public_url(new_path)
+        
+        cursor.execute("UPDATE files SET subject_id = ?, file_url = ? WHERE id = ? AND user_id = ?",
+                       (new_subject_id, new_file_url, file_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        
+        flash('File moved successfully!', 'success')
+        return redirect(url_for('subject_files', subject_id=old_subject_id))
+    except Exception as e:
+        flash('Error occurred while moving the file. Please try again.', 'danger')
+        print(f"Error moving file: {e}")
+        return redirect(url_for('subjects_files', subject_id=old_subject_id))
 
 @app.route('/profile')
 def profile():

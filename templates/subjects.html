@@ -16,13 +16,15 @@
 <div class="modal fade" id="addFolderModal" tabindex="-1">
     <div class="modal-dialog" style="margin-top: 15%;">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header border-bottom-0">
                 <h5 class="modal-title">Add new Subject</h5>
                 <button type="button"
                     class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
                     data-bs-dismiss="modal">
-                    <img width="26" height="26" src="https://img.icons8.com/nolan/64/delete-sign.png"
-                        alt="delete-sign" />
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
                 </button>
             </div>
             <form action="/subjects" method="POST">
@@ -31,9 +33,9 @@
                         style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Subject Name"
                         autocomplete="off" required>
 
-                    <h6></h6>You can change the name of the subject later.</h6>
+                    <h6>You can change the name of the subject later.</h6>
                 </div>
-                <div class="modal-footer" style="justify-content: center; align-items: center;">
+                <div class="modal-footer border-top-0" style="justify-content: center; align-items: center;">
                     <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
                 </div>
             </form>
