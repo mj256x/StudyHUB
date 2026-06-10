@@ -74,25 +74,51 @@ body {
 
 .custom-card {
     background-color: #bdb5e1 !important;
-}
-
-.custom-card.mark-done {
-    background-color: #90EE90 !important;
-    box-shadow: 0 0 10px rgba(144, 238, 144, 0.5) !important;
+    border-radius: 10px !important;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .card-header:hover {
     background-color: #ac9eea !important;
+    border-radius: 10px !important;
 }
 
-.dropdown-menu {
-    background-color: #bdb5e1 !important;
-
+.done-card {
+    background-color: #2ec362 !important;
+    border-radius: 10px !important;
+    border-color: #3ef469 !important;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.dropdown-item:hover {
-    background-color: #ac9eea !important;
+.done-card:hover {
+    background-color: #28a745 !important;
+    border-radius: 10px !important;
+    border-color: #3ef469 !important;
 }
+
+
+.done-card .card-header:hover {
+    background-color: transparent !important;
+}
+
+.dropdown-item.done-btn-active {
+    background-color: #2ec362 !important;
+    border-radius: 10px !important;
+    border: 1px solid #3ef469 !important;
+}
+
+.dropdown-item.done-btn-active:hover {
+    background-color: #28a745 !important;
+    border-radius: 10px !important;
+    border: 1px solid #3ef469 !important;
+}
+
+.done-btn-active:active,
+.done-btn-active:focus {
+    box-shadow: 0 0 0 0.25rem #28a74580 !important;
+}
+
+
 
 .btn:hover,
 .btn-outline-primary:hover {
@@ -105,12 +131,16 @@ body {
 }
 
 .list-dots:hover {
-    background-color: #b5b4c1 !important;
+    background-color: #bdb5e1 !important;
 }
 
 .list-dots::after {
     display: none !important;
     content: none !important;
+}
+
+.dropdown-menu {
+    background-color: #bdb5e1 !important;
 }
 
 .dropdown-menu li {
@@ -124,6 +154,12 @@ body {
 
 .dropdown-menu li:active {
     border-color: #8770a680 !important;
+    border-radius: 10px !important;
+}
+
+.dropdown-item:hover {
+    background-color: #ac9eea !important;
+    border-radius: 10px !important;
 }
 
 .form-select {

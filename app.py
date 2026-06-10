@@ -1,6 +1,6 @@
 import os
 import pyodbc
-from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g, jsonify
 from supabase import create_client, Client
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -169,13 +169,31 @@ def subjects():
             conn = get_db()
             cursor = conn.cursor()
             cursor.execute("SELECT id, name FROM subjects WHERE user_id = ?", (session['user_id'],))
-            subjects = cursor.fetchall()
+            subjects_data = cursor.fetchall()
+            
+            # Create a new list to hold subjects with their progress
+            subjects = []
+            for sub in subjects_data:
+                subject_id = sub[0]
+                cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+                files_num = cursor.fetchone()[0]
+                
+                cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ? AND is_completed = 1", (subject_id, session['user_id']))
+                completed_files = cursor.fetchone()[0]
+                
+                progress = 0
+                if files_num > 0:
+                    progress = int((completed_files / files_num) * 100)
+                    
+                # Append subject id, name, and its calculated progress
+                subjects.append((sub[0], sub[1], progress))
+                
             cursor.close()
         except Exception as e:
             flash('Error occurred while fetching subjects, Please try refreshing the page.', 'danger')
             print(f"Database error: {e}")
             subjects = []
-        return render_template('subjects.html' , subjects=subjects)
+        return render_template('subjects.html', subjects=subjects)
     
 @app.route('/subjects_files/<int:subject_id>')
 def subject_files(subject_id):
@@ -184,7 +202,7 @@ def subject_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, file_url, id FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name, file_url, id, is_completed FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         subject = cursor.fetchone()
@@ -324,7 +342,105 @@ def move_file():
     except Exception as e:
         flash('Error occurred while moving the file. Please try again.', 'danger')
         print(f"Error moving file: {e}")
-        return redirect(url_for('subjects_files', subject_id=old_subject_id))
+        return redirect(url_for('subject_files', subject_id=old_subject_id))
+
+@app.route('/copy_file', methods=['POST'])
+def copy_file():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    file_id = request.form.get('file_id')
+    new_subject_id = request.form.get('new_subject_id')
+    
+    if not file_id or not new_subject_id:
+        flash('Invalid file or subject selected.', 'danger')
+        return redirect(url_for('subjects'))
+        
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects'))
+            
+        file_name = file_record[0]
+        old_subject_id = file_record[1]
+        
+        old_path = f"{old_subject_id}/{file_name}"
+        new_path = f"{new_subject_id}/{file_name}"
+        if old_path != new_path:
+            supabase.storage.from_("files").copy(old_path, new_path)
+        else:
+            flash('File is already in the selected subject.', 'danger')
+            return redirect(url_for('subject_files', subject_id=old_subject_id))
+        
+        new_file_url = supabase.storage.from_("files").get_public_url(new_path)
+        
+        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
+                       (new_subject_id, file_name, new_file_url, session['user_id']))
+        conn.commit()
+        cursor.close()
+        
+        flash('File copied successfully!', 'success')
+        return redirect(url_for('subject_files', subject_id=old_subject_id))
+    except Exception as e:
+        flash('Error occurred while copying the file. Please try again.', 'danger')
+        print(f"Error copying file: {e}")
+        return redirect(url_for('subject_files', subject_id=old_subject_id))
+    
+@app.route('/delete_file/<int:file_id>', methods=['POST'])
+def delete_file(file_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects'))
+        
+        file_name = file_record[0]
+        subject_id = file_record[1]
+        
+        supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
+        
+        cursor.execute("DELETE FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        
+        flash('File deleted successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while deleting the file. Please try again.', 'danger')
+        print(f"Error deleting file: {e}")
+    return redirect(url_for('subject_files', subject_id=subject_id))
+
+@app.route('/toggle_done/<int:file_id>', methods=['POST'])
+def toggle_done(file_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT is_completed FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        file_status = cursor.fetchone()
+        if not file_status:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects'))
+        new_status = not file_status[0]
+        cursor.execute("UPDATE files SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, file_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('File status updated successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while updating file status. Please try again.', 'danger')
+        print(f"Error updating file status: {e}")
+    return jsonify({'success': True, 'new_status': new_status})
+
 
 @app.route('/profile')
 def profile():

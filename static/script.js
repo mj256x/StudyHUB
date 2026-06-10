@@ -25,8 +25,49 @@ async function downloadFile(fileUrl, fileName) {
     }
 }
 
-function moveToAnotherFolder(fileId) {
-    document.getElementById('fileIdToMove').value = fileId;
-    var myModal = new bootstrap.Modal(document.getElementById('moveFileModal'));
+function moveORcopyFileToAnotherFolder(fileId, action) {
+    document.getElementById('fileIdInput').value = fileId;
+
+    var form = document.getElementById('moveCopyForm');
+    var submitBtn = document.getElementById('moveCopyBtn');
+
+    if (action === 'move') {
+        form.action = '/move_file';
+        submitBtn.innerText = 'Move File';
+    } else if (action === 'copy') {
+        form.action = '/copy_file';
+        submitBtn.innerText = 'Copy File';
+    }
+
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('moveORcopyFileModal'));
     myModal.show();
+}
+
+async function toggleDone(fileId) {
+    try {
+        const response = await fetch('/toggle_done/' + fileId, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const card = document.getElementById('file-card-' + fileId);
+            const btnText = document.getElementById('btn-text-' + fileId);
+            const doneBtn = document.getElementById('done-btn-' + fileId);
+
+            if (data.new_status) {
+                card.classList.add('done-card');
+                btnText.innerText = 'Mark as Undone';
+                doneBtn.classList.add('done-btn-active');
+            } else {
+                card.classList.remove('done-card');
+                btnText.innerText = 'Mark as Done';
+                doneBtn.classList.remove('done-btn-active');
+            }
+        } else {
+            alert('Failed to mark file as done/undone. Please try again later.');
+        }
+    } catch (error) {
+        console.error('Error toggling done status:', error);
+    }
 }
