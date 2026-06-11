@@ -173,3 +173,27 @@ body {
 .form-select:focus {
     box-shadow: 0 0 0 0.25rem #8770a680 !important;
 }
+
+.progress-danger {
+    background-color: #b04343 !important;
+    border: 1.5px solid #ea2828 !important;
+    border-radius: 8px !important;
+}
+
+.progress-warning {
+    background-color: #e0a800 !important;
+    border: 1.5px solid #ffbf00 !important;
+    border-radius: 8px !important;
+}
+
+.progress-nearly-success {
+    background-color: #99ec1d !important;
+    border: 1.5px solid #41ff1b !important;
+    border-radius: 8px !important;
+}
+
+.progress-success {
+    background-color: #28a745 !important;
+    border: 1.5px solid #3ef469 !important;
+    border-radius: 8px !important;
+}

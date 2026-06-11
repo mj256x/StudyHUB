@@ -6,6 +6,25 @@ setTimeout(function () {
     }
 }, 3000);
 
+document.addEventListener('DOMContentLoaded', function () {
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+    progressBars.forEach(bar => {
+        const progress = parseInt(bar.getAttribute('aria-valuenow')) || 0;
+
+        if (progress <= 25) {
+            bar.classList.add('progress-danger');
+        } else if (progress <= 50) {
+            bar.classList.add('progress-warning');
+        }
+        else if (progress <= 75) {
+            bar.classList.add('progress-nearly-success');
+        } else {
+            bar.classList.add('progress-success');
+        }
+    });
+});
+
 async function downloadFile(fileUrl, fileName) {
     try {
         const response = await fetch(fileUrl);
