@@ -277,23 +277,42 @@ def delete_subject(subject_id):
 
     return redirect(url_for('subjects'))
 
-@app.route('/edit_subject/<int:subject_id>', methods=['POST'])
-def edit_subject(subject_id):
+@app.route('/rename_subject/<int:subject_id>', methods=['POST'])
+def rename_subject(subject_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    new_name = request.form['new_name']
+
+    new_name = request.form['new_subject_name']
     if not new_name:
-        flash('Please enter a new subject name', 'danger')
+        flash('Please enter a valid subject name.', 'danger')
         return redirect(url_for('subjects'))
+
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?", (new_name, subject_id, session['user_id']))
         conn.commit()
         cursor.close()
-        flash('Subject updated successfully!', 'success')
+        flash('Subject renamed successfully!', 'success')
     except Exception as e:
-        flash('Error occurred while updating subject, Please try again.', 'danger')
+        flash('Error occurred while renaming subject.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('subjects'))
+
+@app.route('/reset_progress/<int:subject_id>', methods=['POST'])
+def reset_progress(subject_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE files SET is_completed = 0 WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Subject progress reset successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while resetting subject progress.', 'danger')
         print(f"Database error: {e}")
     return redirect(url_for('subjects'))
 
