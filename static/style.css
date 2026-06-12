@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, #5146e5d6 0%, #7c3aedcc 100%);
     min-height: 100vh;
 }
 
@@ -118,14 +118,17 @@ body {
     box-shadow: 0 0 0 0.25rem #28a74580 !important;
 }
 
-
-
 .btn:hover,
 .btn-outline-primary:hover {
     background-color: #ac9eea !important;
 }
 
-.sessions-link::after {
+.btn-outline-primary:active,
+.btn-outline-primary:focus {
+    background-color: #ac9eea !important;
+}
+
+.dropdown-link::after {
     display: none !important;
     content: none !important;
 }
@@ -187,7 +190,7 @@ body {
 }
 
 .progress-nearly-success {
-    background-color: #99ec1d !important;
+    background-color: #76d43b !important;
     border: 1.5px solid #41ff1b !important;
     border-radius: 8px !important;
 }

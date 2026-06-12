@@ -90,3 +90,13 @@ async function toggleDone(fileId) {
         console.error('Error toggling done status:', error);
     }
 }
+
+function renameSubject(subjectId, currentName) {
+    var form = document.getElementById('renameSubjectForm');
+    if (form) {
+        form.action = '/rename_subject/' + subjectId;
+    }
+
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSubjectModal'));
+    myModal.show();
+}
