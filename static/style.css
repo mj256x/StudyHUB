@@ -200,3 +200,11 @@ body {
     border: 1.5px solid #3ef469 !important;
     border-radius: 8px !important;
 }
+
+.favorite-icon {
+    transition: fill 0.2s ease-in-out;
+}
+
+.favorite-icon.favorite-btn {
+    fill: gold !important;
+}

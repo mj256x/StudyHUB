@@ -100,3 +100,29 @@ function renameSubject(subjectId, currentName) {
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSubjectModal'));
     myModal.show();
 }
+
+async function toggleFavorite(subjectId, btnElement) {
+    try {
+        const response = await fetch('/add_to_favorite/' + subjectId, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const svg = btnElement.querySelector('.favorite-icon');
+            const textSpan = btnElement.querySelector('.favorite-text');
+
+            if (data.new_status) {
+                svg.classList.add('favorite-btn');
+                textSpan.innerText = 'Remove from Favorites';
+            } else {
+                svg.classList.remove('favorite-btn');
+                textSpan.innerText = 'Add to Favorites';
+            }
+        } else {
+            alert('Failed to update favorite status.');
+        }
+    } catch (error) {
+        console.error('Error toggling favorite status:', error);
+    }
+}

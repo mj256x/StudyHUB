@@ -168,7 +168,7 @@ def subjects():
         try:
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT id, name FROM subjects WHERE user_id = ?", (session['user_id'],))
+            cursor.execute("SELECT id, name, favorite FROM subjects WHERE user_id = ?", (session['user_id'],))
             subjects_data = cursor.fetchall()
             
             # Create a new list to hold subjects with their progress
@@ -186,7 +186,7 @@ def subjects():
                     progress = int((completed_files / files_num) * 100)
                     
                 # Append subject id, name, and its calculated progress
-                subjects.append((sub[0], sub[1], progress))
+                subjects.append((sub[0], sub[1], sub[2], progress))
                 
             cursor.close()
         except Exception as e:
@@ -460,6 +460,23 @@ def toggle_done(file_id):
         print(f"Error updating file status: {e}")
     return jsonify({'success': True, 'new_status': new_status})
 
+@app.route('/add_to_favorite/<int:subject_id>', methods=['POST'])
+def add_to_favorite(subject_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT favorite FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        subject_favorite = cursor.fetchone()  
+        new_favorite_status = not subject_favorite[0]
+        cursor.execute("UPDATE subjects SET favorite = ? WHERE id = ? AND user_id = ?", (new_favorite_status, subject_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        return jsonify({'success': True, 'new_status': new_favorite_status})
+    except Exception as e:
+        print(f"Error toggling favorite status: {e}")
+        return jsonify({'success': False, 'message': 'Database error'}), 500
 
 @app.route('/profile')
 def profile():
