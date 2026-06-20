@@ -246,7 +246,7 @@ def upload_file(subject_id):
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
-                   (subject_id, file.filename, file_url, session['user_id']))
+                (subject_id, file.filename, file_url, session['user_id']))
         conn.commit()
         cursor.close()        
         flash('File uploaded successfully!', 'success')
@@ -352,7 +352,7 @@ def move_file():
         new_file_url = supabase.storage.from_("files").get_public_url(new_path)
         
         cursor.execute("UPDATE files SET subject_id = ?, file_url = ? WHERE id = ? AND user_id = ?",
-                       (new_subject_id, new_file_url, file_id, session['user_id']))
+                    (new_subject_id, new_file_url, file_id, session['user_id']))
         conn.commit()
         cursor.close()
         
@@ -399,7 +399,7 @@ def copy_file():
         new_file_url = supabase.storage.from_("files").get_public_url(new_path)
         
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
-                       (new_subject_id, file_name, new_file_url, session['user_id']))
+                    (new_subject_id, file_name, new_file_url, session['user_id']))
         conn.commit()
         cursor.close()
         
@@ -468,7 +468,7 @@ def add_to_favorite(subject_id):
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("SELECT favorite FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
-        subject_favorite = cursor.fetchone()  
+        subject_favorite = cursor.fetchone()
         new_favorite_status = not subject_favorite[0]
         cursor.execute("UPDATE subjects SET favorite = ? WHERE id = ? AND user_id = ?", (new_favorite_status, subject_id, session['user_id']))
         conn.commit()
@@ -477,6 +477,44 @@ def add_to_favorite(subject_id):
     except Exception as e:
         print(f"Error toggling favorite status: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
+
+@app.route('/tasks')
+def tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        subjects = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(f"Error fetching subjects: {e}")
+        subjects = []
+    return render_template('tasks.html', subjects=subjects)
+
+@app.route('/add_tasks', methods=['GET', 'POST'])
+def add_tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        task_title = request.form['task_title']
+        deadline = request.form['deadline']
+        subject_id = request.form['subject_id']
+
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id) VALUES (?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id))
+            conn.commit()
+            cursor.close()
+            flash('Task added successfully!', 'success')
+        except Exception as e:
+            print(f"Error adding task: {e}")
+            flash('Error occurred while adding task. Please try again.', 'danger')
+        
+        return render_template('tasks.html')
 
 @app.route('/profile')
 def profile():
@@ -489,12 +527,6 @@ def sessions():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('sessions.html')
-
-@app.route('/tasks')
-def tasks():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('tasks.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

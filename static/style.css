@@ -165,6 +165,12 @@ body {
     border-radius: 10px !important;
 }
 
+.dropdown-item:active,
+.dropdown-item:focus {
+    background-color: #ac9eea !important;
+    border-radius: 10px !important;
+}
+
 .form-select {
     background-color: #ac9eea !important;
     color: #00000080 !important;
@@ -207,4 +213,21 @@ body {
 
 .favorite-icon.favorite-btn {
     fill: gold !important;
+}
+
+.deadline {
+    background-color: #ac9eea !important;
+}
+
+input[type="date"] {
+    background-color: #ac9eea;
+    color: #333;
+    border: 1px solid #675e8d;
+    border-radius: 6px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    background-color: #5046e5;
+    padding: 10px;
+    border-radius: 1px;
 }
