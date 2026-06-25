@@ -217,6 +217,7 @@ body {
 
 .deadline {
     background-color: #ac9eea !important;
+    border-color: #675e8d !important;
 }
 
 input[type="date"] {

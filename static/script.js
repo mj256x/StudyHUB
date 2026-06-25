@@ -126,3 +126,8 @@ async function toggleFavorite(subjectId, btnElement) {
         console.error('Error toggling favorite status:', error);
     }
 }
+
+flatpickr("#deadline", {
+    dateFormat: "Y-m-d",
+    locale: "en"
+});

@@ -12,8 +12,24 @@
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
 </button>
+<div class="container">
+    <div class="row">
+        {% for task in tasks %}
+        <div class="col-md-4 mb-4">
+            <div class="card border-success mb-3" style="max-width: 18rem;">
+                <div class="card-header bg-transparent border-success">{{ task[1] }}</div>
+                <div class="card-body text-success">
+                    <h5 class="card-title">task card</h5>
+                </div>
+                <div class="card-footer bg-transparent border-success"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 <div class="modal fade" id="addTaskModal" tabindex="-1">
-    <div class="modal-dialog" style="margin-top: 15%;">
+    <div class="modal-dialog" style="margin-top: 10%;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add The Main Task Title</h5>
@@ -34,12 +50,11 @@
                             <input type="text" id="title" name="task_title" class="form-control search-input"
                                 style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Task Title"
                                 autocomplete="off" required>
-                            <p>You can change the name of the task later.</p>
                         </div>
                         <div class="col-4 text-start">
                             <label for="deadline" class="form-label">Deadline:</label>
-                            <input type="date" id="deadline" name="deadline" class="deadline" autocomplete="off"
-                                required>
+                            <input type="text" id="deadline" name="deadline" class="deadline form-control search-input"
+                                autocomplete="off" placeholder="YYYY-MM-DD" required>
                         </div>
                     </div>
                     <div class="mb-3 text-start">
@@ -50,13 +65,22 @@
                             {% endfor %}
                         </select>
                     </div>
-                </div>
+                    <div class="mb-3 text-start">
+                        <label for="priority" class="form-label">Priority:</label>
+                        <select id="priority" name="priority" class="form-select">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div> <!-- This is the modal-body -->
                 <div class="modal-footer" style="justify-content: center; align-items: center;">
                     <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
                 </div>
             </form>
-        </div>
+        </div> <!-- This is the modal-content -->
     </div>
+</div>
 </div>
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}

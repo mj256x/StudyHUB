@@ -487,11 +487,14 @@ def tasks():
         cursor = conn.cursor()
         cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
         subjects = cursor.fetchall()
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ?", (session['user_id'],))
+        tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
         print(f"Error fetching subjects: {e}")
         subjects = []
-    return render_template('tasks.html', subjects=subjects)
+        tasks = []
+    return render_template('tasks.html', subjects=subjects, tasks=tasks)
 
 @app.route('/add_tasks', methods=['GET', 'POST'])
 def add_tasks():
@@ -502,11 +505,12 @@ def add_tasks():
         task_title = request.form['task_title']
         deadline = request.form['deadline']
         subject_id = request.form['subject_id']
+        priority = request.form['priority']
 
         try:
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id) VALUES (?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id))
+            cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority))
             conn.commit()
             cursor.close()
             flash('Task added successfully!', 'success')
@@ -514,7 +518,7 @@ def add_tasks():
             print(f"Error adding task: {e}")
             flash('Error occurred while adding task. Please try again.', 'danger')
         
-        return render_template('tasks.html')
+        return redirect(url_for('tasks'))
 
 @app.route('/profile')
 def profile():
