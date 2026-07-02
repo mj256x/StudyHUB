@@ -127,7 +127,28 @@ async function toggleFavorite(subjectId, btnElement) {
     }
 }
 
-flatpickr("#deadline", {
-    dateFormat: "Y-m-d",
-    locale: "en"
+document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#deadline", {
+        dateFormat: "Y-m-d",
+        locale: "en"
+    });
 });
+
+function openTaskCardModal(type, mainTaskSubjectId = null) {
+    var form = document.getElementById('addTaskCardForm');
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addTaskModal'));
+    var subjectSelectContainer = document.getElementById('subject-select-container');
+    var mainTaskIdInput = document.getElementById('main_task_id');
+
+    if (form) {
+        if (type === 'main') {
+            form.action = '/add_main_tasks';
+            subjectSelectContainer.style.display = 'block'; // Show subject dropdown for tasks
+        } else if (type === 'sub') {
+            form.action = '/add_sub_tasks';
+            subjectSelectContainer.style.display = 'none'; // Show subject dropdown for sub-tasks
+            mainTaskIdInput.value = mainTaskSubjectId;
+        }
+    }
+    myModal.show();
+}

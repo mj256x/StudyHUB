@@ -487,7 +487,7 @@ def tasks():
         cursor = conn.cursor()
         cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
         subjects = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed, task_type FROM tasks WHERE user_id = ?", (session['user_id'],))
         tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -496,29 +496,52 @@ def tasks():
         tasks = []
     return render_template('tasks.html', subjects=subjects, tasks=tasks)
 
-@app.route('/add_tasks', methods=['GET', 'POST'])
-def add_tasks():
+@app.route('/add_main_tasks', methods=['POST'])
+def add_main_tasks():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    if request.method == 'POST':
-        task_title = request.form['task_title']
-        deadline = request.form['deadline']
-        subject_id = request.form['subject_id']
-        priority = request.form['priority']
+    task_title = request.form['task_title']
+    deadline = request.form['deadline']
+    subject_id = request.form['subject_id']        
+    priority = request.form['priority']
 
-        try:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority))
-            conn.commit()
-            cursor.close()
-            flash('Task added successfully!', 'success')
-        except Exception as e:
-            print(f"Error adding task: {e}")
-            flash('Error occurred while adding task. Please try again.', 'danger')
-        
-        return redirect(url_for('tasks'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority, task_type) VALUES (?, ?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority, 'main'))
+        conn.commit()
+        cursor.close()
+        flash('Task added successfully!', 'success')
+    except Exception as e:
+        print(f"Error adding task: {e}")
+        flash('Error occurred while adding task. Please try again.', 'danger')    
+    return redirect(url_for('tasks'))
+
+@app.route('/add_sub_tasks', methods=['POST'])
+def add_sub_tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    task_title = request.form['task_title']
+    deadline = request.form['deadline']
+    main_task_id = request.form['main_task_id']
+    priority = request.form['priority']
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT subject_id FROM tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        main_task_subject = cursor.fetchone()
+        cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority, task_type) VALUES (?, ?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], main_task_subject[0], priority, 'sub'))
+        conn.commit()
+        cursor.close()
+        flash('Sub-task added successfully!', 'success')
+    except Exception as e:
+        print(f"Error adding sub-task: {e}")
+        flash('Error occurred while adding sub-task. Please try again.', 'danger')
+
+    return redirect(url_for('tasks'))
 
 @app.route('/profile')
 def profile():
