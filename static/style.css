@@ -236,3 +236,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .card {
     border-radius: 10px !important;
 }
+
+.sub_task-card {
+    background-color: #ac9eea !important;
+    border-radius: 10px !important;
+}

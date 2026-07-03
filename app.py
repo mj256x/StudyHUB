@@ -487,14 +487,17 @@ def tasks():
         cursor = conn.cursor()
         cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
         subjects = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed, task_type FROM tasks WHERE user_id = ?", (session['user_id'],))
-        tasks = cursor.fetchall()
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ? AND task_type = 'main'", (session['user_id'],))
+        main_tasks = cursor.fetchall()
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ? AND task_type = 'sub'", (session['user_id'],))
+        sub_tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
         print(f"Error fetching subjects: {e}")
         subjects = []
-        tasks = []
-    return render_template('tasks.html', subjects=subjects, tasks=tasks)
+        main_tasks = []
+        sub_tasks = []
+    return render_template('tasks.html', subjects=subjects, main_tasks=main_tasks, sub_tasks=sub_tasks)
 
 @app.route('/add_main_tasks', methods=['POST'])
 def add_main_tasks():
