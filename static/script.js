@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openTaskCardModal(type, mainTaskSubjectId = null) {
+function openTaskCardModal(type, mainTaskId = null) {
     var form = document.getElementById('addTaskCardForm');
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addTaskModal'));
     var subjectSelectContainer = document.getElementById('subject-select-container');
@@ -147,7 +147,7 @@ function openTaskCardModal(type, mainTaskSubjectId = null) {
         } else if (type === 'sub') {
             form.action = '/add_sub_tasks';
             subjectSelectContainer.style.display = 'none'; // Show subject dropdown for sub-tasks
-            mainTaskIdInput.value = mainTaskSubjectId;
+            mainTaskIdInput.value = mainTaskId;
         }
     }
     myModal.show();

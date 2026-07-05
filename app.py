@@ -487,9 +487,9 @@ def tasks():
         cursor = conn.cursor()
         cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
         subjects = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ? AND task_type = 'main'", (session['user_id'],))
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM main_tasks WHERE user_id = ?", (session['user_id'],))
         main_tasks = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM tasks WHERE user_id = ? AND task_type = 'sub'", (session['user_id'],))
+        cursor.execute("SELECT id, title, deadline, main_task_id, priority, is_completed FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
         sub_tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -512,7 +512,7 @@ def add_main_tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority, task_type) VALUES (?, ?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority, 'main'))
+        cursor.execute("INSERT INTO main_tasks (title, deadline, user_id, subject_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority))
         conn.commit()
         cursor.close()
         flash('Task added successfully!', 'success')
@@ -534,9 +534,7 @@ def add_sub_tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subject_id FROM tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
-        main_task_subject = cursor.fetchone()
-        cursor.execute("INSERT INTO tasks (title, deadline, user_id, subject_id, priority, task_type) VALUES (?, ?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], main_task_subject[0], priority, 'sub'))
+        cursor.execute("INSERT INTO sub_tasks (title, deadline, user_id, main_task_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], main_task_id, priority))
         conn.commit()
         cursor.close()
         flash('Sub-task added successfully!', 'success')
