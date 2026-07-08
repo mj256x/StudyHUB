@@ -134,21 +134,66 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function openTaskCardModal(type, mainTaskId = null) {
+function openTaskCardModal(type, MainOrSubTaskId = null) {
     var form = document.getElementById('addTaskCardForm');
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addTaskModal'));
     var subjectSelectContainer = document.getElementById('subject-select-container');
+    var modalTitle = document.getElementById('modal_title');
     var mainTaskIdInput = document.getElementById('main_task_id');
+    var subTaskIdInput = document.getElementById('sub_task_id');
 
     if (form) {
         if (type === 'main') {
             form.action = '/add_main_tasks';
             subjectSelectContainer.style.display = 'block'; // Show subject dropdown for tasks
+            modalTitle.innerText = 'Add The Main Task';
         } else if (type === 'sub') {
             form.action = '/add_sub_tasks';
             subjectSelectContainer.style.display = 'none'; // Show subject dropdown for sub-tasks
-            mainTaskIdInput.value = mainTaskId;
+            mainTaskIdInput.value = MainOrSubTaskId;
+            modalTitle.innerText = 'Add Sub Task';
+        } else if (type === 'edit_main_task') {
+            form.action = '/edit_main_task';
+            subjectSelectContainer.style.display = 'block';
+            mainTaskIdInput.value = MainOrSubTaskId;
+            modalTitle.innerText = 'Edit Main Task';
+        } else if (type === 'edit_sub_task') {
+            form.action = '/edit_sub_task';
+            subjectSelectContainer.style.display = 'none';
+            subTaskIdInput.value = MainOrSubTaskId;
+            modalTitle.innerText = 'Edit Sub Task';
         }
     }
     myModal.show();
+}
+
+async function toggleSubTaskDone(subTaskId) {
+    try {
+        const response = await fetch('/toggle_sub_task_done/' + subTaskId, {
+            method: 'POST',
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const card = document.getElementById('sub-task-card-' + subTaskId);
+            const checkbox = document.getElementById('sub-task-check-' + subTaskId);
+            if (data.new_status) {
+                card.classList.add('done-card');
+                checkbox.classList.add('form-check-input-checked');
+            } else {
+                card.classList.remove('done-card');
+                checkbox.classList.remove('form-check-input-checked');
+            }
+        }
+
+        else {
+            alert('Failed to update sub-task status. Please try again.');
+            const checkbox = document.getElementById('sub-task-check-' + subTaskId);
+            const isCompleted = checkbox.checked;
+            checkbox.checked = !isCompleted; // Revert the checkbox on failure
+        }
+    } catch (error) {
+        console.error('Error toggling sub-task status:', error);
+    }
 }

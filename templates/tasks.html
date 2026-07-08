@@ -4,8 +4,7 @@
 
 {% block main %}
 <button class="btn btn-primary shadow-lg add-subject-btn" onclick="openTaskCardModal('main')"
-    style="position: fixed; bottom: 30px; left: 30px; width: 56px; height: 56px; font-size: 35px;"
-    data-bs-toggle="modal" data-bs-target="#addTaskModal">
+    style="position: fixed; bottom: 30px; left: 30px; width: 56px; height: 56px; font-size: 35px;">
     <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
             d="M16 4C16.93 4 17.395 4 17.7765 4.10222C18.8117 4.37962 19.6204 5.18827 19.8978 6.22354C20 6.60504 20 7.07003 20 8V17.2C20 18.8802 20 19.7202 19.673 20.362C19.3854 20.9265 18.9265 21.3854 18.362 21.673C17.7202 22 16.8802 22 15.2 22H8.8C7.11984 22 6.27976 22 5.63803 21.673C5.07354 21.3854 4.6146 20.9265 4.32698 20.362C4 19.7202 4 18.8802 4 17.2V8C4 7.07003 4 6.60504 4.10222 6.22354C4.37962 5.18827 5.18827 4.37962 6.22354 4.10222C6.60504 4 7.07003 4 8 4M12 17V11M9 14H15M9.6 6H14.4C14.9601 6 15.2401 6 15.454 5.89101C15.6422 5.79513 15.7951 5.64215 15.891 5.45399C16 5.24008 16 4.96005 16 4.4V3.6C16 3.03995 16 2.75992 15.891 2.54601C15.7951 2.35785 15.6422 2.20487 15.454 2.10899C15.2401 2 14.9601 2 14.4 2H9.6C9.03995 2 8.75992 2 8.54601 2.10899C8.35785 2.20487 8.20487 2.35785 8.10899 2.54601C8 2.75992 8 3.03995 8 3.6V4.4C8 4.96005 8 5.24008 8.10899 5.45399C8.20487 5.64215 8.35785 5.79513 8.54601 5.89101C8.75992 6 9.03995 6 9.6 6Z"
@@ -41,10 +40,30 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="#">Edit</a>
+                                <button class="dropdown-item" type="button"
+                                    onclick="openTaskCardModal('edit_main_task', '{{ main_task[0] }}')">
+                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    Edit
+                                </button>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="#">Delete</a>
+                                <form action="{{ url_for('delete_main_task', main_task_id=main_task[0]) }}"
+                                    method="POST">
+                                    <button class="dropdown-item" type="submit">
+                                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>
@@ -52,19 +71,34 @@
                 <div class="card-body text-success">
                     {% for sub_task in sub_tasks %}
                     {% if sub_task[3] == main_task[0] %}
-                    <button
-                        class="d-flex justify-content-between align-items-center mb-2 btn btn-outline-primary my-custom-btn w-100"
-                        style="width: 26px; height: 26px; ">
-                        {{ sub_task[1] }}
-                        <input type="checkbox" class="form-check-input ms-2" {% if sub_task[5] %}checked{% endif %}>
-                    </button>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+
+                        <button id="sub-task-card-{{ sub_task[0] }}" type="button"
+                            onclick="openTaskCardModal('edit_sub_task', '{{ sub_task[0] }}')"
+                            class="btn btn-outline-primary my-custom-btn w-100 text-start {% if sub_task[5] %}done-card{% endif %}">
+                            {{ sub_task[1] }}
+                        </button>
+                        <input type="checkbox" id="sub-task-check-{{ sub_task[0] }}" style="width: 20px; height: 20px;"
+                            class="form-check-input ms-2 {% if sub_task[5] %}form-check-input-checked{% endif %}"
+                            onclick="toggleSubTaskDone('{{ sub_task[0] }}')" {% if sub_task[5] %}checked{% endif %}>
+                        <form action="{{ url_for('delete_sub_task', sub_task_id=sub_task[0]) }}" method="POST">
+                            <button class="dropdown-item ms-2" type="submit">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" style="color: black;"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                     {% endif %}
                     {% endfor %}
                 </div>
                 <div class="card-footer bg-transparent border-0 p-3 pt-0">
                     <button type="button" onclick="openTaskCardModal('sub', '{{ main_task[0] }}')"
-                        class="btn btn-outline-primary my-custom-btn w-100 d-flex align-items-center justify-content-center gap-2 py-2"
-                        data-bs-toggle="modal" data-bs-target="#addTaskModal" aria-label="Add a new task">
+                        class="btn btn-outline-primary my-custom-btn w-100 d-flex align-items-center justify-content-center gap-2 py-2">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                             aria-hidden="true" focusable="false">
                             <path
@@ -84,7 +118,7 @@
     <div class="modal-dialog" style="margin-top: 10%;">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add The Main Task Title</h5>
+                <h5 class="modal-title" id="modal_title"></h5>
                 <button type="button"
                     class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
                     data-bs-dismiss="modal">
@@ -118,9 +152,11 @@
                         </select>
                     </div>
                     <input type="hidden" id="main_task_id" name="main_task_id" value="">
+                    <input type="hidden" id="sub_task_id" name="sub_task_id" value="">
                     <div class="mb-3 text-start">
                         <label for="priority" class="form-label">Priority:</label>
-                        <select id="priority" name="priority" class="form-select">
+                        <select id="priority" name="priority" class="form-select" required>
+                            <option value="" selected disabled>Select Priority</option>
                             <option value="High">High</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>

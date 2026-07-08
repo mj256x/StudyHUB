@@ -21,7 +21,7 @@ body {
 .my-custom-btn:active,
 .my-custom-btn:focus {
     background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%) !important;
-    box-shadow: 0 0 0 0.25rem rgba(103, 202, 164, 0.5) !important;
+    box-shadow: 0 0 0 0.25rem rgba(151, 91, 211, 0.5) !important;
 }
 
 .search-input:active,
@@ -96,6 +96,10 @@ body {
     border-color: #3ef469 !important;
 }
 
+.done-card:active,
+.done-card:focus {
+    box-shadow: none !important;
+}
 
 .done-card .card-header:hover {
     background-color: transparent !important;
@@ -240,4 +244,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .sub_task-card {
     background-color: #ac9eea !important;
     border-radius: 10px !important;
+}
+
+.form-check-input {
+    background-color: #ac9eea !important;
+    border-color: #675e8d !important;
+    box-shadow: none !important;
+}
+
+.form-check-input-checked {
+    background-color: #28a745 !important;
+    border-color: #3ef469 !important;
+    box-shadow: none !important;
 }
