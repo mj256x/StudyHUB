@@ -638,11 +638,46 @@ def toggle_sub_task_done(sub_task_id):
 
         new_status = not card_status[0]
         cursor.execute("UPDATE sub_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, sub_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
+        sub_tasks_status = cursor.fetchall()
+        all_completed = True
+        for status in sub_tasks_status:
+            if not status[0]:
+                all_completed = False
+        if all_completed == True:
+            cursor.execute("UPDATE main_tasks SET is_completed = 1 WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
+        else:
+            cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'new_status': new_status})
     except Exception as e:
         print(f"Error updating sub-task status: {e}")
+        return jsonify({'success': False, 'message': 'Database error'}), 500
+
+@app.route('/mark_task_as_done/<int:main_task_id>', methods=['POST'])
+def mark_task_as_done(main_task_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT is_completed FROM main_tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        task_status = cursor.fetchone()
+        if not task_status:
+            return jsonify({'success': False, 'message': 'Main task not found'}), 404
+
+        new_status = not task_status[0]
+        cursor.execute("UPDATE main_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, main_task_id, session['user_id']))
+        if new_status == True:
+            cursor.execute("UPDATE sub_tasks SET is_completed = 1 WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        else:
+            cursor.execute("UPDATE sub_tasks SET is_completed = 0 WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        return jsonify({'success': True, 'new_status': new_status})
+    except Exception as e:
+        print(f"Error updating main task status: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
 
 @app.route('/profile')

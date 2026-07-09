@@ -83,6 +83,11 @@ body {
     border-radius: 10px !important;
 }
 
+.done-border {
+    border-color: #3ef469 !important;
+    border-radius: 10px !important;
+}
+
 .done-card {
     background-color: #2ec362 !important;
     border-radius: 10px !important;
