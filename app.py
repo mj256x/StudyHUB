@@ -615,7 +615,19 @@ def delete_sub_task(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
+        cursor.execute("SELECT main_task_id FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
+        main_task_id = cursor.fetchone()
         cursor.execute("DELETE FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+        sub_tasks_status = cursor.fetchall()
+        all_completed = True
+        for status in sub_tasks_status:
+            if not status[0]:
+                all_completed = False
+        if all_completed == True:
+            cursor.execute("UPDATE main_tasks SET is_completed = 1 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+        else:
+            cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
         conn.commit()
         cursor.close()
         flash('Sub-task deleted successfully!', 'success')
