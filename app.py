@@ -48,11 +48,25 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+@app.context_processor
+def inject_subjects():
+    if 'user_id' in session:
+        try:
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
+            Subjects = cursor.fetchall()
+            cursor.close()
+            return dict(Subjects=Subjects)
+        except Exception as e:
+            print(f"Error fetching subjects for context processor: {e}")
+            return dict(Subjects=[])
+    return dict(Subjects=[])
+
 @app.route('/')
-def homepage():
+def welcome_page():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('homepage.html')
+        return render_template('welcome_page.html')
 
 @app.route('/index')
 def index():
@@ -702,11 +716,27 @@ def profile():
         return redirect(url_for('login'))
     return render_template('profile.html')
 
-@app.route('/sessions')
-def sessions():
+@app.route('/start_session', methods=['POST'])
+def start_session():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    return render_template('sessions.html')
+    
+    session_title = request.form['session_title']
+    period = request.form['period']
+    subject_id = request.form['subject_id']
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
+                            (session_title, period, subject_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Session started successfully!, Start kicking!', 'success')
+    except Exception as e:
+        print(f"Error starting session: {e}")
+        flash('Error occurred while starting session. Please try again.', 'danger')
+    return redirect(url_for('subject_files', subject_id=subject_id))
 
 if __name__ == '__main__':
     app.run(debug=True)

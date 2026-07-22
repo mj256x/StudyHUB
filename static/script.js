@@ -98,6 +98,8 @@ function renameSubject(subjectId, currentName) {
     }
 
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSubjectModal'));
+    var inputField = document.getElementById('rename_subject_input');
+    inputField.value = currentName;
     myModal.show();
 }
 
@@ -225,4 +227,9 @@ async function markAsDone(mainTaskId) {
     } catch (error) {
         console.error('Error marking task as done:', error);
     }
+}
+
+function startNewSession() {
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionModal'));
+    myModal.show();
 }

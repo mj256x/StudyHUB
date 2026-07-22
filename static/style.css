@@ -262,3 +262,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-color: #3ef469 !important;
     box-shadow: none !important;
 }
+
+.session-form {
+    background-color: #ac9eea !important;
+    border-color: #675e8d !important;
+}

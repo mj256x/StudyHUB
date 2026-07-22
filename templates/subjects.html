@@ -158,11 +158,12 @@
             </div>
             <form id="renameSubjectForm" action="/rename_subject" method="POST">
                 <div class="modal-body">
+                    <label for="new_subject_name" class="form-label">New Subject Name:</label>
                     <input type="text" name="new_subject_name" class="form-control search-input"
-                        style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Add New Subject Name"
-                        autocomplete="off" required>
+                        style="background-color: #ac9eea; border-color: #675e8d;" autocomplete="off"
+                        id="rename_subject_input" required>
 
-                    <h6>You can change the name of the subject later.</h6>
+                    <small>You can change the name of the subject later.</small>
                 </div>
                 <div class="modal-footer border-top-0" style="justify-content: center; align-items: center;">
                     <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
