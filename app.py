@@ -1,6 +1,7 @@
 import os
 import pyodbc
 from flask import Flask, render_template, request, redirect, url_for, session, flash, g, jsonify
+import time
 from supabase import create_client, Client
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -731,12 +732,41 @@ def start_session():
         cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
                             (session_title, period, subject_id, session['user_id']))
         conn.commit()
+        cursor.execute("SELECT id FROM study_sessions WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        session_id = cursor.fetchone()[0]
+        session['study_session'] = {'id': session_id, 'initial_duration': int(period), 'start_timestamp': time.time()}
+        session_id = cursor.fetchone()[0]
         cursor.close()
         flash('Session started successfully!, Start kicking!', 'success')
     except Exception as e:
         print(f"Error starting session: {e}")
         flash('Error occurred while starting session. Please try again.', 'danger')
-    return redirect(url_for('subject_files', subject_id=subject_id))
+    return redirect(request.referrer or url_for('index'))
+
+@app.route('/update_session_duration', methods=['POST'])
+def update_session_duration():
+    if 'user_id' not in session or 'study_session' not in session:
+        return jsonify({'success': False, 'message': 'Authentication or session required'}), 401
+
+    data = request.get_json()
+    added_time = data.get('added_time')
+
+    if not added_time:
+        return jsonify({'success': False, 'message': 'Invalid data'}), 400
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + ? WHERE id = ? AND user_id = ?",
+                    (added_time, session['study_session']['id'], session['user_id']))
+        conn.commit()
+        session['study_session']['initial_duration'] += added_time
+        session.modified = True
+        cursor.close()
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error updating session duration: {e}")
+        return jsonify({'success': False, 'message': 'Database error'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

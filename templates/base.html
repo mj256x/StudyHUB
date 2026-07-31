@@ -82,7 +82,6 @@
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-
                             </a>
                         </li>
                         <li class="nav-item">
@@ -94,7 +93,6 @@
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-
                             </a>
                         </li>
                     </ul>
@@ -150,8 +148,21 @@
             </div>
         </div>
     </div>
-
-
+    {% if session.study_session %}
+    <div class="dropdown">
+        <button type="button" id="pomodoro-btn" class="pomodoro-floating dropdown-toggle dropdown-link"
+            data-bs-toggle="dropdown" style="display: none;" data-session-active="true"
+            data-initial-duration="{{ session.study_session.initial_duration }}"
+            data-start-timestamp="{{ session.study_session.start_timestamp }}">
+            🍅 <span id="timer-display">25:00</span>
+        </button>
+        <ul class="dropdown-menu custom-dropdown-menu" aria-labelledby="pomodoro-btn">
+            <li><button id="pause-resume-btn" class="btn btn-outline-primary my-custom-btn">Pause</button></li>
+            <li><button id="add-time-btn" class="btn btn-outline-primary my-custom-btn">+5 minutes</button></li>
+            <li><button id="end-session-btn" class="btn btn-outline-primary my-custom-btn">End</button></li>
+        </ul>
+    </div>
+    {% endif %}
     <main class="container py-5 text-center">
         {% block main %}{% endblock %}
     </main>

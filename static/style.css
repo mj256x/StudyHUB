@@ -267,3 +267,39 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background-color: #ac9eea !important;
     border-color: #675e8d !important;
 }
+
+.pomodoro-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: grab;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(255, 63, 63, 0.3);
+    user-select: none;
+    font-family: Arial, sans-serif;
+}
+
+.pomodoro-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.custom-dropdown-menu {
+    background-color: #ff6b6b !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(255, 63, 63, 0.3);
+}
