@@ -124,12 +124,12 @@
                                 <label for="title" class="form-label">Session Title:</label>
                                 <input type="text" id="title" name="session_title"
                                     class="form-control session-form search-input" placeholder="Session Title"
-                                    autocomplete="off" required>
+                                    autocomplete="off" required autofocus>
                             </div>
                             <div class="col-4 text-start">
                                 <label for="period" class="form-label">Period (in minutes):</label>
                                 <input type="number" id="period" name="period"
-                                    class="session-form form-control search-input" min="15" max="45" required>
+                                    class="session-form form-control search-input" min="1" max="45" required>
                             </div>
                         </div>
                         <div class="mb-3 text-start" id="subject-select-container">
@@ -148,6 +148,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Session Ended Modal -->
+    <div class="modal fade" id="sessionEndedModal" tabindex="-1" aria-labelledby="sessionEndedModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sessionEndedModalLabel">Session Finished!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Great work! Your study session has been recorded.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
     {% if session.study_session %}
     <div class="dropdown">
         <button type="button" id="pomodoro-btn" class="pomodoro-floating dropdown-toggle dropdown-link"
@@ -156,10 +178,36 @@
             data-start-timestamp="{{ session.study_session.start_timestamp }}">
             🍅 <span id="timer-display">25:00</span>
         </button>
-        <ul class="dropdown-menu custom-dropdown-menu" aria-labelledby="pomodoro-btn">
-            <li><button id="pause-resume-btn" class="btn btn-outline-primary my-custom-btn">Pause</button></li>
-            <li><button id="add-time-btn" class="btn btn-outline-primary my-custom-btn">+5 minutes</button></li>
-            <li><button id="end-session-btn" class="btn btn-outline-primary my-custom-btn">End</button></li>
+        <ul class="dropdown-menu pomodoro-dropdown-menu" aria-labelledby="pomodoro-btn">
+            <li>
+                <button id="add-time-btn" class="pomodoro-item">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 
+                            16V10M9 13H15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 
+                            17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 
+                            14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 
+                            15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    +5 minutes
+                </button>
+            </li>
+            <li>
+                <button id="end-session-btn" class="pomodoro-item" data-bs-dismiss="dropdown">
+                    <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <path d="M264.5 64C251.2 64 240.5 74.7 240.5 88C240.5 101.3 251.2 112 264.5 
+                            112L296.5 112L296.5 137.3C188.5 149.2 104.5 240.8 104.5 352C104.5 471.3 201.2 568 320.5 568C439.8 
+                            568 536.5 471.3 536.5 352C536.5 312.2 525.7 274.9 506.9 242.8L535.1 214.6C547.6 
+                            202.1 547.6 181.8 535.1 169.3C522.6 
+                            156.8 502.3 156.8 489.8 169.3L466.4 192.7C433.5 162.5 391.2 142.4 344.4 
+                            137.2L344.4 111.9L376.4 111.9C389.7 111.9 400.4 101.2 
+                            400.4 87.9C400.4 74.6 389.7 63.9 376.4 63.9L264.4 63.9zM344.5 
+                            248L344.5 352C344.5 365.3 333.8 376 320.5 376C307.2 376 296.5 365.3 296.5 
+                            352L296.5 248C296.5 234.7 307.2 224 320.5 224C333.8 224 344.5 234.7 344.5 248z" />
+                    </svg>
+                    End Session
+                </button>
+            </li>
         </ul>
     </div>
     {% endif %}

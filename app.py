@@ -156,6 +156,7 @@ def register():
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
+    session.pop('study_session', None)
     flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
@@ -732,7 +733,7 @@ def start_session():
         cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
                             (session_title, period, subject_id, session['user_id']))
         conn.commit()
-        cursor.execute("SELECT id FROM study_sessions WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT id FROM study_sessions WHERE session_name = ? AND duration_minutes = ? AND user_id = ?", (session_title, period, session['user_id']))
         session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'initial_duration': int(period), 'start_timestamp': time.time()}
         session_id = cursor.fetchone()[0]
@@ -767,6 +768,32 @@ def update_session_duration():
     except Exception as e:
         print(f"Error updating session duration: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
+
+@app.route('/session_ended', methods=['POST'])
+def session_ended():
+    if 'user_id' not in session or 'study_session' not in session:
+        return jsonify({'success': False, 'message': 'Authentication or session required'}), 401
+    try:
+        data = request.get_json(silent=True) or {}
+        elapsed_minutes = data.get('elapsed_minutes')
+
+        if elapsed_minutes is None:
+            return jsonify({'success': False, 'message': 'Invalid data'}), 400
+
+        study_session = session.get('study_session')
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE study_sessions SET duration_minutes = ? WHERE id = ? AND user_id = ?",
+            (round(float(elapsed_minutes), 2), study_session['id'], session['user_id'])
+        )
+        conn.commit()
+        cursor.close()
+        session.pop('study_session', None)
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error ending session: {e}")
+        return jsonify({'success': False}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

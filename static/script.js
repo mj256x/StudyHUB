@@ -242,8 +242,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// This function will be called when the user clicks "Start Session"
-// It will ensure the pomodoro button is displayed and initialized.
 function showPomodoroBtnAndInitialize(initialDuration, startTimestamp) {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
     if (pomodoroBtn) {
@@ -257,7 +255,6 @@ function showPomodoroBtnAndInitialize(initialDuration, startTimestamp) {
 
 function initializePomodoro() {
     const timerDisplay = document.getElementById('timer-display');
-    const pauseResumeBtn = document.getElementById('pause-resume-btn');
     const addTimeBtn = document.getElementById('add-time-btn');
     const endSessionBtn = document.getElementById('end-session-btn');
     const pomodoroBtn = document.getElementById('pomodoro-btn');
@@ -269,35 +266,57 @@ function initializePomodoro() {
     let elapsedTimeSeconds = currentTime - startTimestamp;
     let totalSessionDurationSeconds = initialDurationMinutes * 60;
 
-    let totalSeconds = Math.max(0, totalSessionDurationSeconds - elapsedTimeSeconds);
+    let totalSeconds = Math.max(0, Math.floor(totalSessionDurationSeconds - elapsedTimeSeconds));
 
-    let isRunning = true;
     let timerInterval;
 
     function updateDisplay() {
-        if (totalSeconds < 0) totalSeconds = 0;
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
+        const remainingSeconds = Math.max(0, Math.floor(totalSeconds));
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
         timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function startTimer() {
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-            if (isRunning && totalSeconds > 0) {
+            if (totalSeconds > 0) {
                 totalSeconds--;
                 updateDisplay();
             } else if (totalSeconds <= 0) {
                 clearInterval(timerInterval);
-                // Optionally, you can add a notification for when the timer ends
+                sessionEnded();
             }
         }, 1000);
     }
 
-    pauseResumeBtn.addEventListener('click', () => {
-        isRunning = !isRunning;
-        pauseResumeBtn.textContent = isRunning ? "Pause" : 'Resume';
-    });
+    function getElapsedMinutes() {
+        const currentTime = Date.now() / 1000;
+        const elapsedTimeSeconds = Math.max(0, currentTime - startTimestamp);
+        return elapsedTimeSeconds / 60;
+    }
+
+    async function sessionEnded() {
+        try {
+            const response = await fetch('/session_ended', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ elapsed_minutes: getElapsedMinutes() }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                pomodoroBtn.dataset.sessionActive = 'false';
+                pomodoroBtn.style.display = 'none';
+                var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionEndedModal'));
+                myModal.show();
+            }
+        }
+        catch (error) {
+            console.error('Error ending session:', error);
+        }
+    }
 
     addTimeBtn.addEventListener('click', async () => {
         const addedMinutes = 5;
@@ -313,8 +332,6 @@ function initializePomodoro() {
             if (data.success) {
                 totalSeconds += addedMinutes * 60;
                 updateDisplay();
-            } else {
-                alert('Failed to add time.');
             }
         } catch (error) {
             console.error('Error adding time:', error);
@@ -322,7 +339,7 @@ function initializePomodoro() {
     });
 
     endSessionBtn.addEventListener('click', async () => {
-        window.location.href = '/subjects'; // This will clear the session, including study_session
+        await sessionEnded();
     });
 
     updateDisplay();

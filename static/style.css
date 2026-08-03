@@ -155,18 +155,8 @@ body {
     background-color: #bdb5e1 !important;
 }
 
-.dropdown-menu li {
-    border: 2px transparent solid;
-    transition: border-color 0.2s ease;
-}
-
-.dropdown-menu li:hover {
-    border-color: #bdb5e1;
-}
-
-.dropdown-menu li:active {
-    border-color: #8770a680 !important;
-    border-radius: 10px !important;
+.dropdown-item {
+    border: 2px transparent solid !important;
 }
 
 .dropdown-item:hover {
@@ -177,6 +167,39 @@ body {
 .dropdown-item:active,
 .dropdown-item:focus {
     background-color: #ac9eea !important;
+    color: #000000 !important;
+    border-color: #9c649e80 !important;
+    border-radius: 10px !important;
+}
+
+.pomodoro-dropdown-menu {
+    background-color: tomato !important;
+    border: none !important;
+    box-shadow: 0 4px 10px rgba(255, 36, 36, 0.3);
+    padding: 10px !important;
+}
+
+.pomodoro-item {
+    background-color: transparent !important;
+    border: 2px #ff1a1a solid !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.pomodoro-item:hover {
+    background-color: #fd4727 !important;
+    border-radius: 10px !important;
+}
+
+#end-session-btn {
+    margin-bottom: 0 !important;
+}
+
+.pomodoro-item:active,
+.pomodoro-item:focus {
+    background-color: #e43415 !important;
+    color: #000000 !important;
+    border-color: #cf0707 !important;
     border-radius: 10px !important;
 }
 
@@ -272,7 +295,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     position: fixed;
     bottom: 30px;
     right: 20px;
-    background-color: #ff6b6b;
+    background-color: tomato;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -280,26 +303,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-weight: bold;
     cursor: grab;
     z-index: 9999;
-    box-shadow: 0 4px 10px rgba(255, 63, 63, 0.3);
+    box-shadow: 0 4px 10px rgba(255, 52, 52, 0.3);
     user-select: none;
     font-family: Arial, sans-serif;
-}
-
-.pomodoro-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-}
-
-.custom-dropdown-menu {
-    background-color: #ff6b6b !important;
-    border: none !important;
-    box-shadow: 0 4px 10px rgba(255, 63, 63, 0.3);
 }
