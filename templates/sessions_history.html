@@ -4,6 +4,7 @@
 
 {% block main %}
 <div class="container">
+    {% for session in sessions %}
     <table class="table custom-table">
         <thead>
             <tr>
@@ -14,19 +15,64 @@
             </tr>
         </thead>
         <tbody>
-            {% for session in sessions %}
             <tr>
                 <td>
                     <a class="btn btn-outline-primary my-custom-btn"
                         href="{{ url_for('subject_files', subject_id=session[0]) }}">{{ session[1] }}
                     </a>
                 </td>
-                <td>{{ session[2] }}</td>
-                <td>{{ session[3] }}</td>
+                <td>
+                    <button class="btn btn-outline-primary my-custom-btn"
+                        onclick="renameSessionModal('{{ session[2] }}', '{{ session[3] }}')">
+                        {{ session[3] }}
+                    </button>
+                </td>
                 <td>{{ session[4] }}</td>
+                <td>{{ session[5] }}</td>
             </tr>
-            {% endfor %}
         </tbody>
     </table>
+    <form action="{{ url_for('clear_sessions_history') }}" method="POST">
+        <button type="submit" id="clear-sessions" class="btn btn-outline-danger danger-custom-btn">
+            Clear All Sessions
+        </button>
+    </form>
+    {% endfor %}
+    {% if not sessions %}
+    <div class="text-center mt-5">
+        <h3>No sessions found.</h3>
+        <button class="btn btn-outline-primary my-custom-btn" onclick="startNewSession()">Start a New Session</button>
+    </div>
+    {% endif %}
+</div>
+<div class="modal fade" id="renameSessionModal" tabindex="-1">
+    <div class="modal-dialog" style="margin-top: 15%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rename Session</h5>
+                <button type="button"
+                    class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                    data-bs-dismiss="modal">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+            <form id="renameSessionForm" action="{{ url_for('rename_session', session_id=0) }}" method="POST">
+                <div class="modal-body">
+                    <label for="session_title" class="form-label">Session Title:</label>
+                    <input type="text" id="session_title" name="session_title"
+                        class="form-control session-form search-input" placeholder="Session Title" autocomplete="off"
+                        required autofocus>
+                </div>
+                <div class="modal-footer" style="justify-content: space-between; align-items: center;">
+                    <button type="button" class="btn btn-outline-danger danger-custom-btn"
+                        onclick="deleteSession()">Delete Session</button>
+                    <button type="submit" class="btn btn-outline-primary my-custom-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

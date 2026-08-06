@@ -319,10 +319,38 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 table.custom-table {
     background-color: #ac9eea !important;
     border-bottom: 3px solid #675e8d !important;
+    border-radius: 10px !important;
 }
 
 table.custom-table th,
 table.custom-table td {
     background-color: #ac9eea !important;
     border-bottom: 3px solid #675e8d !important;
+}
+
+.danger-custom-btn:hover {
+    background-color: #b04343 !important;
+    border-color: #b04343 !important;
+    color: #fff !important;
+}
+
+.danger-custom-btn:active,
+.danger-custom-btn:focus {
+    box-shadow: 0 0 0 0.25rem #b0434380 !important;
+}
+
+#clear-sessions {
+    background-color: #e33737 !important;
+    color: #fff !important;
+    border-color: #e33737 !important;
+    border-radius: 10px !important;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+}
+
+#clear-sessions:hover {
+    background-color: #b41919 !important;
+    border-color: #e33737 !important;
+    color: #e3e0e0 !important;
 }

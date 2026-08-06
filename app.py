@@ -802,13 +802,72 @@ def sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
         cursor.close()
     except Exception as e:
         print(f"Error fetching sessions: {e}")
         sessions = []
     return render_template('sessions_history.html', sessions=sessions)
+
+@app.route('/rename_session/<int:session_id>', methods=['POST'])
+def rename_session(session_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    new_name = request.form['session_title']
+    if not new_name:
+        flash('Please enter a valid session name.', 'danger')
+        return redirect(url_for('sessions_history'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE study_sessions SET session_name = ? WHERE id = ? AND user_id = ?", (new_name, session_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Session renamed successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while renaming session.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('sessions_history'))
+
+@app.route('/delete_session/<int:session_id>', methods=['POST'])
+def delete_session(session_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM study_sessions WHERE id = ? AND user_id = ?", (session_id, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Session deleted successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while deleting session.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('sessions_history'))
+
+@app.route('/clear_sessions_history', methods=['POST'])
+def clear_sessions_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        conn.commit()
+        cursor.close()
+        flash('All sessions history cleared successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while clearing sessions history.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('sessions_history'))
 
 if __name__ == '__main__':
     app.run(debug=True)

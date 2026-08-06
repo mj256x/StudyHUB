@@ -345,3 +345,22 @@ function initializePomodoro() {
     updateDisplay();
     startTimer();
 }
+
+function renameSessionModal(sessionId, sessionTitle) {
+    var form = document.getElementById('renameSessionForm');
+    if (form) {
+        form.action = '/rename_session/' + sessionId;
+    }
+
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSessionModal'));
+    document.getElementById('session_title').value = sessionTitle;
+    myModal.show();
+}
+
+function deleteSession() {
+    var form = document.getElementById('renameSessionForm');
+    if (form) {
+        form.action = '/delete_session/' + form.action.split('/').pop();
+        form.submit();
+    }
+}
