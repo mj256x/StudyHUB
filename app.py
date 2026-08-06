@@ -795,5 +795,20 @@ def session_ended():
         print(f"Error ending session: {e}")
         return jsonify({'success': False}), 500
 
+@app.route('/sessions_history')
+def sessions_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        sessions = cursor.fetchall()
+        cursor.close()
+    except Exception as e:
+        print(f"Error fetching sessions: {e}")
+        sessions = []
+    return render_template('sessions_history.html', sessions=sessions)
+
 if __name__ == '__main__':
     app.run(debug=True)

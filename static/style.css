@@ -14,7 +14,7 @@ body {
 
 .my-custom-btn:hover {
     color: #000000 !important;
-    border-color: #bdb5e1 !important;
+    border-color: transparent !important;
     background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%) !important;
 }
 
@@ -306,4 +306,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     box-shadow: 0 4px 10px rgba(255, 52, 52, 0.3);
     user-select: none;
     font-family: Arial, sans-serif;
+}
+
+.card-header a {
+    color: black;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+table.custom-table {
+    background-color: #ac9eea !important;
+    border-bottom: 3px solid #675e8d !important;
+}
+
+table.custom-table th,
+table.custom-table td {
+    background-color: #ac9eea !important;
+    border-bottom: 3px solid #675e8d !important;
 }
