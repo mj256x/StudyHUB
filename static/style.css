@@ -3,6 +3,13 @@ body {
     min-height: 100vh;
 }
 
+nav.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
 .custom-navbar {
     background-color: #bdb5e1 !important;
 }
@@ -76,6 +83,7 @@ body {
     background-color: #bdb5e1 !important;
     border-radius: 10px !important;
     transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .card-header:hover {
@@ -353,4 +361,11 @@ table.custom-table td {
     background-color: #b41919 !important;
     border-color: #e33737 !important;
     color: #e3e0e0 !important;
+}
+
+.text-center {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
