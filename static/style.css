@@ -118,6 +118,8 @@ nav.navbar {
     background-color: transparent !important;
 }
 
+
+
 .dropdown-item.done-btn-active {
     background-color: #2ec362 !important;
     border-radius: 10px !important;
@@ -161,6 +163,7 @@ nav.navbar {
 
 .dropdown-menu {
     background-color: #bdb5e1 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 .dropdown-item {
@@ -170,7 +173,10 @@ nav.navbar {
 .dropdown-item:hover {
     background-color: #ac9eea !important;
     border-radius: 10px !important;
+    transition: background-color 0.2s linear, border-radius 0.2s linear !important;
 }
+
+
 
 .dropdown-item:active,
 .dropdown-item:focus {
@@ -183,7 +189,7 @@ nav.navbar {
 .pomodoro-dropdown-menu {
     background-color: tomato !important;
     border: none !important;
-    box-shadow: 0 4px 10px rgba(255, 36, 36, 0.3);
+    box-shadow: 0 4px 10px rgba(255, 36, 36, 0.3) !important;
     padding: 10px !important;
 }
 
@@ -368,4 +374,21 @@ table.custom-table td {
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #675e8d;
+    margin-bottom: 10px;
+}
+
+.pfp {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
 }

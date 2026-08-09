@@ -15,6 +15,9 @@ url: str = os.getenv('SUPABASE_URL')
 key: str = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(url, key)
 
+UPLOAD_FOLDER = 'users_pfp'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 def db_connection():
     driver = "ODBC Driver 18 for SQL Server"
     server = os.getenv('DB_SERVER')
@@ -57,12 +60,14 @@ def inject_subjects():
             cursor = conn.cursor()
             cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
             Subjects = cursor.fetchall()
+            cursor.execute("SELECT username, email, FORMAT(updated_at, 'dd MMM yyyy HH:mm'), profile_picture FROM users WHERE id = ?", (session['user_id'],))
+            user_info = cursor.fetchone()
             cursor.close()
-            return dict(Subjects=Subjects)
+            return dict(Subjects=Subjects, user_info=user_info)
         except Exception as e:
             print(f"Error fetching subjects for context processor: {e}")
-            return dict(Subjects=[])
-    return dict(Subjects=[])
+            return dict(Subjects=[], user_info=None)
+    return dict(Subjects=[], user_info=None)
 
 @app.route('/')
 def welcome_page():
@@ -712,11 +717,6 @@ def mark_task_as_done(main_task_id):
         print(f"Error updating main task status: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
 
-@app.route('/profile')
-def profile():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    return render_template('profile.html')
 
 @app.route('/start_session', methods=['POST'])
 def start_session():
@@ -802,7 +802,7 @@ def sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date,  'HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
         cursor.close()
     except Exception as e:
