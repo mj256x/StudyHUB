@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <title>StudyHUB: {% block title %}{% endblock %}</title>
 </head>
@@ -65,13 +67,13 @@
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex me-3" role="search">
-                    <input class="form-control me-2 search-input"
-                        style="width: 400px; background-color: #ac9eea; border-color: #675e8d;" type="search"
+                <div class="d-flex">
+                    <input id="search-input" class="form-control me-2 search-input searchable" type="search"
                         placeholder="Search" aria-label="Search" />
-                    <button class="btn btn-outline-success my-custom-btn" type="submit">Search</button>
-                </form>
-                <div class="d-flex align-items-center ms-auto">
+                    <button id="search-button" type="button" class="btn btn-outline-primary my-custom-btn"
+                        onclick="toggleSearchInput()">
+                        <i class="fa fa-search"></i>
+                    </button>
                     <ul class="navbar-nav gap-2">
                         <li class="nav-item dropdown">
                             <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
@@ -209,7 +211,7 @@
                     <form action="/change_username" method="POST">
                         <div class="mb-3">
                             <label for="new_username" class="form-label">New Username:</label>
-                            <input type="text" class="form-control search-input session-form" id="new_username"
+                            <input type="text" class="form-control form-input session-form" id="new_username"
                                 name="new_username" required autofocus value="{{ user_info[0] }}">
                         </div>
                         <div class="modal-footer">
@@ -240,7 +242,7 @@
                     <form action="/change_email" method="POST">
                         <div class="mb-3">
                             <label for="new_email" class="form-label">New Email:</label>
-                            <input type="email" class="form-control search-input session-form" id="new_email"
+                            <input type="email" class="form-control form-input session-form" id="new_email"
                                 name="new_email" required autofocus value="{{ user_info[1] }}">
                         </div>
                         <div class="modal-footer">
@@ -271,13 +273,13 @@
                     <form action="/change_password" method="POST">
                         <div class="mb-3">
                             <label for="current_password" class="form-label">Current Password:</label>
-                            <input type="password" class="form-control search-input session-form" id="current_password"
+                            <input type="password" class="form-control form-input session-form" id="current_password"
                                 name="current_password" required autofocus>
                             <label for="new_password" class="form-label">New Password:</label>
-                            <input type="password" class="form-control search-input session-form" id="new_password"
+                            <input type="password" class="form-control form-input session-form" id="new_password"
                                 name="new_password" required autofocus>
                             <label for="confirm_password" class="form-label">Confirm New Password:</label>
-                            <input type="password" class="form-control search-input session-form" id="confirm_password"
+                            <input type="password" class="form-control form-input session-form" id="confirm_password"
                                 name="confirm_password" required autofocus>
                         </div>
                         <div class="modal-footer">
@@ -310,13 +312,13 @@
                             <div class="col-8 text-start">
                                 <label for="title" class="form-label">Session Title:</label>
                                 <input type="text" id="title" name="session_title"
-                                    class="form-control session-form search-input" placeholder="Session Title"
+                                    class="form-control session-form form-input" placeholder="Session Title"
                                     autocomplete="off" required autofocus>
                             </div>
                             <div class="col-4 text-start">
                                 <label for="period" class="form-label">Period (in minutes):</label>
                                 <input type="number" id="period" name="period"
-                                    class="session-form form-control search-input" min="1" max="45" required>
+                                    class="session-form form-control form-input" min="1" max="45" required>
                             </div>
                         </div>
                         <div class="mb-3 text-start" id="subject-select-container">

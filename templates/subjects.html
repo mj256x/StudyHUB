@@ -29,7 +29,7 @@
             </div>
             <form action="/subjects" method="POST">
                 <div class="modal-body">
-                    <input type="text" name="subject_name" class="form-control search-input"
+                    <input type="text" name="subject_name" class="form-control form-input"
                         style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Subject Name"
                         autocomplete="off" required>
 
@@ -57,11 +57,11 @@
 <div class="container">
     <div class="row">
         {% for subject in subjects %}
-        <div class="col-12 col-md-3 mb-4">
+        <div class="col-12 col-md-3 mb-4" data-searchable-item>
             <div class="card h-100 custom-card">
                 <div class="card-header bg-transparent">
                     <a href="{{ url_for('subject_files', subject_id=subject[0]) }}" class="text-decoration-none">
-                        {{subject[1] }}
+                        <h5 class="card-title">{{ subject[1] }}</h5>
                     </a>
                 </div>
                 <div class="card-footer bg-transparent d-flex justify-content-between align-items-center gap-3">
@@ -173,7 +173,7 @@
             <form id="renameSubjectForm" action="/rename_subject" method="POST">
                 <div class="modal-body">
                     <label for="new_subject_name" class="form-label">New Subject Name:</label>
-                    <input type="text" name="new_subject_name" class="form-control search-input"
+                    <input type="text" name="new_subject_name" class="form-control form-input"
                         style="background-color: #ac9eea; border-color: #675e8d;" autocomplete="off"
                         id="rename_subject_input" required>
 

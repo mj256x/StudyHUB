@@ -4,7 +4,12 @@
 
 {% block main %}
 <div class="container">
-    {% for session in sessions %}
+    {% if not sessions %}
+    <div class="text-center">
+        <h2>No sessions found!</h2>
+        <button class="btn btn-outline-primary my-custom-btn" onclick="startNewSession()">Start a New Session</button>
+    </div>
+    {% else %}
     <table class="table custom-table">
         <thead>
             <tr>
@@ -14,6 +19,7 @@
                 <th scope="col">Date</th>
             </tr>
         </thead>
+        {% for session in sessions %}
         <tbody>
             <tr>
                 <td>
@@ -31,18 +37,13 @@
                 <td>{{ session[5] }}</td>
             </tr>
         </tbody>
+        {% endfor %}
     </table>
     <form action="{{ url_for('clear_sessions_history') }}" method="POST">
         <button type="submit" id="clear-sessions" class="btn btn-outline-danger danger-custom-btn">
             Clear All Sessions
         </button>
     </form>
-    {% endfor %}
-    {% if not sessions %}
-    <div class="text-center">
-        <h2>No sessions found!</h2>
-        <button class="btn btn-outline-primary my-custom-btn" onclick="startNewSession()">Start a New Session</button>
-    </div>
     {% endif %}
 </div>
 <div class="modal fade" id="renameSessionModal" tabindex="-1">
@@ -63,7 +64,7 @@
                 <div class="modal-body">
                     <label for="session_title" class="form-label">Session Title:</label>
                     <input type="text" id="session_title" name="session_title"
-                        class="form-control session-form search-input" placeholder="Session Title" autocomplete="off"
+                        class="form-control session-form form-input" placeholder="Session Title" autocomplete="off"
                         required autofocus>
                 </div>
                 <div class="modal-footer" style="justify-content: space-between; align-items: center;">
