@@ -74,24 +74,28 @@
                 <div class="d-flex align-items-center ms-auto">
                     <ul class="navbar-nav gap-2">
                         <li class="nav-item dropdown">
-                            <button class="btn btn-outline-primary my-custom-btn dropdown-toggle dropdown-link"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 2 21M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5ZM11 21L14.1014 20.1139C14.2499 20.0715 14.3241 20.0502 14.3934 20.0184C14.4549 19.9902 14.5134 19.9558 14.5679 19.9158C14.6293 19.8707 14.6839 19.8161 14.7932 19.7068L21.25 13.25C21.9404 12.5597 21.9404 11.4403 21.25 10.75C20.5597 10.0596 19.4404 10.0596 18.75 10.75L12.2932 17.2068C12.1839 17.3161 12.1293 17.3707 12.0842 17.4321C12.0442 17.4866 12.0098 17.5451 11.9816 17.6066C11.9497 17.6759 11.9285 17.7501 11.8861 17.8987L11 21Z"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </button>
+                            <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                {% if user_info[3] %}
+                                <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp2">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
+                                    alt="Profile Picture" class="pfp">
+                                {% endif %}
+                            </a>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <div class="user-info">
                                     {% if user_info[3] %}
-                                    <img src="{{ url_for('users_pfp', user_id=user_info[3]) }}" alt="Profile Picture"
-                                        class="pfp">
+                                    <label for="profile-picture-input" class="profile-picture-label">
+                                        <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
+                                    </label>
+                                    <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
                                     {% else %}
-                                    <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
-                                        alt="Profile Picture" class="pfp">
+                                    <label for="profile-picture-input" class="profile-picture-label">
+                                        <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
+                                            alt="Profile Picture" class="pfp">
+                                    </label>
+                                    <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
                                     {% endif %}
                                     <strong>{{ user_info[0] }}</strong>
                                     <small>{{ user_info[1] }}</small>
@@ -100,8 +104,26 @@
                                 <div class="editing-info">
                                     <ul style="list-style-type: none; padding-left: 0;">
                                         <li>
-                                            <button class="dropdown-item" type="button"><svg width="24px" height="24px"
-                                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <button class="dropdown-item" type="button" onclick="changeUsername()">
+                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 
+                                                        2 21M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 
+                                                        7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5ZM11 21L14.1014 20.1139C14.2499 20.0715 14.3241 20.0502 14.3934 
+                                                        20.0184C14.4549 19.9902 14.5134 19.9558 14.5679 19.9158C14.6293 19.8707 14.6839 19.8161 14.7932 19.7068L21.25 
+                                                        13.25C21.9404 12.5597 21.9404 11.4403 21.25 10.75C20.5597 10.0596 19.4404 10.0596 18.75 10.75L12.2932 17.2068C12.1839 
+                                                        17.3161 12.1293 17.3707 12.0842 17.4321C12.0442 17.4866 12.0098 17.5451 11.9816 17.6066C11.9497 17.6759 11.9285 17.7501 11.8861 17.8987L11 21Z"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                                Change Username
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" type="button" onclick="changePassword()">
+                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
                                                     <path
                                                         d="M22 11V8.2C22 7.0799 22 6.51984 21.782 6.09202C21.5903 5.71569 21.2843 5.40973 20.908 5.21799C20.4802 5 19.9201 
                                                         5 18.8 5H5.2C4.0799 5 3.51984 5 3.09202 5.21799C2.71569 5.40973 2.40973 5.71569 2.21799 6.09202C2 6.51984 2 7.0799 
@@ -121,19 +143,7 @@
                                                 </svg> Change Password</button>
                                         </li>
                                         <li>
-                                            <button class="dropdown-item" type="button">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 2 21M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5ZM11 21L14.1014 20.1139C14.2499 20.0715 14.3241 20.0502 14.3934 20.0184C14.4549 19.9902 14.5134 19.9558 14.5679 19.9158C14.6293 19.8707 14.6839 19.8161 14.7932 19.7068L21.25 13.25C21.9404 12.5597 21.9404 11.4403 21.25 10.75C20.5597 10.0596 19.4404 10.0596 18.75 10.75L12.2932 17.2068C12.1839 17.3161 12.1293 17.3707 12.0842 17.4321C12.0442 17.4866 12.0098 17.5451 11.9816 17.6066C11.9497 17.6759 11.9285 17.7501 11.8861 17.8987L11 21Z"
-                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg>
-                                                Change Username
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item" type="button">
+                                            <button class="dropdown-item" type="button" onclick="changeEmail()">
                                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path
@@ -153,21 +163,14 @@
                                     </ul>
                                 </div>
                                 <hr>
-                                <button class="dropdown-item btn btn-outline-danger danger-custom-btn" type="button">
-                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M16 6V5.2C16 4.0799 16 3.51984 15.782 3.09202C15.5903 2.71569 15.2843 
-                                            2.40973 14.908 2.21799C14.4802 2 13.9201 2 12.8 2H11.2C10.0799 2 9.51984 
-                                            2 9.09202 2.21799C8.71569 2.40973 8.40973 2.71569 8.21799 3.09202C8 3.51984 
-                                            8 4.0799 8 5.2V6M10 11.5V16.5M14 11.5V16.5M3 6H21M19 6V17.2C19 18.8802 19 
-                                            19.7202 18.673 20.362C18.3854 20.9265 17.9265 21.3854 17.362 21.673C16.7202 
-                                            22 15.8802 22 14.2 22H9.8C8.11984 22 7.27976 22 6.63803 21.673C6.07354 21.3854 
-                                            5.6146 20.9265 5.32698 20.362C5 19.7202 5 18.8802 5 17.2V6"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    Delete Account
-                                </button>
+                                <div class="delete-acc">
+                                    <form action="/delete_account" method="POST">
+                                        <button class="btn btn-outline-danger danger-custom-btn" type="submit">
+                                            Delete Account
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-outline-primary my-custom-btn" href="/logout">
@@ -186,6 +189,105 @@
             </div>
         </div>
     </nav>
+
+    <div class="modal fade" id="changeUsernameModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Username</h5>
+                    <button type="button"
+                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">
+                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/change_username" method="POST">
+                        <div class="mb-3">
+                            <label for="new_username" class="form-label">New Username:</label>
+                            <input type="text" class="form-control search-input session-form" id="new_username"
+                                name="new_username" required autofocus value="{{ user_info[0] }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Username</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changeEmailModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Email</h5>
+                    <button type="button"
+                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">
+                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/change_email" method="POST">
+                        <div class="mb-3">
+                            <label for="new_email" class="form-label">New Email:</label>
+                            <input type="email" class="form-control search-input session-form" id="new_email"
+                                name="new_email" required autofocus value="{{ user_info[1] }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Email</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 10%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button"
+                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">
+                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/change_password" method="POST">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password:</label>
+                            <input type="password" class="form-control search-input session-form" id="current_password"
+                                name="current_password" required autofocus>
+                            <label for="new_password" class="form-label">New Password:</label>
+                            <input type="password" class="form-control search-input session-form" id="new_password"
+                                name="new_password" required autofocus>
+                            <label for="confirm_password" class="form-label">Confirm New Password:</label>
+                            <input type="password" class="form-control search-input session-form" id="confirm_password"
+                                name="confirm_password" required autofocus>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="sessionModal" tabindex="-1">
         <div class="modal-dialog" style="margin-top: 10%;">

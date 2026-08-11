@@ -4,9 +4,18 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import time
 from supabase import create_client, Client
 from werkzeug.security import generate_password_hash, check_password_hash
+import cloudinary
+import cloudinary.uploader
 from dotenv import load_dotenv
 
 load_dotenv()
+
+cloudinary.config (
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
@@ -60,7 +69,7 @@ def inject_subjects():
             cursor = conn.cursor()
             cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
             Subjects = cursor.fetchall()
-            cursor.execute("SELECT username, email, FORMAT(updated_at, 'dd MMM yyyy HH:mm'), profile_picture FROM users WHERE id = ?", (session['user_id'],))
+            cursor.execute("SELECT username, email, FORMAT(updated_at, 'dd MMM yyyy'), profile_picture FROM users WHERE id = ?", (session['user_id'],))
             user_info = cursor.fetchone()
             cursor.close()
             return dict(Subjects=Subjects, user_info=user_info)
@@ -802,7 +811,7 @@ def sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date,  'HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date,  'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -868,6 +877,151 @@ def clear_sessions_history():
         print(f"Database error: {e}")
 
     return redirect(url_for('sessions_history'))
+
+@app.route('/change_username', methods=['POST'])
+def change_username():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    new_username = request.form['new_username']
+    if not new_username:
+        flash('Please enter a valid username.', 'danger')
+        return redirect(url_for('sessions_history'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Username changed successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while changing username.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('index'))
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    current_password = request.form['current_password']
+    new_password = request.form['new_password']
+    confirm_new_password = request.form['confirm_password']
+
+
+    if not current_password or not new_password or not confirm_new_password:
+        flash('Please fill in all fields.', 'danger')
+        return redirect(url_for('sessions_history'))
+
+    if new_password != confirm_new_password:
+        flash('New passwords do not match.', 'danger')
+        return redirect(url_for('sessions_history'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT password_hash FROM users WHERE id = ?", (session['user_id'],))
+        stored_password_hash = cursor.fetchone()[0]
+
+        if not check_password_hash(stored_password_hash, current_password):
+            flash('Current password is incorrect.', 'danger')
+            return redirect(url_for('index'))
+
+        new_hashed_password = generate_password_hash(new_password)
+        cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hashed_password, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Password changed successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while changing password.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('index'))
+
+@app.route('/change_email', methods=['POST'])
+def change_email():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    new_email = request.form['new_email']
+    if not new_email:
+        flash('Please enter a valid email.', 'danger')
+        return redirect(url_for('sessions_history'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET email = ? WHERE id = ?", (new_email, session['user_id']))
+        conn.commit()
+        cursor.close()
+        flash('Email changed successfully!', 'success')
+    except Exception as e:
+        flash('Error occurred while changing email.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('index'))
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        subjects = cursor.fetchall()
+        for subject in subjects:
+            subject_id = subject[0]
+            cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+            files = cursor.fetchall()
+            for file in files:
+                supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
+
+        cursor.execute("DELETE FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM main_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM files WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM users WHERE id = ?", (session['user_id'],))
+        conn.commit()
+        cursor.close()
+        session.clear()
+        flash('Account deleted successfully!', 'success')
+        return redirect(url_for('logout'))
+    except Exception as e:
+        flash('Error occurred while deleting account.', 'danger')
+        print(f"Database error: {e}")
+
+    return redirect(url_for('logout'))
+
+@app.route('/upload_profile_picture', methods=['POST'])
+def upload_profile_picture():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
+
+    try:
+        file = request.files['pfp']
+        file_bytes = file.read()
+        upload_result = cloudinary.uploader.upload(
+            file_bytes,
+            folder="users_pfps",
+            transformation=[
+                {"width": 250, "height": 250, "crop": "fill", "gravity": "face"}
+            ]
+        )
+        pfp_url = upload_result['secure_url']
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET profile_picture = ? WHERE id = ?", (pfp_url, session['user_id']))
+        conn.commit()
+        cursor.close()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        print(f"Error uploading profile picture: {e}")
+        return jsonify({'success': False}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

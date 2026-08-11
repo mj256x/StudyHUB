@@ -176,7 +176,14 @@ nav.navbar {
     transition: background-color 0.2s linear, border-radius 0.2s linear !important;
 }
 
-
+.dropdown-menu {
+    background-color: #bdb5e1 !important;
+    border-radius: 10px !important;
+    border: 1px solid #675e8d !important;
+    padding: 10px !important;
+    margin-top: 5px !important;
+    min-width: 200px !important;
+}
 
 .dropdown-item:active,
 .dropdown-item:focus {
@@ -342,10 +349,18 @@ table.custom-table td {
     border-bottom: 3px solid #675e8d !important;
 }
 
-.danger-custom-btn:hover {
-    background-color: #b04343 !important;
-    border-color: #b04343 !important;
+.danger-custom-btn {
+    background-color: #e33737 !important;
     color: #fff !important;
+    border-color: #e33737 !important;
+    border-radius: 10px !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+}
+
+.danger-custom-btn:hover {
+    background-color: #b41919 !important;
+    border-color: #e33737 !important;
+    color: #e3e0e0 !important;
 }
 
 .danger-custom-btn:active,
@@ -354,19 +369,9 @@ table.custom-table td {
 }
 
 #clear-sessions {
-    background-color: #e33737 !important;
-    color: #fff !important;
-    border-color: #e33737 !important;
-    border-radius: 10px !important;
     position: fixed;
     bottom: 20px;
     left: 20px;
-}
-
-#clear-sessions:hover {
-    background-color: #b41919 !important;
-    border-color: #e33737 !important;
-    color: #e3e0e0 !important;
 }
 
 .text-center {
@@ -391,4 +396,39 @@ table.custom-table td {
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+.pfp2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-acc {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#profile-picture-input {
+    display: none;
+}
+
+.profile-picture-label {
+    cursor: pointer;
+}
+
+.profile-picture-label:hover {
+    box-shadow: 0 0 0 4px #999898;
+    border-radius: 50%;
 }
