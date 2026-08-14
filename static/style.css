@@ -1,17 +1,160 @@
 body {
-    background: linear-gradient(135deg, #5146e5d6 0%, #7c3aedcc 100%);
+    background: linear-gradient(135deg, #141E30 0%, #3f5e96 100%);
     min-height: 100vh;
 }
 
-nav.navbar {
-    position: sticky;
+#logo {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 30% !important;
+}
+
+.logo-text {
+    font-weight: bold;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar {
+    background-color: #504485 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    position: sticky !important;
     top: 0;
     z-index: 1000;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.custom-navbar {
-    background-color: #bdb5e1 !important;
+.dashboard-stats,
+.to-do-tasks {
+    background-color: #4f3da0;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 30px;
+}
+
+.dashboard-stat-card {
+    background-color: #5a4d94;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.view-btn {
+    border: 2px solid #7a6fba !important;
+    border-radius: 20px !important;
+}
+
+#agenda-section {
+    background-color: #6f59d1 !important;
+    border-radius: 10px !important;
+}
+
+#agenda-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+#today-tasks,
+#tomorrow-tasks {
+    background-color: #4f3da0 !important;
+    width: 100% !important;
+    padding: 20px !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.msg {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+.tasks-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+.task-item {
+    background-color: #5a4d94 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 20px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.hero-card {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 20px;
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin-bottom: 2.5rem;
+}
+
+.cta-btn {
+    padding: 1rem 2rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(139, 92, 246, 0.6);
+    background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
+}
+
+.cta-btn:active {
+    transform: translateY(0);
 }
 
 .my-custom-btn {

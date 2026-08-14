@@ -3,5 +3,139 @@
 {% block title %}HomePage{% endblock %}
 
 {% block main %}
-<h1 class="display-4 fw-bold mb-4">Welcome to StudyHUB!</h1>
+{% if new_user == 'true' %}
+<div id="new-user-message">
+    <div class="hero-card">
+        <h1 class="hero-title">
+            Every big achievement starts with a single subject.
+        </h1>
+        <p class="hero-subtitle">
+            Organize your lectures, track tasks, and log study sessions seamlessly.
+            Create your first subject folder to unlock your workspace.
+        </p>
+        <button class="cta-btn" onclick="showAddSubjectModal()">
+            Create Your First Subject
+        </button>
+    </div>
+</div>
+{% elif new_user == 'false' %}
+<section class="to-do-tasks">
+    <h2><strong>Today's Agenda</strong></h2>
+    <div class="card border-0">
+        <div class="card-body" id="agenda-section">
+            <div id="agenda-container" style="display: block;">
+                <div id="today-tasks" style="display: none;">
+                    <h3>
+                        Today
+                    </h3>
+                    <div id="today-tasks-list" class="tasks-cards">
+                        <div id="no-tasks-message-1" style="display: none;">
+                            <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
+                            <p class="mt-2">No tasks scheduled!</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="tomorrow-tasks" style="display: none;">
+                    <h3>
+                        Tomorrow
+                    </h3>
+                    <div id="tomorrow-tasks-list" class="tasks-cards">
+                        <div id="no-tasks-message-2" style="display: none;">
+                            <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
+                            <p class="mt-2">No tasks scheduled!</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="no-tasks-message" class="msg" style="display: none;">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
+                    <p class="mt-2">No tasks scheduled!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-stats">
+    <h2><strong>Quick Statistics</strong></h2>
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center dashboard-stat-card">
+                    <div class="mb-3">
+                        <i class="fas fa-book" style="font-size: 2.5rem; color: #7c16e2;"></i>
+                    </div>
+                    <h5 class="card-title text-muted">Active Subjects</h5>
+                    <p class="display-6 fw-bold" id="total-subjects">-</p>
+                    <button class="btn btn-outline-primary my-custom-btn view-btn"
+                        onclick="window.location.href='/subjects'">
+                        View Subjects
+                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center dashboard-stat-card">
+                    <div class="mb-3">
+                        <i class="fas fa-tasks" style="font-size: 2.5rem; color: #067532;"></i>
+                    </div>
+                    <h5 class="card-title text-muted">Pending Tasks</h5>
+                    <p class="display-6 fw-bold" id="pending-tasks">-</p>
+                    <button class="btn btn-outline-primary my-custom-btn view-btn"
+                        onclick="window.location.href='/tasks'">
+                        View Tasks
+                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center dashboard-stat-card">
+                    <div class="mb-3">
+                        <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #96a80a;"></i>
+                    </div>
+                    <h5 class="card-title text-muted">Total Study Time</h5>
+                    <div class="d-flex flex-row justify-content-center align-items-center">
+                        <p class="display-6 fw-bold" id="study-time">-</p>
+                        <small class="text-muted" id="min-hour">-</small>
+                    </div>
+                    <button class="btn btn-outline-primary my-custom-btn view-btn"
+                        onclick="window.location.href='/sessions_history'">
+                        View Session History
+                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<template id="task-item-template">
+    <div class="task-item">
+        <h4 class="task-title"></h4>
+        <span class="badge task-badge"></span>
+        <button class="btn btn-outline-primary my-custom-btn view-btn mark-done-btn" type="submit"><svg width="22px"
+                height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572M22 4L12 14.01L9 11.01"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg> Mark
+            as Done</button>
+    </div>
+</template>
+{% endif %}
 {% endblock %}

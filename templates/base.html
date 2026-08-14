@@ -14,17 +14,12 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg custom-navbar">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='images/logo.jpg') }}" style="margin-right: 10px;" alt=""
-                    width="33" height="auto">
+            <a href="{{ url_for('index') }}" class="navbar-brand nav-link">
+                <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
+                <span class="logo-text">StudyHUB</span>
             </a>
-            <a class="navbar-brand" href="{{ url_for('index') }}"><strong>StudyHUB</strong></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
-                aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
             <div class="collapse navbar-collapse" id="navbarScroll">
                 {% if session.get('user_id') %}
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
@@ -67,6 +62,7 @@
                         </ul>
                     </li>
                 </ul>
+
                 <div class="d-flex">
                     <input id="search-input" class="form-control me-2 search-input searchable" type="search"
                         placeholder="Search" aria-label="Search" />
@@ -191,6 +187,37 @@
             </div>
         </div>
     </nav>
+
+    <div class="modal fade" id="addFolderModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title">Add new Subject</h5>
+                    <button type="button"
+                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">
+                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <form action="/subjects" method="POST">
+                    <div class="modal-body">
+                        <input type="text" name="subject_name" class="form-control form-input"
+                            style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Subject Name"
+                            autocomplete="off" required>
+
+                        <h6>You can change the name of the subject later.</h6>
+                    </div>
+                    <div class="modal-footer border-top-0" style="justify-content: center; align-items: center;">
+                        <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="changeUsernameModal" tabindex="-1">
         <div class="modal-dialog" style="margin-top: 15%;">

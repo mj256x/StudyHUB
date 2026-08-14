@@ -10,6 +10,12 @@ body {
     background-color: white;
 }
 
+#logo {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 30% !important;
+}
+
 .blue-side {
     background: linear-gradient(180deg, #5d51ff 0%, #4338ca 100%);
     padding: 3rem;
