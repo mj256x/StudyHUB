@@ -1,0 +1,122 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+    progressBars.forEach(bar => {
+        const progress = parseInt(bar.getAttribute('aria-valuenow')) || 0;
+        bar.style.width = progress + '%';
+        if (progress <= 25) {
+            bar.classList.add('progress-danger');
+        } else if (progress <= 50) {
+            bar.classList.add('progress-warning');
+        }
+        else if (progress <= 75) {
+            bar.classList.add('progress-nearly-success');
+        } else {
+            bar.classList.add('progress-success');
+        }
+    });
+});
+
+async function downloadFile(fileUrl, fileName) {
+    try {
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    }
+    catch (error) {
+        console.error('Error downloading file:', error);
+        alert('Failed to download file. Please try again later.');
+    }
+}
+
+function moveORcopyFileToAnotherFolder(fileId, action) {
+    document.getElementById('fileIdInput').value = fileId;
+
+    var form = document.getElementById('moveCopyForm');
+    var submitBtn = document.getElementById('moveCopyBtn');
+
+    if (action === 'move') {
+        form.action = '/move_file';
+        submitBtn.innerText = 'Move File';
+    } else if (action === 'copy') {
+        form.action = '/copy_file';
+        submitBtn.innerText = 'Copy File';
+    }
+
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('moveORcopyFileModal'));
+    myModal.show();
+}
+
+async function toggleDone(fileId) {
+    try {
+        const response = await fetch('/toggle_done/' + fileId, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const card = document.getElementById('file-card-' + fileId);
+            const btnText = document.getElementById('btn-text-' + fileId);
+            const doneBtn = document.getElementById('done-btn-' + fileId);
+
+            if (data.new_status) {
+                card.classList.add('done-card');
+                btnText.innerText = 'Mark as Undone';
+                doneBtn.classList.add('done-btn-active');
+            } else {
+                card.classList.remove('done-card');
+                btnText.innerText = 'Mark as Done';
+                doneBtn.classList.remove('done-btn-active');
+            }
+        } else {
+            alert('Failed to mark file as done/undone. Please try again later.');
+        }
+    } catch (error) {
+        console.error('Error toggling done status:', error);
+    }
+}
+
+function renameSubject(subjectId, currentName) {
+    var form = document.getElementById('renameSubjectForm');
+    if (form) {
+        form.action = '/rename_subject/' + subjectId;
+    }
+
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSubjectModal'));
+    var inputField = document.getElementById('rename_subject_input');
+    inputField.value = currentName;
+    myModal.show();
+}
+
+async function toggleFavorite(subjectId, btnElement) {
+    try {
+        const response = await fetch('/add_to_favorite/' + subjectId, {
+            method: 'POST'
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const svg = btnElement.querySelector('.favorite-icon');
+            const textSpan = btnElement.querySelector('.favorite-text');
+
+            if (data.new_status) {
+                svg.classList.add('favorite-btn');
+                textSpan.innerText = 'Remove from Favorites';
+            } else {
+                svg.classList.remove('favorite-btn');
+                textSpan.innerText = 'Add to Favorites';
+            }
+        } else {
+            alert('Failed to update favorite status.');
+        }
+    } catch (error) {
+        console.error('Error toggling favorite status:', error);
+    }
+}

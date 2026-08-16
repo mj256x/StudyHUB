@@ -75,7 +75,7 @@
                             <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 {% if user_info[3] %}
-                                <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp2">
+                                <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
                                 {% else %}
                                 <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
                                     alt="Profile Picture" class="pfp">
@@ -430,8 +430,12 @@
     <main class="container py-5 text-center">
         {% block main %}{% endblock %}
     </main>
-    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    {% block scripts %}
+    {% endblock %}
 </body>
+
 
 </html>
