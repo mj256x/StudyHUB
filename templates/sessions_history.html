@@ -24,7 +24,7 @@
             <tr>
                 <td>
                     <a class="btn btn-outline-primary my-custom-btn"
-                        href="{{ url_for('subject_files', subject_id=session[0]) }}">{{ session[1] }}
+                        href="{{ url_for('subjects.subject_files', subject_id=session[0]) }}">{{ session[1] }}
                     </a>
                 </td>
                 <td>
@@ -39,7 +39,7 @@
         </tbody>
         {% endfor %}
     </table>
-    <form action="{{ url_for('clear_sessions_history') }}" method="POST">
+    <form action="{{ url_for('sessions.clear_sessions_history') }}" method="POST">
         <button type="submit" id="clear-sessions" class="btn btn-outline-danger danger-custom-btn">
             Clear All Sessions
         </button>
@@ -60,7 +60,7 @@
                     </svg>
                 </button>
             </div>
-            <form id="renameSessionForm" action="{{ url_for('rename_session', session_id=0) }}" method="POST">
+            <form id="renameSessionForm" action="{{ url_for('sessions.rename_session', session_id=0) }}" method="POST">
                 <div class="modal-body">
                     <label for="session_title" class="form-label">Session Title:</label>
                     <input type="text" id="session_title" name="session_title"

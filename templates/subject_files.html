@@ -11,7 +11,7 @@
             stroke-linejoin="round" />
     </svg>
 </button>
-<form id="uploadForm" action="{{ url_for('upload_file', subject_id=subject_id) }}" method="POST"
+<form id="uploadForm" action="{{ url_for('subjects.upload_file', subject_id=subject_id) }}" method="POST"
     enctype="multipart/form-data">
     <input type="file" id="fileInput" name="file" style="display: none;"
         onchange="document.getElementById('uploadForm').submit()">
@@ -110,7 +110,7 @@
                                 </button>
                             </li>
                             <li>
-                                <form action="{{ url_for('delete_file', file_id=file[2]) }}" method="POST">
+                                <form action="{{ url_for('subjects.delete_file', file_id=file[2]) }}" method="POST">
                                     <button class="dropdown-item" type="submit">
                                         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">

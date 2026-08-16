@@ -68,7 +68,7 @@
                                 </button>
                             </li>
                             <li>
-                                <form action="{{ url_for('delete_main_task', main_task_id=main_task[0]) }}"
+                                <form action="{{ url_for('tasks.delete_main_task', main_task_id=main_task[0]) }}"
                                     method="POST">
                                     <button class="dropdown-item" type="submit">
                                         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
@@ -98,7 +98,7 @@
                         <input type="checkbox" id="sub-task-check-{{ sub_task[0] }}" style="width: 20px; height: 20px;"
                             class="form-check-input ms-2 {% if sub_task[5] %}form-check-input-checked{% endif %}"
                             onclick="toggleSubTaskDone('{{ sub_task[0] }}')" {% if sub_task[5] %}checked{% endif %}>
-                        <form action="{{ url_for('delete_sub_task', sub_task_id=sub_task[0]) }}" method="POST">
+                        <form action="{{ url_for('tasks.delete_sub_task', sub_task_id=sub_task[0]) }}" method="POST">
                             <button class="dropdown-item ms-2" type="submit">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" style="color: black;"
                                     xmlns="http://www.w3.org/2000/svg">

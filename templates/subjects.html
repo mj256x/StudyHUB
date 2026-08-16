@@ -60,7 +60,8 @@
         <div class="col-12 col-md-3 mb-4" data-searchable-item>
             <div class="card h-100 custom-card">
                 <div class="card-header bg-transparent">
-                    <a href="{{ url_for('subject_files', subject_id=subject[0]) }}" class="text-decoration-none">
+                    <a href="{{ url_for('subjects.subject_files', subject_id=subject[0]) }}"
+                        class="text-decoration-none">
                         <h5 class="card-title">{{ subject[1] }}</h5>
                     </a>
                 </div>
@@ -73,7 +74,7 @@
                     </div>
 
                     <div class="d-flex align-items-center gap-1">
-                        <form action="{{ url_for('delete_subject', subject_id=subject[0]) }}" method="POST">
+                        <form action="{{ url_for('subjects.delete_subject', subject_id=subject[0]) }}" method="POST">
                             <button class="btn btn-outline-primary d-flex align-items-center justify-content-center"
                                 style="border: none; padding: 3px 8px; border-radius: 3px;">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
@@ -117,7 +118,8 @@
                                     </button>
                                 </li>
                                 <li>
-                                    <form action="{{ url_for('reset_progress', subject_id=subject[0]) }}" method="POST">
+                                    <form action="{{ url_for('subjects.reset_progress', subject_id=subject[0]) }}"
+                                        method="POST">
                                         <button class="dropdown-item">
                                             <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +172,7 @@
                     </svg>
                 </button>
             </div>
-            <form id="renameSubjectForm" action="/rename_subject" method="POST">
+            <form id="renameSubjectForm" action="#" method="POST">
                 <div class="modal-body">
                     <label for="new_subject_name" class="form-label">New Subject Name:</label>
                     <input type="text" name="new_subject_name" class="form-control form-input"
