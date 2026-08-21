@@ -9,210 +9,331 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>StudyHUB: {% block title %}{% endblock %}</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a href="{{ url_for('home.index') }}" class="navbar-brand nav-link">
-                <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
-                <span class="logo-text">StudyHUB</span>
-            </a>
-            <div class="collapse navbar-collapse" id="navbarScroll">
-                {% if session.get('user_id') %}
-                <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/subjects">Subjects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/tasks">Tasks</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle dropdown-link" href="#" id="navbarScrollingDropdown"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Sessions
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <button class="dropdown-item" type="button" onclick="startNewSession()">
-                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M9 18.5H15M6.6 2H17.4C17.9601 2 18.2401 2 18.454 2.10899C18.6422 2.20487 18.7951 2.35785 18.891 2.54601C19 2.75992 19 3.03995 19 3.6V5.67452C19 6.1637 19 6.40829 18.9447 6.63846C18.8957 6.84254 18.8149 7.03763 18.7053 7.21657C18.5816 7.4184 18.4086 7.59135 18.0627 7.93726L15.1314 10.8686C14.7354 11.2646 14.5373 11.4627 14.4632 11.691C14.3979 11.8918 14.3979 12.1082 14.4632 12.309C14.5373 12.5373 14.7354 12.7354 15.1314 13.1314L18.0627 16.0627C18.4086 16.4086 18.5816 16.5816 18.7053 16.7834C18.8149 16.9624 18.8957 17.1575 18.9447 17.3615C19 17.5917 19 17.8363 19 18.3255V20.4C19 20.9601 19 21.2401 18.891 21.454C18.7951 21.6422 18.6422 21.7951 18.454 21.891C18.2401 22 17.9601 22 17.4 22H6.6C6.03995 22 5.75992 22 5.54601 21.891C5.35785 21.7951 5.20487 21.6422 5.10899 21.454C5 21.2401 5 20.9601 5 20.4V18.3255C5 17.8363 5 17.5917 5.05526 17.3615C5.10425 17.1575 5.18506 16.9624 5.29472 16.7834C5.4184 16.5816 5.59135 16.4086 5.93726 16.0627L8.86863 13.1314C9.26465 12.7354 9.46265 12.5373 9.53684 12.309C9.6021 12.1082 9.6021 11.8918 9.53684 11.691C9.46266 11.4627 9.26464 11.2646 8.86863 10.8686L5.93726 7.93726C5.59136 7.59136 5.4184 7.4184 5.29472 7.21657C5.18506 7.03763 5.10425 6.84254 5.05526 6.63846C5 6.40829 5 6.1637 5 5.67452V3.6C5 3.03995 5 2.75992 5.10899 2.54601C5.20487 2.35785 5.35785 2.20487 5.54601 2.10899C5.75992 2 6.03995 2 6.6 2Z"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    Start New Session
-                                </button>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="/sessions_history">
-                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M22.7 11.5L20.7005 13.5L18.7 11.5M20.9451 13C20.9814 12.6717 21 12.338 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C14.8273 21 17.35 19.6963 19 17.6573M12 7V12L15 14"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    Sessions History
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
 
-                <div class="d-flex">
-                    <input id="search-input" class="form-control me-2 search-input searchable" type="search"
-                        placeholder="Search" aria-label="Search" />
-                    <button id="search-button" type="button" class="btn btn-outline-primary my-custom-btn"
-                        onclick="toggleSearchInput()">
-                        <i class="fa fa-search"></i>
-                    </button>
-                    <ul class="navbar-nav gap-2">
-                        <li class="nav-item dropdown">
-                            <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                {% if user_info[3] %}
-                                <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
-                                {% else %}
-                                <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
-                                    alt="Profile Picture" class="pfp">
-                                {% endif %}
+    <nav class="navbar">
+        <a href="{{ url_for('home.index') }}" class="navbar-brand">
+            <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
+            <span class="fw-bold">StudyHUB</span>
+        </a>
+        <div class="navbar-links">
+            <ul class="links-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('subjects.subjects')}}">Subjects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url_for('tasks.tasks')}}">Tasks</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle dropdown-link" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Sessions
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item" type="button" onclick="startNewSession()">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 18.5H15M6.6 2H17.4C17.9601 2 18.2401 2 18.454 2.10899C18.6422 
+                                        2.20487 18.7951 2.35785 18.891 2.54601C19 2.75992 19 3.03995 19 
+                                        3.6V5.67452C19 6.1637 19 6.40829 18.9447 6.63846C18.8957 6.84254 
+                                        18.8149 7.03763 18.7053 7.21657C18.5816 7.4184 18.4086 7.59135 
+                                        18.0627 7.93726L15.1314 10.8686C14.7354 11.2646 14.5373 11.4627 
+                                        14.4632 11.691C14.3979 11.8918 14.3979 12.1082 14.4632 12.309C14.5373 
+                                        12.5373 14.7354 12.7354 15.1314 13.1314L18.0627 16.0627C18.4086 16.4086 
+                                        18.5816 16.5816 18.7053 16.7834C18.8149 16.9624 18.8957 17.1575 18.9447 
+                                        17.3615C19 17.5917 19 17.8363 19 18.3255V20.4C19 20.9601 19 21.2401 18.891 
+                                        21.454C18.7951 21.6422 18.6422 21.7951 18.454 21.891C18.2401 22 17.9601 
+                                        22 17.4 22H6.6C6.03995 22 5.75992 22 5.54601 21.891C5.35785 21.7951 5.20487 
+                                        21.6422 5.10899 21.454C5 21.2401 5 20.9601 5 20.4V18.3255C5 17.8363 5 17.5917 
+                                        5.05526 17.3615C5.10425 17.1575 5.18506 16.9624 5.29472 16.7834C5.4184 16.5816 
+                                        5.59135 16.4086 5.93726 16.0627L8.86863 13.1314C9.26465 12.7354 9.46265 12.5373 
+                                        9.53684 12.309C9.6021 12.1082 9.6021 11.8918 9.53684 11.691C9.46266 11.4627 9.26464 
+                                        11.2646 8.86863 10.8686L5.93726 7.93726C5.59136 7.59136 5.4184 7.4184 5.29472 
+                                        7.21657C5.18506 7.03763 5.10425 6.84254 5.05526 6.63846C5 6.40829 5 6.1637 5 
+                                        5.67452V3.6C5 3.03995 5 2.75992 5.10899 2.54601C5.20487 2.35785 5.35785 
+                                        2.20487 5.54601 2.10899C5.75992 2 6.03995 2 6.6 2Z" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span>Start New Session</span>
+                            </button>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{url_for('sessions.sessions_history')}}">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22.7 11.5L20.7005 13.5L18.7 11.5M20.9451 13C20.9814 
+                                        12.6717 21 12.338 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 
+                                        7.02944 3 12C3 16.9706 7.02944 21 12 21C14.8273 21 17.35 19.6963 
+                                        19 17.6573M12 7V12L15 14" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span>Sessions History</span>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <div class="user-info">
-                                    {% if user_info[3] %}
-                                    <label for="profile-picture-input" class="profile-picture-label">
-                                        <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
-                                    </label>
-                                    <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
-                                    {% else %}
-                                    <label for="profile-picture-input" class="profile-picture-label">
-                                        <img src="{{ url_for('static', filename='images/default_pfp.png') }}"
-                                            alt="Profile Picture" class="pfp">
-                                    </label>
-                                    <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
-                                    {% endif %}
-                                    <strong>{{ user_info[0] }}</strong>
-                                    <small>{{ user_info[1] }}</small>
-                                    <small>Last Updated: {{ user_info[2] }}</small>
-                                </div>
-                                <div class="editing-info">
-                                    <ul style="list-style-type: none; padding-left: 0;">
-                                        <li>
-                                            <button class="dropdown-item" type="button" onclick="changeUsername()">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 
-                                                        2 21M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 
-                                                        7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5ZM11 21L14.1014 20.1139C14.2499 20.0715 14.3241 20.0502 14.3934 
-                                                        20.0184C14.4549 19.9902 14.5134 19.9558 14.5679 19.9158C14.6293 19.8707 14.6839 19.8161 14.7932 19.7068L21.25 
-                                                        13.25C21.9404 12.5597 21.9404 11.4403 21.25 10.75C20.5597 10.0596 19.4404 10.0596 18.75 10.75L12.2932 17.2068C12.1839 
-                                                        17.3161 12.1293 17.3707 12.0842 17.4321C12.0442 17.4866 12.0098 17.5451 11.9816 17.6066C11.9497 17.6759 11.9285 17.7501 11.8861 17.8987L11 21Z"
-                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg>
-                                                Change Username
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item" type="button" onclick="changePassword()">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M22 11V8.2C22 7.0799 22 6.51984 21.782 6.09202C21.5903 5.71569 21.2843 5.40973 20.908 5.21799C20.4802 5 19.9201 
-                                                        5 18.8 5H5.2C4.0799 5 3.51984 5 3.09202 5.21799C2.71569 5.40973 2.40973 5.71569 2.21799 6.09202C2 6.51984 2 7.0799 
-                                                        2 8.2V11.8C2 12.9201 2 13.4802 2.21799 13.908C2.40973 14.2843 2.71569 14.5903 3.09202 14.782C3.51984 15 4.0799 15 5.2 
-                                                        15H11M12 10H12.005M17 10H17.005M7 10H7.005M19.25 17V15.25C19.25 14.2835 18.4665 13.5 17.5 13.5C16.5335 
-                                                        13.5 15.75 14.2835 15.75 15.25V17M12.25 10C12.25 10.1381 12.1381 
-                                                        10.25 12 10.25C11.8619 10.25 11.75 10.1381 11.75 10C11.75 9.86193 11.8619 9.75 12 9.75C12.1381 9.75 12.25 9.86193 
-                                                        12.25 10ZM17.25 10C17.25 10.1381 17.1381 10.25 17 10.25C16.8619 10.25 16.75 10.1381 16.75 10C16.75 9.86193 16.8619 
-                                                        9.75 17 9.75C17.1381 9.75 17.25 9.86193 17.25 10ZM7.25 10C7.25 10.1381 7.13807 10.25 7 10.25C6.86193 10.25 6.75 10.1381 
-                                                        6.75 10C6.75 9.86193 6.86193 9.75 7 9.75C7.13807 9.75 7.25 9.86193 7.25 10ZM15.6 21H19.4C19.9601 21 20.2401 21 20.454 
-                                                        20.891C20.6422 20.7951 20.7951 20.6422 20.891 20.454C21 20.2401 21 19.9601 21 19.4V18.6C21 18.0399 21 17.7599 20.891 
-                                                        17.546C20.7951 17.3578 20.6422 17.2049 20.454 17.109C20.2401 17 19.9601 17 19.4 17H15.6C15.0399 17 14.7599 17 14.546 
-                                                        17.109C14.3578 17.2049 14.2049 17.3578 14.109 17.546C14 17.7599 14 18.0399 14 18.6V19.4C14 19.9601 14 20.2401 14.109 
-                                                        20.454C14.2049 20.6422 14.3578 20.7951 14.546 20.891C14.7599 21 15.0399 21 15.6 21Z"
-                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg> Change Password</button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item" type="button" onclick="changeEmail()">
-                                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M16 7.99999V13C16 13.7956 16.3161 14.5587 16.8787 15.1213C17.4413 15.6839 18.2043 16 19 
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="search-info-logout">
+            <div class="search-container">
+                <input id="search-input" class="form-control search-input" type="search"
+                    placeholder="Search for subjects or tasks..." aria-label="Search" style="display: none;" />
+                <button id="search-button" type="button" class="nav-btn" onclick="toggleSearchInput()">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <div class="dropdown">
+                <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    {% if user_info[3] %}
+                    <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/default_pfp.png') }}" alt="Profile Picture"
+                        class="pfp">
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <div class="user-info">
+                        {% if user_info[3] %}
+                        <label for="profile-picture-input" class="profile-picture-label">
+                            <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
+                        </label>
+                        <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
+                        {% else %}
+                        <label for="profile-picture-input" class="profile-picture-label">
+                            <img src="{{ url_for('static', filename='images/default_pfp.png') }}" alt="Profile Picture"
+                                class="pfp">
+                        </label>
+                        <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
+                        {% endif %}
+                        <strong>{{ user_info[0] }}</strong>
+                        <small>{{ user_info[1] }}</small>
+                        <small>Last Updated: {{ user_info[2] }}</small>
+                    </div>
+                    <ul class="editing-info">
+                        <li>
+                            <button class="dropdown-item" type="button" onclick="changeUsername()">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 
+                                        16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 
+                                        2 21M14.5 7.5C14.5 9.98528 12.4853 12 10 
+                                        12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 
+                                        7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 
+                                        7.5ZM11 21L14.1014 20.1139C14.2499 20.0715 14.3241 20.0502 14.3934 
+                                        20.0184C14.4549 19.9902 14.5134 19.9558 14.5679 
+                                        19.9158C14.6293 19.8707 14.6839 19.8161 14.7932 19.7068L21.25 
+                                        13.25C21.9404 12.5597 21.9404 11.4403 21.25 10.75C20.5597 
+                                        10.0596 19.4404 10.0596 18.75 10.75L12.2932 17.2068C12.1839 
+                                        17.3161 12.1293 17.3707 12.0842 17.4321C12.0442 17.4866
+                                        12.0098 17.5451 11.9816 17.6066C11.9497 17.6759 11.9285 
+                                        17.7501 11.8861 17.8987L11 21Z" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Change Username
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" type="button" onclick="changePassword()">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M22 11V8.2C22 7.0799 22 6.51984 21.782 6.09202C21.5903 5.71569 21.2843 
+                                        
+                                        .40973 20.908 5.21799C20.4802 5 19.9201 
+                                            5 18.8 5H5.2C4.0799 5 3.51984 5 3.09202 5.21799C2.71569 
+                                            5.40973 2.40973 5.71569 2.21799 6.09202C2 6.51984 2 7.0799 
+                                            2 8.2V11.8C2 12.9201 2 13.4802 2.21799 13.908C2.40973 
+                                            14.2843 2.71569 14.5903 3.09202 14.782C3.51984 15 4.0799 15 5.2 
+                                            15H11M12 10H12.005M17 10H17.005M7 10H7.005M19.25 17V15.25C19.25 14.2835 
+                                            18.4665 13.5 17.5 13.5C16.5335 
+                                            13.5 15.75 14.2835 15.75 15.25V17M12.25 10C12.25 10.1381 12.1381 
+                                            10.25 12 10.25C11.8619 10.25 11.75 10.1381 11.75 10C11.75 9.86193 
+                                            11.8619 9.75 12 9.75C12.1381 9.75 12.25 9.86193 
+                                            12.25 10ZM17.25 10C17.25 10.1381 17.1381 10.25 17 10.25C16.8619 
+                                            10.25 16.75 10.1381 16.75 10C16.75 9.86193 16.8619 
+                                            9.75 17 9.75C17.1381 9.75 17.25 9.86193 17.25 10ZM7.25 10C7.25 
+                                            10.1381 7.13807 10.25 7 10.25C6.86193 10.25 6.75 10.1381 
+                                            6.75 10C6.75 9.86193 6.86193 9.75 7 9.75C7.13807 9.75 7.25 9.86193 7.25 
+                                            10ZM15.6 21H19.4C19.9601 21 20.2401 21 20.454 
+                                            20.891C20.6422 20.7951 20.7951 20.6422 20.891 20.454C21 20.2401 
+                                            21 19.9601 21 19.4V18.6C21 18.0399 21 17.7599 20.891 
+                                            17.546C20.7951 17.3578 20.6422 17.2049 20.454 17.109C20.2401 17 
+                                            19.9601 17 19.4 17H15.6C15.0399 17 14.7599 17 14.546 
+                                            17.109C14.3578 17.2049 14.2049 17.3578 14.109 17.546C14 17.7599 
+                                            14 18.0399 14 18.6V19.4C14 19.9601 14 20.2401 14.109 
+                                            20.454C14.2049 20.6422 14.3578 20.7951 14.546 20.891C14.7599 21 15.0399 21 15.6 21Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg> Change Password</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" type="button" onclick="changeEmail()">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M16 7.99999V13C16 13.7956 16.3161 14.5587 16.8787 15.1213C17.4413 15.6839 18.2043 16 19 
                                                         16C19.7956 16 20.5587 15.6839 21.1213 15.1213C21.6839 14.5587 22 13.7956 22 13V12C21.9999 9.74302 
                                                         21.2362 7.55247 19.8333 5.78452C18.4303 4.01658 16.4705 2.77521 14.2726 2.26229C12.0747 1.74936 9.76793 
                                                         1.99503 7.72734 2.95936C5.68676 3.92368 4.03239 5.54995 3.03325 7.57371C2.03411 9.59748 1.74896 11.8997 
                                                         2.22416 14.1061C2.69936 16.3125 3.90697 18.2932 5.65062 19.7263C7.39428 21.1593 9.57143 21.9603 11.8281 
                                                         21.9991C14.0847 22.0379 16.2881 21.3122 18.08 19.94M16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 
                                                         12C8 9.79085 9.79086 7.99999 12 7.99999C14.2091 7.99999 16 9.79085 16 12Z"
-                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                        stroke-linejoin="round" />
-                                                </svg>
-                                                Change Email
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <hr>
-                                <div class="delete-acc">
-                                    <form action="/delete_account" method="POST">
-                                        <button class="btn btn-outline-danger danger-custom-btn" type="submit">
-                                            Delete Account
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-outline-primary my-custom-btn" href="/logout">
-                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M6 17C6 17.3513 6 17.5269 6.01567 17.6796C6.14575 18.9474 7.0626 19.9946 8.30206 20.2911C8.45134 20.3268 8.6255 20.35 8.97368 20.3965L15.5656 21.2754C17.442 21.5256 18.3803 21.6507 19.1084 21.3611C19.7478 21.1069 20.2803 20.6407 20.6168 20.0406C21 19.357 21 18.4105 21 16.5175V7.48244C21 5.5894 21 4.64288 20.6168 3.95935C20.2803 3.35923 19.7478 2.893 19.1084 2.6388C18.3803 2.34926 17.442 2.47435 15.5656 2.72455L8.97368 3.60347C8.62546 3.6499 8.45135 3.67311 8.30206 3.70883C7.0626 4.00532 6.14575 5.05254 6.01567 6.3203C6 6.47301 6 6.64866 6 6.99996M12 7.99996L16 12M16 12L12 16M16 12H3"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                            </a>
+                                Change Email
+                            </button>
                         </li>
                     </ul>
+                    <hr>
+                    <div class="delete-acc">
+                        <button class="btn btn-outline-danger danger-custom-btn" type="submit">
+                            Delete Account
+                        </button>
+                    </div>
                 </div>
-                {% endif %}
             </div>
+            <a class="nav-btn" href="/logout" role="button">
+                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M6 17C6 17.3513 6 17.5269 6.01567 17.6796C6.14575 18.9474 7.0626 19.9946 8.30206 20.2911C8.45134 20.3268 8.6255 20.35 8.97368 20.3965L15.5656 21.2754C17.442 21.5256 18.3803 21.6507 19.1084 21.3611C19.7478 21.1069 20.2803 20.6407 20.6168 20.0406C21 19.357 21 18.4105 21 16.5175V7.48244C21 5.5894 21 4.64288 20.6168 3.95935C20.2803 3.35923 19.7478 2.893 19.1084 2.6388C18.3803 2.34926 17.442 2.47435 15.5656 2.72455L8.97368 3.60347C8.62546 3.6499 8.45135 3.67311 8.30206 3.70883C7.0626 4.00532 6.14575 5.05254 6.01567 6.3203C6 6.47301 6 6.64866 6 6.99996M12 7.99996L16 12M16 12L12 16M16 12H3"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
         </div>
     </nav>
 
+    <!-- Modals -->
     <div class="modal fade" id="addFolderModal" tabindex="-1">
         <div class="modal-dialog" style="margin-top: 15%;">
             <div class="modal-content">
-                <div class="modal-header border-bottom-0">
-                    <h5 class="modal-title">Add new Subject</h5>
-                    <button type="button"
-                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                <div class="modal-header">
+                    <h4 class="modal-title">Add a new Subject</h4>
                 </div>
-                <form action="/subjects" method="POST">
+                <form action="{{ url_for('subjects.add_subject')}}" method="POST">
                     <div class="modal-body">
                         <input type="text" name="subject_name" class="form-control form-input"
-                            style="background-color: #ac9eea; border-color: #675e8d;" placeholder="Subject Name"
-                            autocomplete="off" required>
-
-                        <h6>You can change the name of the subject later.</h6>
+                            placeholder="Subject Title" autocomplete="off" autofocus required>
+                        <p>You can change the name of the subject later.</p>
                     </div>
-                    <div class="modal-footer border-top-0" style="justify-content: center; align-items: center;">
-                        <button type="submit" class="btn btn-outline-primary my-custom-btn">Save</button>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteSubjectsAlertModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete All Subjects</h4>
+                </div>
+                <form action="{{ url_for('subjects.delete_all_subjects')}}" method="POST">
+                    <div class="modal-body">
+                        <div class="warning-container">
+                            <svg width="35px" height="35px" style="color: red;" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.9998 8.99999V13M11.9998 17H12.0098M10.6151 3.89171L2.39019 18.0983C1.93398 18.8863 1.70588 19.2803 1.73959 19.6037C1.769 19.8857 1.91677 20.142 2.14613 20.3088C2.40908 20.5 2.86435 20.5 3.77487 20.5H20.2246C21.1352 20.5 21.5904 20.5 21.8534 20.3088C22.0827 20.142 22.2305 19.8857 22.2599 19.6037C22.2936 19.2803 22.0655 18.8863 21.6093 18.0983L13.3844 3.89171C12.9299 3.10654 12.7026 2.71396 12.4061 2.58211C12.1474 2.4671 11.8521 2.4671 11.5935 2.58211C11.2969 2.71396 11.0696 3.10655 10.6151 3.89171Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <p class="warning-text">Are you sure you want to delete all subjects? <br>
+                                <span style="color: #d21818; font-weight: bold">This action
+                                    cannot be undone.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="save-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="cancel-btn">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteFilesAlertModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete All Files</h4>
+                </div>
+                <form id="deleteFilesForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <div class="warning-container">
+                            <svg width="35px" height="35px" style="color: red;" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.9998 8.99999V13M11.9998 17H12.0098M10.6151 3.89171L2.39019 18.0983C1.93398 18.8863 1.70588 19.2803 1.73959 19.6037C1.769 19.8857 1.91677 20.142 2.14613 20.3088C2.40908 20.5 2.86435 20.5 3.77487 20.5H20.2246C21.1352 20.5 21.5904 20.5 21.8534 20.3088C22.0827 20.142 22.2305 19.8857 22.2599 19.6037C22.2936 19.2803 22.0655 18.8863 21.6093 18.0983L13.3844 3.89171C12.9299 3.10654 12.7026 2.71396 12.4061 2.58211C12.1474 2.4671 11.8521 2.4671 11.5935 2.58211C11.2969 2.71396 11.0696 3.10655 10.6151 3.89171Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <p class="warning-text">Are you sure you want to delete all files? <br>
+                                <span style="color: #d21818; font-weight: bold">This action
+                                    cannot be undone.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="save-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="cancel-btn">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="renameSubjectModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Rename Subject</h4>
+                </div>
+                <form id="renameSubjectForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%; padding: 0 10px;">
+                            <label for="rename_subject_input" class="text-nowrap">Current Name:</label>
+                            <input type="text" name="new_subject_name" class="form-control form-input"
+                                autocomplete="off" id="rename_subject_input" style="width: 75%;" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="moveORcopyFileModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Choose a subject</h4>
+                </div>
+                <form id="moveCopyForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <select name="new_subject_id" class="form-control form-select" required>
+                            <option value="" disabled selected>Select a subject</option>
+                            {% for sub in all_subjects %}
+                            <option class="subject-option" value="{{ sub[1] }}">{{ sub[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" id="moveCopyBtn" class="save-btn">Move File</button>
                     </div>
                 </form>
             </div>
@@ -365,7 +486,6 @@
         </div>
     </div>
 
-    <!-- Session Ended Modal -->
     <div class="modal fade" id="sessionEndedModal" tabindex="-1" aria-labelledby="sessionEndedModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -383,8 +503,6 @@
             </div>
         </div>
     </div>
-
-
 
     {% if session.study_session %}
     <div class="dropdown">
@@ -427,12 +545,39 @@
         </ul>
     </div>
     {% endif %}
-    <main class="container py-5 text-center">
+
+    <main>
         {% block main %}{% endblock %}
     </main>
+
+    <hr class="footer-separator">
+
+    <footer>
+        <div class="rights">
+            <a href="{{ url_for('home.index') }}" class="navbar-brand">
+                <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
+                <span class="fw-bold">StudyHUB</span>
+            </a>
+            <a href="https://cs50.harvard.edu/x/project/" target="_blank" class="footer-link">
+                <p>&copy; CS50 Final Project 2026</p>
+            </a>
+        </div>
+        <div class="contact-links">
+            <p class="contact-text">Feel free to contact me:</p>
+            <a href="mailto:mohammed256jamal@gmail.com" target="_blank" class="contact-link">
+                <i class="fa fa-envelope" style="font-size:25px"></i>
+            </a>
+            <a href="https://github.com/mj256x" target="_blank" class="contact-link">
+                <i style="font-size:25px" class="fa">&#xf09b;</i>
+            </a>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ url_for('static', filename='js/sessions.js') }}"></script>
     {% block scripts %}
     {% endblock %}
 </body>
