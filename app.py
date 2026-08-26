@@ -49,12 +49,14 @@ def inject_subjects():
             Subjects = cursor.fetchall()
             cursor.execute("SELECT username, email, FORMAT(updated_at, 'dd MMM yyyy'), profile_picture FROM users WHERE id = ?", (session['user_id'],))
             user_info = cursor.fetchone()
+            cursor.execute("SELECT DISTINCT subjects.name, subjects.id FROM subjects JOIN main_tasks ON subjects.id = main_tasks.subject_id WHERE subjects.user_id = ?", (session['user_id'],))            
+            main_tasks_subjects = cursor.fetchall()
             cursor.close()
-            return dict(Subjects=Subjects, user_info=user_info)
+            return dict(Subjects=Subjects, user_info=user_info, main_tasks_subjects=main_tasks_subjects)
         except Exception as e:
             print(f"Error fetching subjects for context processor: {e}")
-            return dict(Subjects=[], user_info=None)
-    return dict(Subjects=[], user_info=None)
+            return dict(Subjects=[], user_info=None, main_tasks_subjects=[])
+    return dict(Subjects=[], user_info=None, main_tasks_subjects=[])
 
 if __name__ == '__main__':
     app.run(debug=True)

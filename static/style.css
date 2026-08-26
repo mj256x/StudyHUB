@@ -105,9 +105,22 @@ ul {
     border-color: #8b7acf !important;
 }
 
+.dropdown-item-selected {
+    background-color: #6a5ba6 !important;
+    border-color: #8b7acf !important;
+}
+
+.nav-link {
+    color: #000000 !important;
+    transition: all 0.2s linear !important;
+}
+
 .nav-link:hover {
-    color: #3c3a3a !important;
-    transition: all 0.1s linear !important;
+    color: #212020 !important;
+    text-decoration: none !important;
+    border-bottom: 4px solid #1d1d1d !important;
+    border-radius: 3px !important;
+    padding-bottom: 5px !important;
 }
 
 .nav-btn {
@@ -257,6 +270,7 @@ ul {
     background-color: #7868b6 !important;
     border: 2px #8b7acf solid !important;
     border-radius: 10px !important;
+    width: 100% !important;
     transition: box-shadow 0.2s ease;
 }
 
@@ -269,6 +283,119 @@ ul {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
+}
+
+.card-body {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.done-all-card {
+    background-color: #49bf72ab !important;
+    border-color: #3ef469 !important;
+    transition: background-color 0.2s ease;
+}
+
+.sub-task-card {
+    width: 100% !important;
+    height: 60px !important;
+    padding: 10px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin: 10px !important;
+    background-color: #6550b8 !important;
+    border: 2px #8b7acf solid !important;
+    border-radius: 10px !important;
+    transition: all 0.3s linear !important;
+}
+
+.sub-task-card:hover {
+    background-color: #5d49ad !important;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.sub-task-card-btns {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.custom-btn {
+    background-color: transparent !important;
+    border: 2px solid transparent !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    cursor: pointer !important;
+}
+
+.mark-done-svg {
+    transition: all 0.2s linear !important;
+}
+
+.mark-done-svg:hover {
+    fill: #6e5fab !important;
+}
+
+.mark-done-svg-1 {
+    transition: all 0.2s linear !important;
+}
+
+.mark-done-svg-1:hover {
+    fill: #2ec36299 !important;
+}
+
+.custom-delete-btn {
+    background-color: transparent !important;
+    border: 2px solid transparent !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s linear !important;
+}
+
+.custom-delete-btn:hover {
+    background-color: #ff00001a !important;
+    border-color: #e715156b !important;
+    border-radius: 15px !important;
+}
+
+.custom-delete-icon {
+    color: #ff000080 !important;
+    transition: all 0.2s linear !important;
+}
+
+.add-sub-task-btn {
+    background-color: transparent !important;
+    border: 2px solid transparent !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px !important;
+    width: 100% !important;
+    height: 40px !important;
+    cursor: pointer !important;
+    transition: all 0.2s linear !important;
+}
+
+.add-sub-task-btn:hover {
+    background-color: #6e5fab !important;
+    border-color: #8b7acf !important;
+}
+
+.add-sub-task-btn:active,
+.add-sub-task-btn:focus {
+    background-color: #60529b !important;
+    border-color: #8b7acf !important;
 }
 
 .subject-link a,
@@ -292,6 +419,7 @@ ul {
 
 .dots-btn:hover {
     background-color: #6e5fab !important;
+    border-color: #8b7acf !important;
 }
 
 .dots-btn:active,
@@ -316,9 +444,9 @@ ul {
 .card-footer {
     display: flex !important;
     flex-direction: row !important;
-    justify-content: space-between !important;
+    justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 20px !important;
 }
 
 .progress-bar {
@@ -492,7 +620,7 @@ footer {
 .add-subject-file-task-btn {
     background-color: #7868b6 !important;
     border: 2px solid #8b7acf !important;
-    width: 150px !important;
+    width: 175px !important;
     height: 50px !important;
     border-radius: 10px !important;
     display: flex !important;
@@ -557,11 +685,23 @@ footer {
 }
 
 .modal-body {
+    width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 10px !important;
+    padding: 25px !important;
+}
+
+.selectors {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
 }
 
 .form-input,
@@ -597,6 +737,8 @@ footer {
     border-radius: 10px !important;
 }
 
+
+
 .done-card {
     background-color: #2ec36299 !important;
     border-color: #3ef469 !important;
@@ -625,8 +767,17 @@ footer {
     border-color: #3ef469 !important;
 }
 
+.done-border-bottom {
+    border-bottom: 2px solid #3ef469 !important;
+}
+
+.done-border-top {
+    border-top: 2px solid #3ef469 !important;
+}
+
 .done-dots-btn:hover {
     background-color: #00c72d !important;
+    border-color: #3ef469 !important;
 }
 
 .done-dots-btn:active,

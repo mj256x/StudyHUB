@@ -293,18 +293,18 @@
         </div>
     </div>
 
-    <div class="modal fade" id="renameSubjectModal" tabindex="-1">
+    <div class="modal fade" id="renameModal" tabindex="-1">
         <div class="modal-dialog" style="margin-top: 15%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Rename Subject</h4>
+                    <h4 id="renameModalLabel" class="modal-title">Rename</h4>
                 </div>
-                <form id="renameSubjectForm" action="#" method="POST">
+                <form id="renameForm" action="#" method="POST">
                     <div class="modal-body">
-                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%; padding: 0 10px;">
-                            <label for="rename_subject_input" class="text-nowrap">Current Name:</label>
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="rename_input" class="text-nowrap">Current Name:</label>
                             <input type="text" name="new_subject_name" class="form-control form-input"
-                                autocomplete="off" id="rename_subject_input" style="width: 75%;" required>
+                                autocomplete="off" id="rename_input" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -334,6 +334,153 @@
                     <div class="modal-footer">
                         <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
                         <button type="submit" id="moveCopyBtn" class="save-btn">Move File</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addTaskModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="task_modal_title">-</h5>
+                </div>
+                <form action="/add_tasks" method="POST" id="addTaskCardForm">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row justify-content-space-between align-items-center gap-2"
+                            style="width: 100%;">
+                            <input type="text" name="task_title" class="form-control form-input"
+                                placeholder="Task Title" autocomplete="off" required style="width: 70%;">
+                            <input id="deadline" type="text" name="deadline" class="deadline form-control form-input"
+                                autocomplete="off" placeholder="YYYY-MM-DD" required style="width: 30%;">
+                        </div>
+                        <div class="selectors">
+                            <select id="subject-select" name="subject_id" class="form-control form-select" required>
+                                <option value="" selected disabled>Select Subject</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject[1] }}">{{ subject[0] }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="priority" name="priority" class="form-control form-select" required>
+                                <option value="" selected disabled>Select Priority</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="moveCopyBtn" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changeDeadlineModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Deadline</h4>
+                </div>
+                <form id="changeDeadlineForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="new_deadline_input" class="text-nowrap">Current Deadline:</label>
+                            <input type="text" name="new_deadline" class="form-control form-input"
+                                id="new_deadline_input" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changePriorityModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Priority</h4>
+                </div>
+                <form id="changePriorityForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="new_priority_input" class="text-nowrap">Current Priority:</label>
+                            <select id="new_priority_input" name="new_priority" class="form-control form-select"
+                                required>
+                                <option id="high-option" value="High">High</option>
+                                <option id="medium-option" value="Medium">Medium</option>
+                                <option id="low-option" value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changeTaskSubjectModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Change Subject</h4>
+                </div>
+                <form id="changeTaskSubjectForm" action="#" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="new_subject_input" class="text-nowrap">Current Subject:</label>
+                            <select id="new_subject_input" name="new_subject_id" class="form-control form-select"
+                                required>
+                                {% for subject in subjects %}
+                                <option id="subject-option" value="{{ subject[1] }}">{{ subject[0] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="save-btn">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteTasksAlertModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete All Tasks</h4>
+                </div>
+                <form action="{{ url_for('tasks.delete_all_tasks') }}" method="POST">
+                    <div class="modal-body">
+                        <div class="warning-container">
+                            <svg width="35px" height="35px" style="color: red;" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.9998 8.99999V13M11.9998 17H12.0098M10.6151 3.89171L2.39019 18.0983C1.93398 18.8863 1.70588 19.2803 1.73959 19.6037C1.769 19.8857 1.91677 20.142 2.14613 20.3088C2.40908 20.5 2.86435 20.5 3.77487 20.5H20.2246C21.1352 20.5 21.5904 20.5 21.8534 20.3088C22.0827 20.142 22.2305 19.8857 22.2599 19.6037C22.2936 19.2803 22.0655 18.8863 21.6093 18.0983L13.3844 3.89171C12.9299 3.10654 12.7026 2.71396 12.4061 2.58211C12.1474 2.4671 11.8521 2.4671 11.5935 2.58211C11.2969 2.71396 11.0696 3.10655 10.6151 3.89171Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <p class="warning-text">Are you sure you want to delete all tasks? <br>
+                                <span style="color: #d21818; font-weight: bold">This action
+                                    cannot be undone.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="save-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="cancel-btn">Delete</button>
                     </div>
                 </form>
             </div>

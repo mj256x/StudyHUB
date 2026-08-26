@@ -1,3 +1,12 @@
+function showModal(modalId, subjectId = null) {
+    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId));
+    myModal.show();
+    var form = document.getElementById('deleteFilesForm');
+    if (form && subjectId) {
+        form.action = '/delete_all_files/' + subjectId;
+    }
+}
+
 setTimeout(function () {
     const flashMessage = document.getElementById('flash');
     if (flashMessage) {
@@ -25,9 +34,12 @@ searchInput.addEventListener('input', function (event) {
 
 function toggleSearchInput() {
     const searchInput = document.getElementById('search-input');
-    const isVisible = searchInput.classList.toggle('is-visible');
-    if (isVisible) {
-        searchInput.classList.add('searchable');
+    if (searchInput.style.display === 'none') {
+        searchInput.style.display = 'block';
+        searchInput.classList.add('search-input-is-visible');
         searchInput.focus();
+    } else {
+        searchInput.style.display = 'none';
+        searchInput.classList.remove('search-input-is-visible');
     }
 }

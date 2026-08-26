@@ -18,13 +18,16 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function renameSubject(subjectId, currentName) {
-    showModal('renameSubjectModal');
-    const inputField = document.getElementById('rename_subject_input');
-    inputField.value = currentName;
-    var form = document.getElementById('renameSubjectForm');
+    const renameModalLabel = document.getElementById('renameModalLabel');
+    renameModalLabel.textContent = 'Rename Subject:';
+    const form = document.getElementById('renameForm');
     if (form) {
         form.action = '/rename_subject/' + subjectId;
     }
+    const inputField = document.getElementById('rename_input');
+    inputField.value = currentName;
+    inputField.setAttribute('name', 'new_subject_name');
+    showModal('renameModal');
 }
 
 async function toggleFavorite(subjectId, btnElement) {
@@ -102,6 +105,7 @@ async function showCompleted(btn) {
                     }
                 });
                 btn.setAttribute('data-active', 'true');
+                btn.classList.add('done-btn-active');
                 svg.classList.add('completed-icon');
                 btnText.innerText = "Show All";
             }
@@ -115,6 +119,7 @@ async function showCompleted(btn) {
         });
         svg.classList.remove('completed-icon');
         btnText.innerText = "Show Completed";
+        btn.classList.remove('done-btn-active');
         btn.setAttribute('data-active', 'false');
     }
 }
@@ -201,8 +206,8 @@ async function showCompletedFiles(btn, subjectId) {
 }
 
 function moveORcopyFileToAnotherFolder(fileId, action, subjectId) {
-    var form = document.getElementById('moveCopyForm');
-    var submitBtn = document.getElementById('moveCopyBtn');
+    const form = document.getElementById('moveCopyForm');
+    const submitBtn = document.getElementById('moveCopyBtn');
 
     if (action === 'move') {
         form.action = '/move_file/' + fileId;
@@ -211,7 +216,7 @@ function moveORcopyFileToAnotherFolder(fileId, action, subjectId) {
         form.action = '/copy_file/' + fileId;
         submitBtn.innerText = 'Copy File';
     }
-    var subjectOption = document.querySelectorAll('.subject-option');
+    const subjectOption = document.querySelectorAll('.subject-option');
     subjectOption.forEach(option => {
         if (subjectId == option.value) {
             option.style.display = 'none';
