@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function renameSubject(subjectId, currentName) {
     const renameModalLabel = document.getElementById('renameModalLabel');
-    renameModalLabel.textContent = 'Rename Subject:';
+    renameModalLabel.innerText = 'Rename Subject Name:';
     const form = document.getElementById('renameForm');
     if (form) {
         form.action = '/rename_subject/' + subjectId;

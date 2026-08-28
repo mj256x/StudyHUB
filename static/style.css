@@ -68,7 +68,9 @@ ul {
 }
 
 .dropdown-menu.show {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
     background-color: #7d72ab !important;
     border: 2px solid #8b7acf !important;
     border-radius: 10px !important;
@@ -260,7 +262,7 @@ ul {
     width: 100% !important;
     height: 75vh !important;
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: auto !important;
     grid-gap: 30px !important;
     align-content: start !important;
@@ -285,6 +287,14 @@ ul {
     align-items: center !important;
 }
 
+.card-header-content {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
 .card-body {
     display: flex !important;
     flex-direction: column !important;
@@ -302,19 +312,20 @@ ul {
     width: 100% !important;
     height: 60px !important;
     padding: 10px !important;
-    display: flex !important;
+    display: flex;
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
     margin: 10px !important;
     background-color: #6550b8 !important;
-    border: 2px #8b7acf solid !important;
+    border: 2px transparent solid !important;
     border-radius: 10px !important;
     transition: all 0.3s linear !important;
 }
 
 .sub-task-card:hover {
     background-color: #5d49ad !important;
+    border-color: #8b7acf !important;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -351,6 +362,47 @@ ul {
     fill: #2ec36299 !important;
 }
 
+.priority-icon {
+    background-color: transparent;
+    border: 2px solid transparent;
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    width: 70px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.deadline-icon {
+    background-color: #524388 !important;
+    border: 1.5px solid #7d6fba !important;
+    border-radius: 8px !important;
+    padding: 3px 8px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    color: #ede9fe !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+    transition: all 0.2s linear !important;
+}
+
+.deadline-icon.overdue {
+    background-color: #ffb8b838 !important;
+    border-color: #ea2828 !important;
+    color: #ffb4b4 !important;
+}
+
+.deadline-icon.today {
+    background-color: #fef3c733 !important;
+    border-color: #ffcc00 !important;
+    color: #fde68a !important;
+}
+
 .custom-delete-btn {
     background-color: transparent !important;
     border: 2px solid transparent !important;
@@ -373,7 +425,8 @@ ul {
     transition: all 0.2s linear !important;
 }
 
-.add-sub-task-btn {
+.add-sub-task-btn,
+.show-sub-tasks-btn {
     background-color: transparent !important;
     border: 2px solid transparent !important;
     border-radius: 10px !important;
@@ -387,13 +440,16 @@ ul {
     transition: all 0.2s linear !important;
 }
 
-.add-sub-task-btn:hover {
+.add-sub-task-btn:hover,
+.show-sub-tasks-btn:hover {
     background-color: #6e5fab !important;
     border-color: #8b7acf !important;
 }
 
 .add-sub-task-btn:active,
-.add-sub-task-btn:focus {
+.add-sub-task-btn:focus,
+.show-sub-tasks-btn:active,
+.show-sub-tasks-btn:focus {
     background-color: #60529b !important;
     border-color: #8b7acf !important;
 }
@@ -446,7 +502,7 @@ ul {
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 20px !important;
+    gap: 15px !important;
 }
 
 .progress-bar {
@@ -526,16 +582,33 @@ ul {
     transition: all 0.2s linear !important;
 }
 
+.delete-main-task-btn {
+    background-color: #ff00000f !important;
+    color: #ff3c3c !important;
+    border: 2px solid #e715156b !important;
+    transition: all 0.2s linear !important;
+}
+
+.delete-main-task-btn:hover {
+    background-color: #960000 !important;
+    color: #fab6b6 !important;
+    border-color: red !important;
+}
+
 .delete-all-btn:hover {
-    background-color: #ff0000af !important;
-    color: #ffffff !important;
+    height: 45px !important;
+    border-radius: 15px !important;
+    background-color: #960000 !important;
+    color: #ffe0e0 !important;
     border-color: red !important;
 }
 
 .delete-all-btn:active,
-.delete-all-btn:focus {
-    background-color: #af0000cc !important;
-    color: #ffffff !important;
+.delete-all-btn:focus,
+.delete-main-task-btn:active,
+.delete-main-task-btn:focus {
+    background-color: #820000 !important;
+    color: #ffe0e0 !important;
     border-color: red !important;
 }
 

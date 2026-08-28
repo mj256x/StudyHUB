@@ -372,7 +372,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" id="moveCopyBtn" class="save-btn">Save</button>
+                        <button type="submit" class="save-btn">Save</button>
                     </div>
                 </form>
             </div>
@@ -442,7 +442,8 @@
                             <select id="new_subject_input" name="new_subject_id" class="form-control form-select"
                                 required>
                                 {% for subject in subjects %}
-                                <option id="subject-option" value="{{ subject[1] }}">{{ subject[0] }}</option>
+                                <option class="subjects-options" value="{{ subject[1] }}">{{ subject[0] }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>

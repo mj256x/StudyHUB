@@ -15,7 +15,7 @@ def tasks():
         subjects = cursor.fetchall()
         cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM main_tasks WHERE user_id = ?", (session['user_id'],))
         main_tasks = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, main_task_id, priority, is_completed FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, title, FORMAT(deadline, 'yyyy-MM-dd'), main_task_id, priority, is_completed FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
         sub_tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -216,12 +216,17 @@ def delete_sub_task(sub_task_id):
         cursor = conn.cursor()
         cursor.execute("SELECT main_task_id FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
         main_task_id = cursor.fetchone()
+        if main_task_id is None:
+            return jsonify({'success': False, 'message': 'Sub-task not found'}), 404
         cursor.execute("DELETE FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
         cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
         sub_tasks_status = cursor.fetchall()
         main_task_status = False
         if not sub_tasks_status:
             cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+            conn.commit()
+            cursor.close()
+            return jsonify({'success': True, 'message': 'Sub-task deleted successfully.', 'main_task_status': False})
         else:
             all_completed = True
             for status in sub_tasks_status:
@@ -249,6 +254,8 @@ def toggle_sub_task_done(sub_task_id):
         cursor = conn.cursor()
         cursor.execute("SELECT is_completed FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
         card_status = cursor.fetchone()
+        if card_status is None:
+            return jsonify({'success': False, 'message': 'Sub-task not found'}), 404
         new_status = not card_status[0]
         cursor.execute("UPDATE sub_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, sub_task_id, session['user_id']))
         cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
@@ -279,6 +286,8 @@ def mark_task_as_done(main_task_id):
         cursor = conn.cursor()
         cursor.execute("SELECT is_completed FROM main_tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
         task_status = cursor.fetchone()
+        if task_status is None:
+            return jsonify({'success': False, 'message': 'Main task not found'}), 404
         new_status = not task_status[0]
         cursor.execute("UPDATE main_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, main_task_id, session['user_id']))
         if new_status == True:
