@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, session, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_db, supabase, cloudinary
+import cloudinary.uploader
 
 user_bp = Blueprint('user', __name__)
 
@@ -8,23 +9,17 @@ user_bp = Blueprint('user', __name__)
 def change_username():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-
     new_username = request.form['new_username']
     if not new_username:
-        flash('Please enter a valid username.', 'danger')
         return redirect(url_for('home.index'))
-
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, session['user_id']))
         conn.commit()
         cursor.close()
-        flash('Username changed successfully!', 'success')
     except Exception as e:
-        flash('Error occurred while changing username.', 'danger')
         print(f"Database error: {e}")
-
     return redirect(url_for('home.index'))
 
 @user_bp.route('/change_password', methods=['POST'])
@@ -36,13 +31,10 @@ def change_password():
     new_password = request.form['new_password']
     confirm_new_password = request.form['confirm_password']
 
-
     if not current_password or not new_password or not confirm_new_password:
-        flash('Please fill in all fields.', 'danger')
         return redirect(url_for('home.index'))
 
     if new_password != confirm_new_password:
-        flash('New passwords do not match.', 'danger')
         return redirect(url_for('home.index'))
 
     try:
@@ -52,30 +44,23 @@ def change_password():
         stored_password_hash = cursor.fetchone()[0]
 
         if not check_password_hash(stored_password_hash, current_password):
-            flash('Current password is incorrect.', 'danger')
             return redirect(url_for('home.index'))
 
         new_hashed_password = generate_password_hash(new_password)
         cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hashed_password, session['user_id']))
         conn.commit()
         cursor.close()
-        flash('Password changed successfully!', 'success')
     except Exception as e:
-        flash('Error occurred while changing password.', 'danger')
         print(f"Database error: {e}")
-
     return redirect(url_for('home.index'))
 
 @user_bp.route('/change_email', methods=['POST'])
 def change_email():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-
     new_email = request.form['new_email']
     if not new_email:
-        flash('Please enter a valid email.', 'danger')
         return redirect(url_for('home.index'))
-
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -84,9 +69,7 @@ def change_email():
         cursor.close()
         flash('Email changed successfully!', 'success')
     except Exception as e:
-        flash('Error occurred while changing email.', 'danger')
         print(f"Database error: {e}")
-
     return redirect(url_for('home.index'))
 
 @user_bp.route('/delete_account', methods=['POST'])
@@ -115,10 +98,8 @@ def delete_account():
         conn.commit()
         cursor.close()
         session.clear()
-        flash('Account deleted successfully!', 'success')
         return redirect(url_for('auth.logout'))
     except Exception as e:
-        flash('Error occurred while deleting account.', 'danger')
         print(f"Database error: {e}")
 
     return redirect(url_for('auth.logout'))

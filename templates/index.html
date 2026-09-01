@@ -139,6 +139,29 @@
 </template>
 {% endif %}
 {% endblock %}
+{% block footer %}
+<hr class="footer-separator">
+<div class="footer-content">
+    <div class="rights">
+        <a href="{{ url_for('home.index') }}" class="navbar-brand">
+            <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
+            <span class="fw-bold">StudyHUB</span>
+        </a>
+        <a href="https://cs50.harvard.edu/x/project/" target="_blank" class="footer-link">
+            <p>&copy; CS50 Final Project 2026</p>
+        </a>
+    </div>
+    <div class="contact-links">
+        <p class="contact-text">Feel free to contact me:</p>
+        <a href="mailto:mohammed256jamal@gmail.com" target="_blank" class="contact-link">
+            <i class="fa fa-envelope" style="font-size:25px"></i>
+        </a>
+        <a href="https://github.com/mj256x" target="_blank" class="contact-link">
+            <i style="font-size:25px" class="fa">&#xf09b;</i>
+        </a>
+    </div>
+</div>
+{% endblock %}
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}

@@ -81,35 +81,36 @@
         </div>
         <div class="search-info-logout">
             <div class="search-container">
-                <input id="search-input" class="form-control search-input" type="search"
-                    placeholder="Search for subjects or tasks..." aria-label="Search" style="display: none;" />
-                <button id="search-button" type="button" class="nav-btn" onclick="toggleSearchInput()">
+                <input id="search-input" class="form-control search-input" type="search" placeholder="Search..."
+                    aria-label="Search" />
+                <button id="search-button" type="button" class="nav-btn">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
             <div class="dropdown">
-                <a class="dropdown-toggle dropdown-link" role="button" href="#" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                <button class="img-btn" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                     {% if user_info[3] %}
-                    <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
+                    <img src="{{ user_info[3] }}" alt="Profile Picture" class="nav-pfp">
                     {% else %}
                     <img src="{{ url_for('static', filename='images/default_pfp.png') }}" alt="Profile Picture"
-                        class="pfp">
+                        class="nav-pfp">
                     {% endif %}
-                </a>
+                </button>
                 <div class="dropdown-menu dropdown-menu-end">
                     <div class="user-info">
                         {% if user_info[3] %}
                         <label for="profile-picture-input" class="profile-picture-label">
                             <img src="{{ user_info[3] }}" alt="Profile Picture" class="pfp">
                         </label>
-                        <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
+                        <input type="file" id="profile-picture-input" style="display: none;"
+                            onchange="uploadProfilePicture(this)">
                         {% else %}
                         <label for="profile-picture-input" class="profile-picture-label">
                             <img src="{{ url_for('static', filename='images/default_pfp.png') }}" alt="Profile Picture"
                                 class="pfp">
                         </label>
-                        <input type="file" id="profile-picture-input" onchange="uploadProfilePicture(this)">
+                        <input type="file" id="profile-picture-input" style="display: none;"
+                            onchange="uploadProfilePicture(this)">
                         {% endif %}
                         <strong>{{ user_info[0] }}</strong>
                         <small>{{ user_info[1] }}</small>
@@ -117,7 +118,7 @@
                     </div>
                     <ul class="editing-info">
                         <li>
-                            <button class="dropdown-item" type="button" onclick="changeUsername()">
+                            <button class="dropdown-item" type="button" onclick="showModal('changeUsernameModal')">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 
@@ -139,7 +140,7 @@
                             </button>
                         </li>
                         <li>
-                            <button class="dropdown-item" type="button" onclick="changePassword()">
+                            <button class="dropdown-item" type="button" onclick="showModal('changePasswordModal')">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -173,7 +174,7 @@
                                 </svg> Change Password</button>
                         </li>
                         <li>
-                            <button class="dropdown-item" type="button" onclick="changeEmail()">
+                            <button class="dropdown-item" type="button" onclick="showModal('changeEmailModal')">
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -191,9 +192,9 @@
                             </button>
                         </li>
                     </ul>
-                    <hr>
+                    <hr class="dropdown-divider">
                     <div class="delete-acc">
-                        <button class="btn btn-outline-danger danger-custom-btn" type="submit">
+                        <button class="delete-acc-btn" type="submit" onclick="showModal('deleteAccountModal')">
                             Delete Account
                         </button>
                     </div>
@@ -492,29 +493,21 @@
         <div class="modal-dialog" style="margin-top: 15%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Change Username</h5>
-                    <button type="button"
-                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                    <h4 class="modal-title">Change Username</h4>
                 </div>
-                <div class="modal-body">
-                    <form action="/change_username" method="POST">
-                        <div class="mb-3">
-                            <label for="new_username" class="form-label">New Username:</label>
-                            <input type="text" class="form-control form-input session-form" id="new_username"
-                                name="new_username" required autofocus value="{{ user_info[0] }}">
+                <form action="/change_username" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="new_username" class="text-nowrap">Current Username:</label>
+                            <input type="text" class="form-control form-input" id="new_username" name="new_username"
+                                required autofocus autocomplete="off" value="{{ user_info[0] }}">
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Username</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="save-btn">Confirm</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -523,29 +516,21 @@
         <div class="modal-dialog" style="margin-top: 15%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Change Email</h5>
-                    <button type="button"
-                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                    <h4 class="modal-title">Change Email</h4>
                 </div>
-                <div class="modal-body">
-                    <form action="/change_email" method="POST">
-                        <div class="mb-3">
-                            <label for="new_email" class="form-label">New Email:</label>
-                            <input type="email" class="form-control form-input session-form" id="new_email"
-                                name="new_email" required autofocus value="{{ user_info[1] }}">
+                <form action="/change_email" method="POST">
+                    <div class="modal-body">
+                        <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
+                            <label for="new_email" class="text-nowrap">Current Email:</label>
+                            <input type="email" class="form-control form-input" id="new_email" name="new_email" required
+                                autofocus autocomplete="off" value="{{ user_info[1] }}">
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Email</button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="save-btn">Confirm</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -554,35 +539,56 @@
         <div class="modal-dialog" style="margin-top: 10%;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Change Password</h5>
-                    <button type="button"
-                        class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                    </button>
+                    <h4 class="modal-title">Change Password</h4>
                 </div>
-                <div class="modal-body">
-                    <form action="/change_password" method="POST">
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label">Current Password:</label>
-                            <input type="password" class="form-control form-input session-form" id="current_password"
-                                name="current_password" required autofocus>
-                            <label for="new_password" class="form-label">New Password:</label>
-                            <input type="password" class="form-control form-input session-form" id="new_password"
-                                name="new_password" required autofocus>
-                            <label for="confirm_password" class="form-label">Confirm New Password:</label>
-                            <input type="password" class="form-control form-input session-form" id="confirm_password"
-                                name="confirm_password" required autofocus>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-outline-primary my-custom-btn">Change Password</button>
-                        </div>
-                    </form>
+                <form action="/change_password" method="POST">
+                    <div class="modal-body">
+                        <label for="current_password" class="form-label">Current Password:</label>
+                        <input type="password" class="form-control form-input" id="current_password"
+                            name="current_password" required autofocus>
+                        <label for="new_password" class="form-label">New Password:</label>
+                        <input type="password" class="form-control form-input" id="new_password" name="new_password"
+                            required autofocus>
+                        <label for="confirm_password" class="form-label">Confirm New Password:</label>
+                        <input type="password" class="form-control form-input" id="confirm_password"
+                            name="confirm_password" required autofocus>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="save-btn">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1">
+        <div class="modal-dialog" style="margin-top: 15%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Account</h4>
                 </div>
+                <form action="{{ url_for('user.delete_account') }}" method="POST">
+                    <div class="modal-body">
+                        <div class="warning-container">
+                            <svg width="35px" height="35px" style="color: red;" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.9998 8.99999V13M11.9998 17H12.0098M10.6151 3.89171L2.39019 18.0983C1.93398 18.8863 1.70588 19.2803 1.73959 19.6037C1.769 19.8857 1.91677 20.142 2.14613 20.3088C2.40908 20.5 2.86435 20.5 3.77487 20.5H20.2246C21.1352 20.5 21.5904 20.5 21.8534 20.3088C22.0827 20.142 22.2305 19.8857 22.2599 19.6037C22.2936 19.2803 22.0655 18.8863 21.6093 18.0983L13.3844 3.89171C12.9299 3.10654 12.7026 2.71396 12.4061 2.58211C12.1474 2.4671 11.8521 2.4671 11.5935 2.58211C11.2969 2.71396 11.0696 3.10655 10.6151 3.89171Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <p class="warning-text">Are you sure you want to <strong>delete your account</strong>? <br>
+                                <span style="color: #d21818; font-weight: bold">This action
+                                    cannot be undone.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="save-btn" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="cancel-btn">Delete</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -698,32 +704,13 @@
         {% block main %}{% endblock %}
     </main>
 
-    <hr class="footer-separator">
-
     <footer>
-        <div class="rights">
-            <a href="{{ url_for('home.index') }}" class="navbar-brand">
-                <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
-                <span class="fw-bold">StudyHUB</span>
-            </a>
-            <a href="https://cs50.harvard.edu/x/project/" target="_blank" class="footer-link">
-                <p>&copy; CS50 Final Project 2026</p>
-            </a>
-        </div>
-        <div class="contact-links">
-            <p class="contact-text">Feel free to contact me:</p>
-            <a href="mailto:mohammed256jamal@gmail.com" target="_blank" class="contact-link">
-                <i class="fa fa-envelope" style="font-size:25px"></i>
-            </a>
-            <a href="https://github.com/mj256x" target="_blank" class="contact-link">
-                <i style="font-size:25px" class="fa">&#xf09b;</i>
-            </a>
-        </div>
+        {% block footer %}
+        {% endblock %}
     </footer>
 
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="{{ url_for('static', filename='js/sessions.js') }}"></script>
     {% block scripts %}
