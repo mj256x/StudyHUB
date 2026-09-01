@@ -1,18 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
     const progressBars = document.querySelectorAll('.progress-bar');
-
     progressBars.forEach(bar => {
         const progress = parseInt(bar.getAttribute('aria-valuenow')) || 0;
-        bar.style.width = progress + '%';
+        bar.style.setProperty('width', progress + '%', 'important');
+        const progressParent = bar.parentElement;
         if (progress <= 25 && progress > 0) {
             bar.classList.add('progress-danger');
+            progressParent.style.setProperty('border', 'transparent', 'important');
         } else if (progress <= 50 && progress > 25) {
             bar.classList.add('progress-warning');
-        }
-        else if (progress <= 75 && progress > 50) {
+            progressParent.style.setProperty('border', 'transparent', 'important');
+        } else if (progress <= 75 && progress > 50) {
             bar.classList.add('progress-nearly-success');
+            progressParent.style.setProperty('border', 'transparent', 'important');
         } else if (progress <= 100 && progress > 75) {
             bar.classList.add('progress-success');
+            progressParent.style.setProperty('border', 'transparent', 'important');
         }
     });
 });

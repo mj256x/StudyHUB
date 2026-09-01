@@ -1,13 +1,21 @@
+html {
+    height: 100% !important;
+}
+
 body {
     background: linear-gradient(135deg, #463e6b 0%, #3a2c6e 100%);
-    min-height: 100dvh;
     display: flex !important;
     flex-direction: column !important;
+    min-height: 100vh !important;
 }
 
 main {
+    height: 100% !important;
     flex: 1 !important;
     padding: 45px 90px !important;
+    display: grid !important;
+    grid-template-rows: 1fr auto !important;
+    gap: 100px !important;
 }
 
 * {
@@ -113,17 +121,34 @@ ul {
 }
 
 .nav-link {
-    color: #000000 !important;
-    transition: all 0.2s linear !important;
+    position: relative;
+    color: #333;
+    padding: 15px 0;
 }
 
-.nav-link:hover {
-    color: #212020 !important;
-    text-decoration: none !important;
-    border-bottom: 4px solid #1d1d1d !important;
-    border-radius: 3px !important;
-    padding-bottom: 5px !important;
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    bottom: 0;
+    left: 0;
+    background-color: #343335;
+    transform: scaleX(0);
+    transform-origin: bottom left;
+    transition: transform 0.3s ease-in-out;
 }
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    transform: scaleX(1);
+}
+
+.nav-link.active {
+    font-weight: 600;
+}
+
 
 .nav-btn {
     background-color: transparent !important;
@@ -300,7 +325,7 @@ ul {
 
 .subjects-tasks-container {
     width: 100% !important;
-    height: 75vh !important;
+    height: auto !important;
     display: grid !important;
     grid-template-columns: repeat(3, 1fr) !important;
     grid-template-rows: auto !important;
@@ -317,7 +342,7 @@ ul {
 }
 
 .card:hover {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 1px 2px 8px 0 #8b7acf, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .card-header {
@@ -466,7 +491,8 @@ ul {
 }
 
 .add-sub-task-btn,
-.show-sub-tasks-btn {
+.show-sub-tasks-btn,
+.reset-progress-btn {
     background-color: transparent !important;
     border: 2px solid transparent !important;
     border-radius: 10px !important;
@@ -481,7 +507,8 @@ ul {
 }
 
 .add-sub-task-btn:hover,
-.show-sub-tasks-btn:hover {
+.show-sub-tasks-btn:hover,
+.reset-progress-btn:hover {
     background-color: #6e5fab !important;
     border-color: #8b7acf !important;
 }
@@ -489,7 +516,9 @@ ul {
 .add-sub-task-btn:active,
 .add-sub-task-btn:focus,
 .show-sub-tasks-btn:active,
-.show-sub-tasks-btn:focus {
+.show-sub-tasks-btn:focus,
+.reset-progress-btn:active,
+.reset-progress-btn:focus {
     background-color: #60529b !important;
     border-color: #8b7acf !important;
 }
@@ -545,36 +574,33 @@ ul {
     gap: 15px !important;
 }
 
-.progress-bar {
-    height: 18px !important;
-    background-color: #cecbd9 !important;
-    border: 2px #8b7acf solid !important;
+.progress {
+    width: 100% !important;
+    height: 20px !important;
+    background-color: #929192 !important;
+    border: 1.5px #5e5e64 solid !important;
     border-radius: 8px !important;
 }
 
 .progress-danger {
-    height: 18px !important;
     background-color: #b04343 !important;
     border: 2px solid #ea2828 !important;
     border-radius: 8px !important;
 }
 
 .progress-warning {
-    height: 18px !important;
     background-color: #e0a800 !important;
     border: 2px solid #ffbf00 !important;
     border-radius: 8px !important;
 }
 
 .progress-nearly-success {
-    height: 18px !important;
     background-color: #76d43b !important;
     border: 2px solid #41ff1b !important;
     border-radius: 8px !important;
 }
 
 .progress-success {
-    height: 18px !important;
     background-color: #28a745 !important;
     border: 2px solid #3ef469 !important;
     border-radius: 8px !important;
@@ -604,6 +630,7 @@ ul {
 
 .add-show-delete-btns,
 .add-show-btns {
+    height: auto !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
@@ -633,14 +660,14 @@ ul {
     transition: all 0.2s linear !important;
 }
 
-.delete-main-task-btn {
+.delete-subject-main-task-btn {
     background-color: #ff00000f !important;
     color: #ff3c3c !important;
     border: 2px solid #e715156b !important;
     transition: all 0.2s linear !important;
 }
 
-.delete-main-task-btn:hover {
+.delete-subject-main-task-btn:hover {
     background-color: #960000 !important;
     color: #fab6b6 !important;
     border-color: red !important;
@@ -657,8 +684,8 @@ ul {
 
 .delete-all-btn:active,
 .delete-all-btn:focus,
-.delete-main-task-btn:active,
-.delete-main-task-btn:focus,
+.delete-subject-main-task-btn:active,
+.delete-subject-main-task-btn:focus,
 .delete-acc-btn:active,
 .delete-acc-btn:focus {
     background-color: #820000 !important;
@@ -683,7 +710,6 @@ ul {
     position: relative !important;
     top: 10px !important;
 }
-
 
 .footer-separator {
     border: 1px solid #000000 !important;

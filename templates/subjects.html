@@ -17,7 +17,7 @@
                 <div class="dropdown">
                     <button type="button" class="dots-btn dropdown-toggle dropdown-link" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
@@ -34,7 +34,7 @@
                         <li>
                             <button class="dropdown-item"
                                 onclick="renameSubject('{{ subject[0] }}', '{{ subject[1] }}')">
-                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M12 20H21M3.00003 20H4.67457C5.16376 20 5.40835 20 5.63852 19.9447C5.84259 19.8957 6.03768 19.8149 6.21663 19.7053C6.41846 19.5816 6.59141 19.4086 6.93732 19.0627L19.5001 6.49998C20.3285 5.67156 20.3285 4.32841 19.5001 3.49998C18.6716 2.67156 17.3285 2.67156 16.5001 3.49998L3.93729 16.0627C3.59139 16.4086 3.41843 16.5816 3.29475 16.7834C3.18509 16.9624 3.10428 17.1574 3.05529 17.3615C3.00003 17.5917 3.00003 17.8363 3.00003 18.3255V20Z"
@@ -45,26 +45,10 @@
                             </button>
                         </li>
                         <li>
-                            <form action="{{ url_for('subjects.reset_progress', subject_id=subject[0]) }}"
-                                method="POST">
-                                <button class="dropdown-item {% if subject[5]==0 %} disabled-btn {% endif %}"
-                                    type="submit">
-                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M8.54661 19.7675C10.9457 20.8319 13.8032 20.7741 16.2502 19.3613C20.3157 17.0141 21.7086 11.8156 19.3614 7.75008L19.1114 7.31706M4.63851 16.2502C2.2913 12.1847 3.68424 6.98619 7.74972 4.63898C10.1967 3.22621 13.0542 3.16841 15.4533 4.23277M2.49341 16.3338L5.22546 17.0659L5.95751 14.3338M18.0426 9.6659L18.7747 6.93385L21.5067 7.6659"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round" />
-                                    </svg>
-                                    Reset Progress
-                                </button>
-                            </form>
-                        </li>
-                        <li>
                             <button onclick="toggleCompleted('{{ subject[0] }}', this)"
                                 class="dropdown-item {% if subject[5]==0 %} disabled-btn {% endif %}" type="button">
-                                <svg class="completed-svg {% if subject[3] %} completed-icon {% endif %}" width="24px"
-                                    height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="completed-svg {% if subject[3] %} completed-icon {% endif %}" width="22px"
+                                    height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M13 7L11.8845 4.76892C11.5634 4.1268 11.4029 3.80573 11.1634 3.57116C10.9516 3.36373 10.6963 3.20597 10.4161 3.10931C10.0992 3 9.74021 3 9.02229 3H5.2C4.0799 3 3.51984 3 3.09202 3.21799C2.71569 3.40973 2.40973 3.71569 2.21799 4.09202C2 4.51984 2 5.0799 2 6.2V7M2 7H17.2C18.8802 7 19.7202 7 20.362 7.32698C20.9265 7.6146 21.3854 8.07354 21.673 8.63803C22 9.27976 22 10.1198 22 11.8V16.2C22 17.8802 22 18.7202 21.673 19.362C21.3854 19.9265 20.9265 20.3854 20.362 20.673C19.7202 21 18.8802 21 17.2 21H6.8C5.11984 21 4.27976 21 3.63803 20.673C3.07354 20.3854 2.6146 19.9265 2.32698 19.362C2 18.7202 2 17.8802 2 16.2V7ZM9 14L11 16L15.5 11.5"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -77,8 +61,8 @@
                         <li>
                             <button type="button" class="dropdown-item"
                                 onclick="toggleFavorite('{{ subject[0] }}', this)">
-                                <svg class="fav-svg {% if subject[2] %} favorite-icon {% endif %}" width="24px"
-                                    height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="fav-svg {% if subject[2] %} favorite-icon {% endif %}" width="22px"
+                                    height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -88,25 +72,37 @@
                                     Favorites{% endif %}</span>
                             </button>
                         </li>
+                        <li>
+                            <form action="{{ url_for('subjects.delete_subject', subject_id=subject[0]) }}"
+                                method="POST">
+                                <button class="dropdown-item delete-subject-main-task-btn" type="submit">
+                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    Delete Subject
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </div>
             </div>
             <div class="card-footer">
-                <div class="progress flex-grow-1" style="height: 18px; border-radius: 8px;">
+                <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow="{{ subject[4] or 0 }}" aria-valuemin="0"
-                        aria-valuemax="100"></div>
+                        aria-valuemax="100">
+                        <strong>{{ subject[4] or 0 }}%</strong>
+                    </div>
                 </div>
-                <form action="{{ url_for('subjects.delete_subject', subject_id=subject[0]) }}" method="POST">
-                    <button class="delete-btn">
-                        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                <form action="{{ url_for('subjects.reset_progress', subject_id=subject[0]) }}" method="POST">
+                    <button class="reset-progress-btn {% if subject[5]==0 %} disabled-btn {% endif %}" type="submit">
+                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M16 6V5.2C16 4.0799 16 3.51984 15.782 3.09202C15.5903 2.71569 15.2843 
-                                            2.40973 14.908 2.21799C14.4802 2 13.9201 2 12.8 2H11.2C10.0799 2 9.51984 
-                                            2 9.09202 2.21799C8.71569 2.40973 8.40973 2.71569 8.21799 3.09202C8 3.51984 
-                                            8 4.0799 8 5.2V6M10 11.5V16.5M14 11.5V16.5M3 6H21M19 6V17.2C19 18.8802 19 
-                                            19.7202 18.673 20.362C18.3854 20.9265 17.9265 21.3854 17.362 21.673C16.7202 
-                                            22 15.8802 22 14.2 22H9.8C8.11984 22 7.27976 22 6.63803 21.673C6.07354 21.3854 
-                                            5.6146 20.9265 5.32698 20.362C5 19.7202 5 18.8802 5 17.2V6"
+                            <path
+                                d="M8.54661 19.7675C10.9457 20.8319 13.8032 20.7741 16.2502 19.3613C20.3157 17.0141 21.7086 11.8156 19.3614 7.75008L19.1114 7.31706M4.63851 16.2502C2.2913 12.1847 3.68424 6.98619 7.74972 4.63898C10.1967 3.22621 13.0542 3.16841 15.4533 4.23277M2.49341 16.3338L5.22546 17.0659L5.95751 14.3338M18.0426 9.6659L18.7747 6.93385L2１。５０６７ ７。６６５９"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
@@ -119,7 +115,7 @@
 <div class="add-show-delete-btns">
     <div class="add-show-btns">
         <button class="add-subject-file-task-btn" onclick="showModal('addFolderModal')">
-            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M13 7L11.8845 4.76892C11.5634 4.1268 11.4029 3.80573 11.1634 3.57116C10.9516 3.36373 10.6963 3.20597 10.4161 3.10931C10.0992 3 9.74021 3 9.02229 3H5.2C4.0799 3 3.51984 3 3.09202 3.21799C2.71569 3.40973 2.40973 3.71569 2.21799 4.09202C2 4.51984 2 5.0799 2 6.2V7M2 7H17.2C18.8802 7 19.7202 7 20.362 7.32698C20.9265 7.6146 21.3854 8.07354 21.673 8.63803C22 9.27976 22 10.1198 22 11.8V16.2C22 17.8802 22 18.7202 21.673 19.362C21.3854 19.9265 20.9265 20.3854 20.362 20.673C19.7202 21 18.8802 21 17.2 21H6.8C5.11984 21 4.27976 21 3.63803 20.673C3.07354 20.3854 2.6146 19.9265 2.32698 19.362C2 18.7202 2 17.8802 2 16.2V7ZM12 17V11M9 14H15"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -128,7 +124,7 @@
         </button>
         <div class="dropdown dropup">
             <button type="button" data-bs-toggle="dropdown" aria-expanded="false" class="show-btn">
-                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M2.42012 12.7132C2.28394 12.4975 2.21584 12.3897 2.17772 12.2234C2.14909 12.0985 2.14909 11.9015 2.17772 11.7766C2.21584 11.6103 2.28394 11.5025 2.42012 11.2868C3.54553 9.50484 6.8954 5 12.0004 5C17.1054 5 20.4553 9.50484 21.5807 11.2868C21.7169 11.5025 21.785 11.6103 21.8231 11.7766C21.8517 11.9015 21.8517 12.0985 21.8231 12.2234C21.785 12.3897 21.7169 12.4975 21.5807 12.7132C20.4553 14.4952 17.1054 19 12.0004 19C6.8954 19 3.54553 14.4952 2.42012 12.7132Z"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -140,7 +136,7 @@
             <ul class="dropdown-menu">
                 <li>
                     <button class="dropdown-item" data-active="false" onclick="showFavorites(this)" type="button">
-                        <svg class="fav-svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                        <svg class="fav-svg" width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
@@ -151,7 +147,7 @@
                 </li>
                 <li>
                     <button class="dropdown-item" data-active="false" onclick="showCompleted(this)" type="button">
-                        <svg class="completed-svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                        <svg class="completed-svg" width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M13 7L11.8845 4.76892C11.5634 4.1268 11.4029 3.80573 11.1634 3.57116C10.9516 3.36373 10.6963 3.20597 10.4161 3.10931C10.0992 3 9.74021 3 9.02229 3H5.2C4.0799 3 3.51984 3 3.09202 3.21799C2.71569 3.40973 2.40973 3.71569 2.21799 4.09202C2 4.51984 2 5.0799 2 6.2V7M2 7H17.2C18.8802 7 19.7202 7 20.362 7.32698C20.9265 7.6146 21.3854 8.07354 21.673 8.63803C22 9.27976 22 10.1198 22 11.8V16.2C22 17.8802 22 18.7202 21.673 19.362C21.3854 19.9265 20.9265 20.3854 20.362 20.673C19.7202 21 18.8802 21 17.2 21H6.8C5.11984 21 4.27976 21 3.63803 20.673C3.07354 20.3854 2.6146 19.9265 2.32698 19.362C2 18.7202 2 17.8802 2 16.2V7ZM9 14L11 16L15.5 11.5"
