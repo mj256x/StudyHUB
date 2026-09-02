@@ -1,7 +1,38 @@
-function startNewSession() {
-    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionModal'));
-    myModal.show();
-}
+let timerInterval = null;
+
+document.getElementById('sessionForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const formObject = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/start_session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const pomodoroBtn = document.getElementById('pomodoro-btn');
+            const timerDisplay = document.getElementById('timer-display');
+
+            if (pomodoroBtn && timerDisplay) {
+                pomodoroBtn.dataset.sessionActive = 'true';
+                pomodoroBtn.dataset.initialDuration = formObject.period;
+                pomodoroBtn.dataset.startTimestamp = (Date.now() / 1000).toString();
+                pomodoroBtn.style.display = 'flex';
+                initializePomodoro();
+            }
+            this.reset();
+        }
+    }
+    catch (error) {
+        console.error('Error submitting session form:', error);
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
@@ -9,110 +40,106 @@ document.addEventListener('DOMContentLoaded', function () {
         pomodoroBtn.style.display = 'flex';
         initializePomodoro();
     }
+    setupPomodoroControls();
 });
 
-function showPomodoroBtnAndInitialize(initialDuration, startTimestamp) {
-    const pomodoroBtn = document.getElementById('pomodoro-btn');
-    if (pomodoroBtn) {
-        pomodoroBtn.dataset.initialDuration = initialDuration;
-        pomodoroBtn.dataset.startTimestamp = startTimestamp;
-        pomodoroBtn.dataset.sessionActive = 'true';
-        pomodoroBtn.style.display = 'flex';
-        initializePomodoro();
-    }
-}
-
 function initializePomodoro() {
-    const timerDisplay = document.getElementById('timer-display');
-    const addTimeBtn = document.getElementById('add-time-btn');
-    const endSessionBtn = document.getElementById('end-session-btn');
     const pomodoroBtn = document.getElementById('pomodoro-btn');
 
     let initialDurationMinutes = parseInt(pomodoroBtn.dataset.initialDuration, 10);
-    let startTimestamp = parseFloat(pomodoroBtn.dataset.startTimestamp); // Unix timestamp
-
-    let currentTime = Date.now() / 1000; // Current Unix timestamp in seconds
+    let startTimestamp = parseFloat(pomodoroBtn.dataset.startTimestamp);
+    let currentTime = Date.now() / 1000;
     let elapsedTimeSeconds = currentTime - startTimestamp;
     let totalSessionDurationSeconds = initialDurationMinutes * 60;
 
-    let totalSeconds = Math.max(0, Math.floor(totalSessionDurationSeconds - elapsedTimeSeconds));
+    window.totalSecondsLeft = Math.max(0, Math.floor(totalSessionDurationSeconds - elapsedTimeSeconds));
 
-    let timerInterval;
-
-    function updateDisplay() {
-        const remainingSeconds = Math.max(0, Math.floor(totalSeconds));
-        const minutes = Math.floor(remainingSeconds / 60);
-        const seconds = remainingSeconds % 60;
-        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-
-    function startTimer() {
+    if (timerInterval) {
         clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            if (totalSeconds > 0) {
-                totalSeconds--;
-                updateDisplay();
-            } else if (totalSeconds <= 0) {
-                clearInterval(timerInterval);
-                sessionEnded();
-            }
-        }, 1000);
     }
-
-    function getElapsedMinutes() {
-        const currentTime = Date.now() / 1000;
-        const elapsedTimeSeconds = Math.max(0, currentTime - startTimestamp);
-        return elapsedTimeSeconds / 60;
-    }
-
-    async function sessionEnded() {
-        try {
-            const response = await fetch('/session_ended', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ elapsed_minutes: getElapsedMinutes() }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                pomodoroBtn.dataset.sessionActive = 'false';
-                pomodoroBtn.style.display = 'none';
-                var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionEndedModal'));
-                myModal.show();
-            }
-        }
-        catch (error) {
-            console.error('Error ending session:', error);
-        }
-    }
-
-    addTimeBtn.addEventListener('click', async () => {
-        const addedMinutes = 5;
-        try {
-            const response = await fetch('/update_session_duration', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ added_time: addedMinutes }),
-            });
-            const data = await response.json();
-            if (data.success) {
-                totalSeconds += addedMinutes * 60;
-                updateDisplay();
-            }
-        } catch (error) {
-            console.error('Error adding time:', error);
-        }
-    });
-
-    endSessionBtn.addEventListener('click', async () => {
-        await sessionEnded();
-    });
 
     updateDisplay();
-    startTimer();
+
+    timerInterval = setInterval(() => {
+        if (window.totalSecondsLeft > 0) {
+            window.totalSecondsLeft--;
+            updateDisplay();
+        } else {
+            clearInterval(timerInterval);
+            sessionEnded();
+        }
+    }, 1000);
+}
+
+function updateDisplay() {
+    const timerDisplay = document.getElementById('timer-display');
+    if (!timerDisplay) return;
+
+    const remainingSeconds = Math.max(0, Math.floor(window.totalSecondsLeft || 0));
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function setupPomodoroControls() {
+    const addTimeBtn = document.getElementById('add-time-btn');
+    const endSessionBtn = document.getElementById('end-session-btn');
+
+    if (addTimeBtn) {
+        addTimeBtn.addEventListener('click', async () => {
+            const addedMinutes = 5;
+            try {
+                const response = await fetch('/update_session_duration', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ added_time: addedMinutes }),
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.totalSecondsLeft += addedMinutes * 60;
+                    updateDisplay();
+                }
+            } catch (error) {
+                console.error('Error adding time:', error);
+            }
+        });
+    }
+
+    if (endSessionBtn) {
+        endSessionBtn.addEventListener('click', async () => {
+            await sessionEnded();
+        });
+    }
+}
+
+async function sessionEnded() {
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    if (timerInterval) clearInterval(timerInterval);
+
+    try {
+        let startTimestamp = parseFloat(pomodoroBtn.dataset.startTimestamp);
+        let currentTime = Date.now() / 1000;
+        let elapsedTimeSeconds = Math.max(0, currentTime - startTimestamp);
+        let elapsedMinutes = Math.round(elapsedTimeSeconds / 60);
+
+        const response = await fetch('/session_ended', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elapsed_minutes: elapsedMinutes }),
+        });
+        const data = await response.json();
+        if (data.success) {
+            pomodoroBtn.dataset.sessionActive = 'false';
+            pomodoroBtn.style.display = 'none';
+            document.getElementById('session-duration').textContent = elapsedMinutes;
+            document.getElementById('session-subject').textContent = data.subject_name;
+            document.getElementById('session-title').textContent = data.session_name;
+            showModal('sessionEndedModal');
+        }
+    }
+    catch (error) {
+        console.error('Error ending session:', error);
+    }
 }
 
 function renameSessionModal(sessionId, sessionTitle) {

@@ -101,12 +101,12 @@ ul {
     border: 2px transparent solid !important;
     border-radius: 10px !important;
     color: #000000 !important;
+    transition: all 0.2s linear !important;
 }
 
 .dropdown-item:hover {
     background-color: #7868b6 !important;
     border-color: #8b7acf !important;
-    transition: all 0.2s linear !important;
 }
 
 .dropdown-item:active,
@@ -282,7 +282,7 @@ ul {
     background-color: transparent !important;
     border: 2px solid #8b7acf !important;
     border-radius: 20px !important;
-    width: 100px !important;
+    width: 150px !important;
     height: 40px !important;
     transition: all 0.3s linear !important;
 }
@@ -770,6 +770,18 @@ ul {
     color: #292929 !important;
 }
 
+p {
+    margin: 0 !important;
+}
+
+.session-summary {
+    width: 100% !important;
+    padding: 10px !important;
+    background-color: #d7deae !important;
+    border-left: 4px solid #5fb96d !important;
+    border-radius: 4px !important;
+}
+
 .add-subject-file-task-btn {
     background-color: #7868b6 !important;
     border: 2px solid #8b7acf !important;
@@ -1093,35 +1105,53 @@ ul {
     }
 }
 
+.pomodoro-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 20px;
+    background-color: tomato;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(255, 52, 52, 0.3);
+    user-select: none;
+    font-family: Arial, sans-serif;
+}
+
 .pomodoro-dropdown-menu {
+    display: none !important;
+}
+
+.pomodoro-dropdown-menu.show {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
     background-color: tomato !important;
     border: none !important;
+    border-radius: 10px !important;
     box-shadow: 0 4px 10px rgba(255, 36, 36, 0.3) !important;
     padding: 10px !important;
 }
 
 .pomodoro-item {
-    background-color: transparent !important;
     border: 2px #ff1a1a solid !important;
-    border-radius: 10px !important;
-    margin-bottom: 10px !important;
+    color: #ffffff !important;
 }
 
 .pomodoro-item:hover {
     background-color: #fd4727 !important;
-    border-radius: 10px !important;
-}
-
-#end-session-btn {
-    margin-bottom: 0 !important;
+    border-color: #ff1a1a !important;
 }
 
 .pomodoro-item:active,
 .pomodoro-item:focus {
     background-color: #e43415 !important;
-    color: #000000 !important;
     border-color: #cf0707 !important;
-    border-radius: 10px !important;
+    color: #9ade9c !important;
 }
 
 .deadline {
@@ -1157,28 +1187,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background-color: #28a745 !important;
     border-color: #3ef469 !important;
     box-shadow: none !important;
-}
-
-.session-form {
-    background-color: #ac9eea !important;
-    border-color: #675e8d !important;
-}
-
-.pomodoro-floating {
-    position: fixed;
-    bottom: 30px;
-    right: 20px;
-    background-color: tomato;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: grab;
-    z-index: 9999;
-    box-shadow: 0 4px 10px rgba(255, 52, 52, 0.3);
-    user-select: none;
-    font-family: Arial, sans-serif;
 }
 
 

@@ -8,13 +8,13 @@ sessions_bp = Blueprint('sessions', __name__)
 @sessions_bp.route('/start_session', methods=['POST'])
 def start_session():
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
     
-    session_title = request.form['session_title']
-    period = request.form['period']
-    subject_id = request.form['subject_id']
-
     try:
+        data = request.get_json(silent=True) or {}
+        session_title = data.get('session_title')
+        period = data.get('period')
+        subject_id = data.get('subject_id')
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
@@ -24,24 +24,21 @@ def start_session():
         session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'initial_duration': int(period), 'start_timestamp': time.time()}
         cursor.close()
-        flash('Session started successfully!, Start kicking!', 'success')
+        return jsonify({'success': True})
     except Exception as e:
         print(f"Error starting session: {e}")
-        flash('Error occurred while starting session. Please try again.', 'danger')
-    return redirect(request.referrer or url_for('home.index'))
+        return jsonify({'success': False, 'message': 'Database error'}), 500
 
 @sessions_bp.route('/update_session_duration', methods=['POST'])
 def update_session_duration():
     if 'user_id' not in session or 'study_session' not in session:
         return jsonify({'success': False, 'message': 'Authentication or session required'}), 401
 
-    data = request.get_json()
-    added_time = data.get('added_time')
-
-    if not added_time:
-        return jsonify({'success': False, 'message': 'Invalid data'}), 400
-
     try:
+        data = request.get_json()
+        added_time = data.get('added_time')
+        if not added_time:
+            return jsonify({'success': False, 'message': 'Invalid data'}), 400
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + ? WHERE id = ? AND user_id = ?",
@@ -69,14 +66,22 @@ def session_ended():
         study_session = session.get('study_session')
         conn = get_db()
         cursor = conn.cursor()
+        cursor.execute("SELECT name FROM subjects WHERE id in (SELECT subject_id FROM study_sessions WHERE id = ? AND user_id = ?)", (study_session['id'], session['user_id']))
+        subject_name = cursor.fetchone()[0]
+        cursor.execute("SELECT session_name FROM study_sessions WHERE id = ? AND user_id = ?", (study_session['id'], session['user_id']))
+        session_name = cursor.fetchone()[0]
         cursor.execute(
             "UPDATE study_sessions SET duration_minutes = ? WHERE id = ? AND user_id = ?",
-            (round(float(elapsed_minutes), 2), study_session['id'], session['user_id'])
+            (elapsed_minutes, study_session['id'], session['user_id'])
         )
         conn.commit()
         cursor.close()
         session.pop('study_session', None)
-        return jsonify({'success': True})
+        return jsonify(
+            {'success': True,
+            'subject_name': subject_name,
+            'session_name': session_name}
+            )
     except Exception as e:
         print(f"Error ending session: {e}")
         return jsonify({'success': False}), 500

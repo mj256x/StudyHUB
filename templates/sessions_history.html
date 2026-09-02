@@ -5,9 +5,12 @@
 {% block main %}
 <div class="container">
     {% if not sessions %}
-    <div class="text-center">
-        <h2>No sessions found!</h2>
-        <button class="btn btn-outline-primary my-custom-btn" onclick="startNewSession()">Start a New Session</button>
+    <div class="no-activities-container">
+        <h1 class="no-activities-title">No Sessions Found</h1>
+        <p class="no-activities-subtitle">You haven't started any sessions yet. Click the button below to start your
+            first
+            session.</p>
+        <button class="cta-btn" onclick="showModal('sessionModal')">Start a New Session</button>
     </div>
     {% else %}
     <table class="table custom-table">
