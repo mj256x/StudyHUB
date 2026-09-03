@@ -16,9 +16,14 @@ document.getElementById('sessionForm').addEventListener('submit', async function
         const data = await response.json();
 
         if (data.success) {
+            const rowData = [
+                data.subject_name,
+                formObject.session_title,
+                formObject.period
+            ];
+            createSessionRow(rowData);
             const pomodoroBtn = document.getElementById('pomodoro-btn');
             const timerDisplay = document.getElementById('timer-display');
-
             if (pomodoroBtn && timerDisplay) {
                 pomodoroBtn.dataset.sessionActive = 'true';
                 pomodoroBtn.dataset.initialDuration = formObject.period;
@@ -31,6 +36,40 @@ document.getElementById('sessionForm').addEventListener('submit', async function
     }
     catch (error) {
         console.error('Error submitting session form:', error);
+    }
+});
+
+function createSessionRow(rowData) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const nowDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+    const tableBody = document.querySelector('.table-body');
+    const newRow = document.createElement('tr');
+    rowData.forEach(text => {
+        const cell = document.createElement('td');
+        cell.textContent = text;
+        newRow.appendChild(cell);
+    });
+    const dateCell = document.createElement('td');
+    dateCell.textContent = nowDateTime;
+    newRow.appendChild(dateCell);
+    tableBody.appendChild(newRow);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    let totalDuration = document.getElementById('total-duration').dataset.totalDuration;
+    if (totalDuration) {
+        if (totalDuration < 60) {
+            document.getElementById('total-duration').textContent = totalDuration + ' minutes';
+        } else {
+            const hours = Math.floor(totalDuration / 60);
+            const minutes = totalDuration % 60;
+            document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
+        }
     }
 });
 
@@ -153,10 +192,12 @@ function renameSessionModal(sessionId, sessionTitle) {
     myModal.show();
 }
 
-function deleteSession() {
-    var form = document.getElementById('renameSessionForm');
-    if (form) {
-        form.action = '/delete_session/' + form.action.split('/').pop();
-        form.submit();
+document.getElementById('clear-sessions').addEventListener('mouseenter', function () {
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    if (pomodoroBtn && pomodoroBtn.dataset.sessionActive === 'true') {
+        this.disabled = true;
+    } else {
+        this.disabled = false;
     }
-}
+});
+

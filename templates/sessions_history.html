@@ -3,82 +3,99 @@
 {% block title %}Session History{% endblock %}
 
 {% block main %}
-<div class="container">
-    {% if not sessions %}
-    <div class="no-activities-container">
-        <h1 class="no-activities-title">No Sessions Found</h1>
-        <p class="no-activities-subtitle">You haven't started any sessions yet. Click the button below to start your
-            first
-            session.</p>
-        <button class="cta-btn" onclick="showModal('sessionModal')">Start a New Session</button>
-    </div>
-    {% else %}
-    <table class="table custom-table">
-        <thead>
-            <tr>
-                <th scope="col">Subject</th>
-                <th scope="col">Session Name</th>
-                <th scope="col">Duration (minutes)</th>
-                <th scope="col">Date</th>
-            </tr>
-        </thead>
-        {% for session in sessions %}
-        <tbody>
-            <tr>
-                <td>
-                    <a class="btn btn-outline-primary my-custom-btn"
-                        href="{{ url_for('subjects.subject_files', subject_id=session[0]) }}">{{ session[1] }}
-                    </a>
-                </td>
-                <td>
-                    <button class="btn btn-outline-primary my-custom-btn"
-                        onclick="renameSessionModal('{{ session[2] }}', '{{ session[3] }}')">
-                        {{ session[3] }}
-                    </button>
-                </td>
-                <td>{{ session[4] }}</td>
-                <td>{{ session[5] }}</td>
-            </tr>
-        </tbody>
-        {% endfor %}
-    </table>
-    <form action="{{ url_for('sessions.clear_sessions_history') }}" method="POST">
-        <button type="submit" id="clear-sessions" class="btn btn-outline-danger danger-custom-btn">
-            Clear All Sessions
-        </button>
-    </form>
-    {% endif %}
+{% if not sessions %}
+<div class="no-activities-container">
+    <h1 class="no-activities-title">No Sessions Found</h1>
+    <p class="no-activities-subtitle">You haven't started any sessions yet. Click the button below to start your
+        first
+        session.</p>
+    <button class="cta-btn" onclick="showModal('sessionModal')">Start a New Session</button>
 </div>
-<div class="modal fade" id="renameSessionModal" tabindex="-1">
-    <div class="modal-dialog" style="margin-top: 15%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Rename Session</h5>
-                <button type="button"
-                    class="ms-auto bg-transparent custom-btn-close border-0 p-2 rounded-circle d-flex align-items-center justify-content-center"
-                    data-bs-dismiss="modal">
-                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </button>
+{% else %}
+<div class="sessions-summary-cards-container">
+    <div class="session-summary-card">
+        <div class="summary-content">
+            <span class="summary-title">Total Study Time</span>
+            <span id="total-duration" data-total-duration="{{ total_duration }}" class="summary-value">
+                {{ total_duration}} minutes
+            </span>
+        </div>
+        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M14.5 19L16.5 21L21 16.5M21.9851 12.5499C21.995 12.3678 22 12.1845 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.4354 6.33651 21.858 11.7385 21.9966M12 6V12L15.7384 13.8692"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </div>
+    <div class="session-summary-card">
+        <div class="summary-content">
+            <span class="summary-title">Total Sessions</span>
+            <span class="summary-value">{{ total_sessions }} Sessions</span>
+        </div>
+        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M20 19V16H7C5.34315 16 4 17.3431 4 19M8.8 22H16.8C17.9201 22 18.4802 22 18.908 21.782C19.2843 21.5903 19.5903 21.2843 19.782 20.908C20 20.4802 20 19.9201 20 18.8V5.2C20 4.07989 20 3.51984 19.782 3.09202C19.5903 2.71569 19.2843 2.40973 18.908 2.21799C18.4802 2 17.9201 2 16.8 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22Z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </div>
+    <div class="session-summary-card">
+        <div class="summary-content">
+            <span class="summary-title">Average Session Duration</span>
+            <span class="summary-value">{{ average_duration|round(2) }} minutes</span>
+        </div>
+        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 9V13L14 15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </div>
+    <div class="session-summary-card">
+        <div class="summary-content">
+            <span class="summary-title">Top Subject</span>
+            <span class="summary-value">{{ top_subject[0][0] }} <span class="summary-title">{{ top_subject[0][1] }}
+                    minutes</span></span>
+        </div>
+        <div class="circular-progress" style="--percent: {{ top_subject_percentage }};">
+            <div class="circular-progress-bar">
+                <strong>{{ top_subject_percentage }}%</strong>
             </div>
-            <form id="renameSessionForm" action="{{ url_for('sessions.rename_session', session_id=0) }}" method="POST">
-                <div class="modal-body">
-                    <label for="session_title" class="form-label">Session Title:</label>
-                    <input type="text" id="session_title" name="session_title"
-                        class="form-control session-form form-input" placeholder="Session Title" autocomplete="off"
-                        required autofocus>
-                </div>
-                <div class="modal-footer" style="justify-content: space-between; align-items: center;">
-                    <button type="button" class="btn btn-outline-danger danger-custom-btn"
-                        onclick="deleteSession()">Delete Session</button>
-                    <button type="submit" class="btn btn-outline-primary my-custom-btn">Save Changes</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
+<table class="table custom-table">
+    <thead>
+        <tr>
+            <th scope="col">Subject</th>
+            <th scope="col">Session Name</th>
+            <th scope="col">Duration (minutes)</th>
+            <th scope="col">Date</th>
+        </tr>
+    </thead>
+    <tbody class="table-body">
+        {% for session in sessions %}
+        <tr>
+            <td>
+                <a class="btn btn-outline-primary my-custom-btn"
+                    href="{{ url_for('subjects.subject_files', subject_id=session[0]) }}">{{ session[1] }}
+                </a>
+            </td>
+            <td>
+                <button class="btn btn-outline-primary my-custom-btn"
+                    onclick="renameSessionModal('{{ session[2] }}', '{{ session[3] }}')">
+                    {{ session[3] }}
+                </button>
+            </td>
+            <td>{{ session[4] }}</td>
+            <td>{{ session[5] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="clear-sessions-container">
+    <button type="button" id="clear-sessions" class="delete-all-btn" onclick="showModal('clearSessionsModal')">
+        Clear All Sessions
+    </button>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

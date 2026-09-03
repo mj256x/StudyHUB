@@ -1,3 +1,5 @@
+from math import floor
+
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from database import get_db
 import time
@@ -20,11 +22,13 @@ def start_session():
         cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
                             (session_title, period, subject_id, session['user_id']))
         conn.commit()
+        cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        subject_name = cursor.fetchone()[0]
         cursor.execute("SELECT id FROM study_sessions WHERE session_name = ? AND duration_minutes = ? AND user_id = ?", (session_title, period, session['user_id']))
         session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'initial_duration': int(period), 'start_timestamp': time.time()}
         cursor.close()
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'subject_name': subject_name})
     except Exception as e:
         print(f"Error starting session: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
@@ -68,8 +72,12 @@ def session_ended():
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM subjects WHERE id in (SELECT subject_id FROM study_sessions WHERE id = ? AND user_id = ?)", (study_session['id'], session['user_id']))
         subject_name = cursor.fetchone()[0]
+        if subject_name is None:
+            return jsonify({'success': False, 'message': 'Subject not found'}), 404
         cursor.execute("SELECT session_name FROM study_sessions WHERE id = ? AND user_id = ?", (study_session['id'], session['user_id']))
         session_name = cursor.fetchone()[0]
+        if session_name is None:
+            return jsonify({'success': False, 'message': 'Session not found'}), 404
         cursor.execute(
             "UPDATE study_sessions SET duration_minutes = ? WHERE id = ? AND user_id = ?",
             (elapsed_minutes, study_session['id'], session['user_id'])
@@ -93,13 +101,51 @@ def sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subjects.id, subjects.name, study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes, FORMAT(study_sessions.session_date,  'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        
+        cursor.execute("SELECT subjects.id, subjects.name," \
+        " study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes," \
+        " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects" \
+        " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
+        
+        cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        sum_duration = cursor.fetchone()
+        total_duration = sum_duration[0] if sum_duration and sum_duration[0] is not None else 0
+        
+        cursor.execute("SELECT COUNT(*) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        sum_sessions = cursor.fetchone()
+        total_sessions = sum_sessions[0] if sum_sessions and sum_sessions[0] is not None else 0
+        
+        average_duration = total_duration / total_sessions if total_sessions > 0 else 0
+        
+        cursor.execute("SELECT TOP 1 s.name AS subject_name, "
+        "SUM(ss.duration_minutes) AS total_duration_minutes, s.id AS subject_id "
+        "FROM subjects AS s "
+        "JOIN study_sessions AS ss ON ss.subject_id = s.id "
+        "WHERE ss.user_id = ? "
+        "GROUP BY s.id, s.name "
+        "ORDER BY SUM(ss.duration_minutes) DESC",
+        (session['user_id'],)
+        )
+        top_subject = cursor.fetchall()
+        cursor.execute("SELECT COUNT(*) FROM files WHERE user_id = ? and subject_id = ?", (session['user_id'], top_subject[0][2]))
+        files_count = cursor.fetchone()[0]
+        if files_count > 0:
+            cursor.execute("SELECT COUNT(*) FROM files WHERE user_id = ? and subject_id = ? AND is_completed = 1", (session['user_id'], top_subject[0][2]))
+            completed_files_count = cursor.fetchone()[0]
+            top_subject_percentage = floor(int((completed_files_count / files_count) * 100))
+        else:
+            top_subject_percentage = 0
         cursor.close()
     except Exception as e:
         print(f"Error fetching sessions: {e}")
         sessions = []
-    return render_template('sessions_history.html', sessions=sessions)
+        total_duration = 0
+        total_sessions = 0
+        average_duration = 0
+        top_subject = None
+        top_subject_percentage = 0
+    return render_template('sessions_history.html', sessions=sessions, total_duration=total_duration, total_sessions=total_sessions, average_duration=average_duration, top_subject=top_subject, top_subject_percentage=top_subject_percentage)
 
 @sessions_bp.route('/rename_session/<int:session_id>', methods=['POST'])
 def rename_session(session_id):

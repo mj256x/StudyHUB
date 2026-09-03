@@ -3,7 +3,7 @@ html {
 }
 
 body {
-    background: linear-gradient(135deg, #463e6b 0%, #3a2c6e 100%);
+    background-color: #443b68 !important;
     display: flex !important;
     flex-direction: column !important;
     min-height: 100vh !important;
@@ -523,6 +523,27 @@ ul {
     border-color: #8b7acf !important;
 }
 
+.circular-progress {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: conic-gradient(#8b7acf calc(var(--percent) * 1%), #5f558a 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.circular-progress-bar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #5f558a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c8c7c7;
+}
+
 .subject-link a,
 .file-link a {
     text-decoration: none !important;
@@ -629,7 +650,8 @@ ul {
 }
 
 .add-show-delete-btns,
-.add-show-btns {
+.add-show-btns,
+.clear-sessions-container {
     height: auto !important;
     display: flex !important;
     flex-direction: row !important;
@@ -675,11 +697,10 @@ ul {
 
 .delete-all-btn:hover,
 .delete-acc-btn:hover {
-    height: 45px !important;
-    border-radius: 15px !important;
     background-color: #960000 !important;
     color: #ffe0e0 !important;
     border-color: red !important;
+    transform: translateY(-1px) !important;
 }
 
 .delete-all-btn:active,
@@ -772,14 +793,6 @@ ul {
 
 p {
     margin: 0 !important;
-}
-
-.session-summary {
-    width: 100% !important;
-    padding: 10px !important;
-    background-color: #d7deae !important;
-    border-left: 4px solid #5fb96d !important;
-    border-radius: 4px !important;
 }
 
 .add-subject-file-task-btn {
@@ -1189,6 +1202,62 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     box-shadow: none !important;
 }
 
+.session-summary {
+    width: 100% !important;
+    padding: 10px !important;
+    background-color: #d7deae !important;
+    border-left: 4px solid #5fb96d !important;
+    border-radius: 4px !important;
+}
+
+.sessions-summary-cards-container {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+}
+
+.session-summary-card {
+    width: 100% !important;
+    height: 100px !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background-color: #5f558a !important;
+    border: 2px solid #8b7acf !important;
+    border-radius: 15px !important;
+    transition: all 0.2s linear !important;
+    user-select: none !important;
+}
+
+.session-summary-card:hover {
+    background-color: #4f3da0 !important;
+    border-color: #8b7acf !important;
+    transform: translateY(-2px);
+    box-shadow: 1px 2px 8px 0 #8b7acf, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.summary-content {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+}
+
+.summary-title {
+    font-size: 1rem !important;
+    color: #d2d2d2 !important;
+}
+
+.summary-value {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
 
 table.custom-table {
     background-color: #ac9eea !important;
