@@ -258,15 +258,28 @@ function changeTaskSubject(MainTaskId, currentSubjectId) {
     subjects.forEach(subject => {
         subject.disabled = false;
         subject.selected = false;
+        subject.hidden = false;
     });
     subjects.forEach(subject => {
         if (subject.value === currentSubjectId) {
             subject.selected = true;
             subject.disabled = true;
+            subject.hidden = true;
         }
     });
     showModal('changeTaskSubjectModal');
 }
+
+
+document.getElementById('changeTaskSubjectForm').addEventListener('submit', function (event) {
+    const subjects = document.querySelectorAll('.subjects-options');
+    subjects.forEach(subject => {
+        if (subject.disabled && subject.selected) {
+            event.preventDefault();
+            return false;
+        }
+    });
+});
 
 async function doneButtonDisabled(mainTaskId) {
     try {
