@@ -1,44 +1,5 @@
 let timerInterval = null;
 
-document.getElementById('sessionForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-    const formData = new FormData(this);
-    const formObject = Object.fromEntries(formData.entries());
-
-    try {
-        const response = await fetch('/start_session', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formObject),
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            const rowData = [
-                data.subject_name,
-                formObject.session_title,
-                formObject.period
-            ];
-            createSessionRow(rowData);
-            const pomodoroBtn = document.getElementById('pomodoro-btn');
-            const timerDisplay = document.getElementById('timer-display');
-            if (pomodoroBtn && timerDisplay) {
-                pomodoroBtn.dataset.sessionActive = 'true';
-                pomodoroBtn.dataset.initialDuration = formObject.period;
-                pomodoroBtn.dataset.startTimestamp = (Date.now() / 1000).toString();
-                pomodoroBtn.style.display = 'flex';
-                initializePomodoro();
-            }
-            this.reset();
-        }
-    }
-    catch (error) {
-        console.error('Error submitting session form:', error);
-    }
-});
-
 function createSessionRow(rowData) {
     const now = new Date();
     const year = now.getFullYear();
@@ -59,28 +20,6 @@ function createSessionRow(rowData) {
     newRow.appendChild(dateCell);
     tableBody.appendChild(newRow);
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    let totalDuration = document.getElementById('total-duration').dataset.totalDuration;
-    if (totalDuration) {
-        if (totalDuration < 60) {
-            document.getElementById('total-duration').textContent = totalDuration + ' minutes';
-        } else {
-            const hours = Math.floor(totalDuration / 60);
-            const minutes = totalDuration % 60;
-            document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
-        }
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const pomodoroBtn = document.getElementById('pomodoro-btn');
-    if (pomodoroBtn && pomodoroBtn.dataset.sessionActive === 'true' && pomodoroBtn.dataset.initialDuration && pomodoroBtn.dataset.startTimestamp) {
-        pomodoroBtn.style.display = 'flex';
-        initializePomodoro();
-    }
-    setupPomodoroControls();
-});
 
 function initializePomodoro() {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
@@ -112,20 +51,44 @@ function initializePomodoro() {
 
 function updateDisplay() {
     const timerDisplay = document.getElementById('timer-display');
-    if (!timerDisplay) return;
+    const activeSessionTimer = document.getElementById('pomodoro-timer');
+    if (!timerDisplay || !activeSessionTimer) return;
 
     const remainingSeconds = Math.max(0, Math.floor(window.totalSecondsLeft || 0));
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    activeSessionTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 function setupPomodoroControls() {
     const addTimeBtn = document.getElementById('add-time-btn');
     const endSessionBtn = document.getElementById('end-session-btn');
+    const addBtn = document.getElementById('add-btn');
+    const endBtn = document.getElementById('end-btn');
 
     if (addTimeBtn) {
         addTimeBtn.addEventListener('click', async () => {
+            const addedMinutes = 5;
+            try {
+                const response = await fetch('/update_session_duration', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ added_time: addedMinutes }),
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.totalSecondsLeft += addedMinutes * 60;
+                    updateDisplay();
+                }
+            } catch (error) {
+                console.error('Error adding time:', error);
+            }
+        });
+    }
+
+    if (addBtn) {
+        addBtn.addEventListener('click', async () => {
             const addedMinutes = 5;
             try {
                 const response = await fetch('/update_session_duration', {
@@ -149,10 +112,18 @@ function setupPomodoroControls() {
             await sessionEnded();
         });
     }
+
+    if (endBtn) {
+        endBtn.addEventListener('click', async () => {
+            await sessionEnded();
+        });
+    }
 }
 
 async function sessionEnded() {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
+    const activeSessionCard = document.querySelector('.active-session');
+    const inactiveSessionCard = document.querySelector('.inactive-session');
     if (timerInterval) clearInterval(timerInterval);
 
     try {
@@ -169,6 +140,9 @@ async function sessionEnded() {
         const data = await response.json();
         if (data.success) {
             pomodoroBtn.dataset.sessionActive = 'false';
+            activeSessionCard.dataset.active = 'false';
+            activeSessionCard.style.setProperty('display', 'none', 'important');
+            inactiveSessionCard.style.setProperty('display', 'flex', 'important');
             pomodoroBtn.style.display = 'none';
             document.getElementById('session-duration').textContent = elapsedMinutes;
             document.getElementById('session-subject').textContent = data.subject_name;
@@ -181,16 +155,54 @@ async function sessionEnded() {
     }
 }
 
-function renameSessionModal(sessionId, sessionTitle) {
-    var form = document.getElementById('renameSessionForm');
-    if (form) {
-        form.action = '/rename_session/' + sessionId;
-    }
+document.getElementById('sessionForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const formObject = Object.fromEntries(formData.entries());
 
-    var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('renameSessionModal'));
-    document.getElementById('session_title').value = sessionTitle;
-    myModal.show();
-}
+    try {
+        const response = await fetch('/start_session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const rowData = [
+                data.subject_name,
+                formObject.session_title,
+                formObject.period
+            ];
+            createSessionRow(rowData);
+            const activeSessionCard = document.querySelector('.active-session');
+            const inactiveSessionCard = document.querySelector('.inactive-session');
+            if (inactiveSessionCard && activeSessionCard) {
+                inactiveSessionCard.style.setProperty('display', 'none', 'important');
+                activeSessionCard.style.setProperty('display', 'flex', 'important');
+                activeSessionCard.dataset.active = 'true';
+            }
+            const currentSessionTitle = document.querySelector('.current-session-title');
+            if (currentSessionTitle) {
+                currentSessionTitle.textContent = formObject.session_title;
+            }
+            const pomodoroBtn = document.getElementById('pomodoro-btn');
+            if (pomodoroBtn) {
+                pomodoroBtn.dataset.sessionActive = 'true';
+                pomodoroBtn.dataset.initialDuration = formObject.period;
+                pomodoroBtn.dataset.startTimestamp = (Date.now() / 1000).toString();
+                pomodoroBtn.style.display = 'flex';
+                initializePomodoro();
+            }
+            this.reset();
+        }
+    }
+    catch (error) {
+        console.error('Error submitting session form:', error);
+    }
+});
 
 document.getElementById('clear-sessions').addEventListener('mouseenter', function () {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
@@ -201,3 +213,33 @@ document.getElementById('clear-sessions').addEventListener('mouseenter', functio
     }
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    let totalDuration = document.getElementById('total-duration').dataset.totalDuration;
+    if (totalDuration) {
+        if (totalDuration < 60) {
+            document.getElementById('total-duration').textContent = totalDuration + ' minutes';
+        } else {
+            const hours = Math.floor(totalDuration / 60);
+            const minutes = totalDuration % 60;
+            document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
+        }
+    }
+
+    const activeSessionCard = document.querySelector('.active-session');
+    const inactiveSessionCard = document.querySelector('.inactive-session');
+    if (inactiveSessionCard && activeSessionCard && activeSessionCard.dataset.active === 'true') {
+        inactiveSessionCard.style.setProperty('display', 'none', 'important');
+        activeSessionCard.style.setProperty('display', 'flex', 'important');
+    }
+    else if (inactiveSessionCard && activeSessionCard.dataset.active === 'false') {
+        inactiveSessionCard.style.setProperty('display', 'flex', 'important');
+        activeSessionCard.style.setProperty('display', 'none', 'important');
+    }
+
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    if (pomodoroBtn && pomodoroBtn.dataset.sessionActive === 'true' && pomodoroBtn.dataset.initialDuration && pomodoroBtn.dataset.startTimestamp) {
+        pomodoroBtn.style.display = 'flex';
+        initializePomodoro();
+    }
+    setupPomodoroControls();
+});

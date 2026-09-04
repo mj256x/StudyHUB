@@ -139,43 +139,7 @@
 </template>
 {% endif %}
 {% endblock %}
-{% block pomodoro %}
-<div class="dropdown">
-    <button type="button" id="pomodoro-btn" class="pomodoro-floating dropdown-toggle dropdown-link"
-        data-bs-toggle="dropdown" style="display: none;"
-        data-session-active="{% if session.study_session %}true{% else %}false{% endif %}"
-        data-initial-duration="{% if session.study_session %}{{ session.study_session.initial_duration }}{% else %}0{% endif %}"
-        data-start-timestamp="{% if session.study_session %}{{ session.study_session.start_timestamp }}{% else %}0{% endif %}">
-        🍅 <span id="timer-display">{% if session.study_session %}{{ session.study_session.initial_duration }}{%
-            else %}-{% endif %}</span>
-    </button>
-    <ul class="dropdown-menu pomodoro-dropdown-menu" aria-labelledby="pomodoro-btn">
-        <li>
-            <button id="add-time-btn" class="dropdown-item pomodoro-item">
-                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 
-                            16V10M9 13H15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 
-                            17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 
-                            14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 
-                            15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                +5 minutes
-            </button>
-        </li>
-        <li>
-            <button id="end-session-btn" class="dropdown-item pomodoro-item" data-bs-dismiss="dropdown">
-                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M12 9.5V13.5L14.5 15M12 5C7.30558 5 3.5 8.80558 3.5 13.5C3.5 18.1944 7.30558 22 12 22C16.6944 22 20.5 18.1944 20.5 13.5C20.5 8.80558 16.6944 5 12 5ZM12 5V2M10 2H14M20.329 5.59204L18.829 4.09204L19.579 4.84204M3.67102 5.59204L5.17102 4.09204L4.42102 4.84204"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                End Session
-            </button>
-        </li>
-    </ul>
-</div>
-{% endblock %}
+
 {% block footer %}
 <hr class="footer-separator">
 <div class="footer-content">

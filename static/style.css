@@ -1169,7 +1169,8 @@ p {
     color: #9ade9c !important;
 }
 
-.pomodoro-card {
+.pomodoro-card .inactive-session,
+.pomodoro-card .active-session {
     width: 100% !important;
     background: linear-gradient(to right, #5f558a, tomato) !important;
     border: 2px solid #8b7acfd1 !important;
@@ -1179,16 +1180,21 @@ p {
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 20px !important;
     box-shadow: 1px 2px 10px 4px rgba(255, 36, 36, 0.208) !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.3s ease !important;
 }
 
-.pomodoro-card:hover {
+.pomodoro-card .inactive-session:hover,
+.pomodoro-card .active-session:hover {
     background: linear-gradient(to right, #5f558a, #ff1a1aa0) !important;
     border-color: #ff1a1a99 !important;
     box-shadow: 1px 2px 10px 7px rgba(255, 36, 36, 0.471) !important;
     transform: translate3d(0px, 1px, 1px);
+}
+
+.pomodoro-card .active-session {
+    display: none !important;
 }
 
 .pomodoro-header {
@@ -1201,15 +1207,17 @@ p {
     justify-content: space-between !important;
     align-items: center !important;
     user-select: none !important;
+    gap: 20px !important;
 }
 
 .pomodoro-card-btns {
     display: flex !important;
     flex-direction: row !important;
-    gap: 10px !important;
+    gap: 20px !important;
 }
 
-.pomodoro-card-btn {
+.add-btn,
+.end-btn {
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
@@ -1225,8 +1233,13 @@ p {
     transition: all 0.2s linear !important;
 }
 
-.pomodoro-card-btn:hover {
+.end-btn {
     background-color: #fd4727 !important;
+}
+
+.end-btn:hover,
+.add-btn:hover {
+    background-color: #d03014db !important;
     border-color: #ff1a1a !important;
 }
 
@@ -1318,10 +1331,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .summary-value,
-.current-session-title {
+.current-session-title,
+.pomodoro-timer {
     font-size: 1.5rem !important;
     font-weight: 600 !important;
     color: #ffffff !important;
+    user-select: none !important;
 }
 
 table.custom-table {

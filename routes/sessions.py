@@ -26,7 +26,7 @@ def start_session():
         subject_name = cursor.fetchone()[0]
         cursor.execute("SELECT id FROM study_sessions WHERE session_name = ? AND duration_minutes = ? AND user_id = ?", (session_title, period, session['user_id']))
         session_id = cursor.fetchone()[0]
-        session['study_session'] = {'id': session_id, 'initial_duration': int(period), 'start_timestamp': time.time()}
+        session['study_session'] = {'id': session_id, 'title': session_title, 'initial_duration': int(period), 'start_timestamp': time.time()}
         cursor.close()
         return jsonify({'success': True, 'subject_name': subject_name})
     except Exception as e:
@@ -85,6 +85,7 @@ def session_ended():
         conn.commit()
         cursor.close()
         session.pop('study_session', None)
+        session.modified = True
         return jsonify(
             {'success': True,
             'subject_name': subject_name,
