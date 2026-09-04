@@ -35,7 +35,9 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <button class="dropdown-item" type="button" onclick="showModal('sessionModal')">
+                            <button id="start-session-btn"
+                                class="dropdown-item {% if session.study_session %}disabled-btn{% endif %}"
+                                type="button" onclick="showModal('sessionModal')">
                                 <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9 18.5H15M6.6 2H17.4C17.9601 2 18.2401 2 18.454 2.10899C18.6422 
@@ -303,9 +305,9 @@
                 <form id="renameForm" action="#" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
-                            <label for="rename_input" class="text-nowrap">Current Name:</label>
+                            <label for="rename-input" class="text-nowrap">Current Name:</label>
                             <input type="text" name="new_subject_name" class="form-control form-input"
-                                autocomplete="off" id="rename_input" required>
+                                autocomplete="off" id="rename-input" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -614,8 +616,8 @@
                             <div class="d-flex flex-row justify-content-space-between align-items-center gap-2">
                                 <input type="number" id="period" name="period" class="form-control form-input" min="5"
                                     max="45" required value="25" lang="en-US">
-                                <select id='subject_id' name="subject_id" class="form-select">
-                                    <option value="" selected disabled>Select Subject</option>
+                                <select id='subject_id' name="subject_id" class="form-select" required>
+                                    <option value="" selected disabled hidden>Select Subject</option>
                                     {% for subject in Subjects %}
                                     <option value="{{ subject[1] }}">{{ subject[0] }}</option>
                                     {% endfor %}

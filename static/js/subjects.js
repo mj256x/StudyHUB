@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function renameSubject(subjectId, currentName) {
     const renameModalLabel = document.getElementById('renameModalLabel');
-    renameModalLabel.innerText = 'Rename Subject Name:';
+    renameModalLabel.textContent = 'Rename Subject Name:';
     const form = document.getElementById('renameForm');
     if (form) {
         form.action = '/rename_subject/' + subjectId;
     }
-    const inputField = document.getElementById('rename_input');
+    const inputField = document.getElementById('rename-input');
     inputField.value = currentName;
     inputField.setAttribute('name', 'new_subject_name');
     showModal('renameModal');

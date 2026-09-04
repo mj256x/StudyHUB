@@ -1342,11 +1342,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    gap: 40px !important;
+    gap: 20px !important;
 }
 
 .custom-table {
-    width: 100% !important;
+    width: 75% !important;
     border-collapse: separate !important;
     border-spacing: 0 !important;
     transition: transform 0.4s ease !important;
@@ -1421,6 +1421,8 @@ th {
     width: 100% !important;
     padding-left: 50% !important;
 }
+
+
 
 .danger-custom-btn {
     background-color: #e33737 !important;

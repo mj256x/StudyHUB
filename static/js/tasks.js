@@ -182,16 +182,16 @@ function openTaskCardModal(type, MainTaskId = null) {
 function renameTask(type, MainSubTaskId, currentName) {
     const renameModalLabel = document.getElementById('renameModalLabel');
     const form = document.getElementById('renameForm');
-    const inputField = document.getElementById('rename_input');
+    const inputField = document.getElementById('rename-input');
     inputField.value = currentName;
     if (form) {
         if (type === 'main') {
             form.action = '/rename_main_task/' + MainSubTaskId;
-            renameModalLabel.innerText = 'Rename Main Task';
+            renameModalLabel.textContent = 'Rename Main Task';
             inputField.setAttribute('name', 'new_main_task_name');
         } else if (type === 'sub') {
             form.action = '/rename_sub_task/' + MainSubTaskId;
-            renameModalLabel.innerText = 'Rename Sub Task';
+            renameModalLabel.textContent = 'Rename Sub Task';
             inputField.setAttribute('name', 'new_sub_task_name');
         }
     }

@@ -28,7 +28,7 @@ def start_session():
         session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'title': session_title, 'initial_duration': int(period), 'start_timestamp': time.time()}
         cursor.close()
-        return jsonify({'success': True, 'subject_name': subject_name})
+        return jsonify({'success': True, 'subject_name': subject_name, 'session_id': session_id})
     except Exception as e:
         print(f"Error starting session: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
@@ -153,41 +153,39 @@ def rename_session(session_id):
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
 
-    new_name = request.form['session_title']
-    if not new_name:
-        flash('Please enter a valid session name.', 'danger')
-        return redirect(url_for('sessions.sessions_history'))
-
     try:
+        new_title = request.form['new_session_title']
+        if not new_title:
+            return redirect(url_for('sessions.sessions_history'))
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE study_sessions SET session_name = ? WHERE id = ? AND user_id = ?", (new_name, session_id, session['user_id']))
+        cursor.execute("UPDATE study_sessions SET session_name = ? WHERE id = ? AND user_id = ?", (new_title, session_id, session['user_id']))
         conn.commit()
         cursor.close()
-        flash('Session renamed successfully!', 'success')
+        if 'study_session' in session and session['study_session']['id'] == session_id:
+            session['study_session']['title'] = new_title
+            session['study_session']['id'] = session_id
+            session.modified = True
     except Exception as e:
-        flash('Error occurred while renaming session.', 'danger')
         print(f"Database error: {e}")
-
     return redirect(url_for('sessions.sessions_history'))
 
 @sessions_bp.route('/delete_session/<int:session_id>', methods=['POST'])
 def delete_session(session_id):
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
 
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("DELETE FROM study_sessions WHERE id = ? AND user_id = ?", (session_id, session['user_id']))
+        if cursor.rowcount == 0:
+            return jsonify({'success': False, 'message': 'Session not found or not authorized'}), 404
         conn.commit()
         cursor.close()
-        flash('Session deleted successfully!', 'success')
+        return jsonify({'success': True, 'message': 'Session deleted successfully'})
     except Exception as e:
-        flash('Error occurred while deleting session.', 'danger')
-        print(f"Database error: {e}")
-
-    return redirect(url_for('sessions.sessions_history'))
+        return jsonify({'success': False, 'message': 'Error occurred while deleting session'}), 500
 
 @sessions_bp.route('/clear_sessions_history', methods=['POST'])
 def clear_sessions_history():
