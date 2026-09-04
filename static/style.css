@@ -494,7 +494,9 @@ ul {
 
 .add-sub-task-btn,
 .show-sub-tasks-btn,
-.reset-progress-btn {
+.reset-progress-btn,
+.sort-btn,
+.rename-btn {
     background-color: transparent !important;
     border: 2px solid transparent !important;
     border-radius: 10px !important;
@@ -508,9 +510,17 @@ ul {
     transition: all 0.2s linear !important;
 }
 
+.sort-btn,
+.rename-btn {
+    width: 40px !important;
+    color: #fff !important;
+}
+
 .add-sub-task-btn:hover,
 .show-sub-tasks-btn:hover,
-.reset-progress-btn:hover {
+.reset-progress-btn:hover,
+.sort-btn:hover,
+.rename-btn:hover {
     background-color: #6e5fab !important;
     border-color: #8b7acf !important;
 }
@@ -520,7 +530,11 @@ ul {
 .show-sub-tasks-btn:active,
 .show-sub-tasks-btn:focus,
 .reset-progress-btn:active,
-.reset-progress-btn:focus {
+.reset-progress-btn:focus,
+.sort-btn:active,
+.sort-btn:focus,
+.rename-btn:active,
+.rename-btn:focus {
     background-color: #60529b !important;
     border-color: #8b7acf !important;
 }
@@ -1261,23 +1275,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-radius: 1px;
 }
 
-.sub_task-card {
-    background-color: #ac9eea !important;
-    border-radius: 10px !important;
-}
-
-.form-check-input {
-    background-color: #ac9eea !important;
-    border-color: #675e8d !important;
-    box-shadow: none !important;
-}
-
-.form-check-input-checked {
-    background-color: #28a745 !important;
-    border-color: #3ef469 !important;
-    box-shadow: none !important;
-}
-
 .session-summary {
     width: 100% !important;
     padding: 10px !important;
@@ -1339,16 +1336,90 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     user-select: none !important;
 }
 
-table.custom-table {
-    background-color: #5f558a !important;
-    border-bottom: 3px solid #675e8d !important;
-    border-radius: 10px !important;
+.sessions-details {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 40px !important;
 }
 
-table.custom-table th,
-table.custom-table td {
-    background-color: #5f558a !important;
-    border-bottom: 3px solid #675e8d !important;
+.custom-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    transition: transform 0.4s ease !important;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 20px !important;
+    text-align: left !important;
+}
+
+.custom-table tbody tr td {
+    background-color: #605789 !important;
+    border-bottom: 1px solid #8b7acf !important;
+    color: #ececec !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+.custom-table tfoot tr td {
+    background-color: #60529b !important;
+    border: none !important;
+    color: #ececec !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+.custom-table thead tr.table-main-header th {
+    background-color: #60529b !important;
+    border-bottom: 2px solid #8b7acf !important;
+}
+
+.custom-table th {
+    background-color: #9d97bac3 !important;
+    color: #ffffff !important;
+    font-size: 1.3rem !important;
+    font-weight: 800 !important;
+}
+
+th {
+    position: relative !important;
+    border: none !important;
+}
+
+.custom-table thead tr.table-secondary-header th:not(:last-child)::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 20% !important;
+    height: 60% !important;
+    width: 1px !important;
+    background-color: #cecadd !important;
+}
+
+.custom-table thead tr.table-main-header th:first-child {
+    border-top-left-radius: 15px !important;
+}
+
+.custom-table thead tr.table-main-header th:last-child {
+    border-top-right-radius: 15px !important;
+}
+
+.custom-table tfoot td:first-child {
+    border-bottom-left-radius: 15px !important;
+}
+
+.custom-table tfoot td:last-child {
+    border-bottom-right-radius: 15px !important;
+}
+
+.custom-table tfoot tr td.pagination-controls {
+    width: 100% !important;
+    padding-left: 50% !important;
 }
 
 .danger-custom-btn {

@@ -61,76 +61,133 @@
         </div>
     </div>
 </div>
-<div class="d-flex flex-row justfiy-content-between align-items-center gap-5" style="width: 100%;">
-    <table class="table custom-table">
+<div class="sessions-details">
+    <table class="custom-table">
         <thead>
-            <tr>
-                <th scope="col">Subject</th>
+            <tr class="table-main-header">
+                <th>Session History</th>
+                <th colspan="2">
+                    <input type="search" placeholder="Search..." style="width: 100%;">
+                </th>
+                <th>
+                    <select style="width: 100%;">
+                        <option selected disabled hidden>Subject Filter</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </th>
+            </tr>
+            <tr class="table-secondary-header">
+                <th scope=" col">Subject
+                </th>
                 <th scope="col">Session Name</th>
                 <th scope="col">Duration (minutes)</th>
-                <th scope="col">Date</th>
+                <th scope="col" class="d-flex flex-row justify-content-between align-items-center gap-2">
+                    <span>Date</span>
+                    <button type="button" class="sort-btn" id="sortBtn">
+                        <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M3.38589 5.66687C2.62955 4.82155 2.25138 4.39889 2.23712 4.03968C2.22473 3.72764 2.35882 3.42772 2.59963 3.22889C2.87684 3 3.44399 3 4.57828 3H19.4212C20.5555 3 21.1227 3 21.3999 3.22889C21.6407 3.42772 21.7748 3.72764 21.7624 4.03968C21.7481 4.39889 21.3699 4.82155 20.6136 5.66687L14.9074 12.0444C14.7566 12.2129 14.6812 12.2972 14.6275 12.3931C14.5798 12.4781 14.5448 12.5697 14.5236 12.6648C14.4997 12.7721 14.4997 12.8852 14.4997 13.1113V18.4584C14.4997 18.6539 14.4997 18.7517 14.4682 18.8363C14.4403 18.911 14.395 18.9779 14.336 19.0315C14.2692 19.0922 14.1784 19.1285 13.9969 19.2012L10.5969 20.5612C10.2293 20.7082 10.0455 20.7817 9.89802 20.751C9.76901 20.7242 9.6558 20.6476 9.583 20.5377C9.49975 20.4122 9.49975 20.2142 9.49975 19.8184V13.1113C9.49975 12.8852 9.49975 12.7721 9.47587 12.6648C9.45469 12.5697 9.41971 12.4781 9.37204 12.3931C9.31828 12.2972 9.2429 12.2129 9.09213 12.0444L3.38589 5.66687Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </th>
             </tr>
         </thead>
         <tbody class="table-body">
             {% for session in sessions %}
             <tr>
                 <td>
-                    <a class="btn btn-outline-primary my-custom-btn"
-                        href="{{ url_for('subjects.subject_files', subject_id=session[0]) }}">{{ session[1] }}
-                    </a>
+                    {{ session[1] }}
                 </td>
                 <td>
-                    <button class="btn btn-outline-primary my-custom-btn"
-                        onclick="renameSessionModal('{{ session[2] }}', '{{ session[3] }}')">
-                        {{ session[3] }}
-                    </button>
+                    <div class="d-flex flex-row justify-content-between align-items-center gap-2">
+                        <span>{{ session[3] }}</span>
+                        <div class="d-flex flex-row justify-content-between align-items-center gap-2">
+                            <button type="button" class="rename-btn">
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12 20H21M3.00003 20H4.67457C5.16376 20 5.40835 20 5.63852 19.9447C5.84259 19.8957 6.03768 19.8149 6.21663 19.7053C6.41846 19.5816 6.59141 19.4086 6.93732 19.0627L19.5001 6.49998C20.3285 5.67156 20.3285 4.32841 19.5001 3.49998C18.6716 2.67156 17.3285 2.67156 16.5001 3.49998L3.93729 16.0627C3.59139 16.4086 3.41843 16.5816 3.29475 16.7834C3.18509 16.9624 3.10428 17.1574 3.05529 17.3615C3.00003 17.5917 3.00003 17.8363 3.00003 18.3255V20Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                            <button type="button" class="custom-delete-btn">
+                                <svg class="custom-delete-icon" width="22px" height="22px" viewBox="0 0 24 24"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </td>
-                <td>{{ session[4] }}</td>
+                <td>
+                    <div class="d-flex flex-row justify-content-between align-items-center gap-2">
+                        <span>{{ session[4] }}</span>
+                        <div class="progress" role="progressbar" aria-label="Animated striped example"
+                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 75%">
+                            </div>
+                        </div>
+                    </div>
+                </td>
                 <td>{{ session[5] }}</td>
             </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    <button type="button" id="clear-sessions" class="delete-all-btn"
+                        onclick="showModal('clearSessionsModal')">
+                        Clear All Sessions
+                    </button>
+                </td>
+                <td colspan="3" class="pagination-controls">
+                    <button id="prevBtn">&lt;</button>
+                    <span>Page <input type="number" id="pageInput" value="1"> of 5</span>
+                    <button id="nextBtn">&gt;</button>
+                </td>
+            </tr>
+        </tfoot>
     </table>
-    <div class="d-flex flex-column justfiy-content-center align-items-center gap-5" style="width: 30%;">
-        <div class="pomodoro-card">
-            <div class="inactive-session">
-                <span class="pomodoro-title">No Active Session</span>
-                <button class="cta-btn" onclick="showModal('sessionModal')">Start a New Session</button>
-            </div>
-            <div class="active-session" data-active="{% if session.study_session %}true{% else %}false{% endif %}">
-                <div class="pomodoro-header">
-                    <span class="pomodoro-title">Current Session</span>
-                    <span class="current-session-title">{%if session.study_session %}{{ session.study_session.title }}{%
-                        endif %}</span>
-                </div>
-                <span class="pomodoro-timer" id="pomodoro-timer"></span>
-                <div class="pomodoro-card-btns">
-                    <button id="add-btn" class="add-btn">
-                        <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 16V10M9 13H15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                    <button id="end-btn" class="end-btn">
-                        <svg width="36px" height="36px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path
-                                d="M8 9.6C8 9.03995 8 8.75992 8.10899 8.54601C8.20487 8.35785 8.35785 8.20487 8.54601 8.10899C8.75992 8 9.03995 8 9.6 8H14.4C14.9601 8 15.2401 8 15.454 8.10899C15.6422 8.20487 15.7951 8.35785 15.891 8.54601C16 8.75992 16 9.03995 16 9.6V14.4C16 14.9601 16 15.2401 15.891 15.454C15.7951 15.6422 15.6422 15.7951 15.454 15.891C15.2401 16 14.9601 16 14.4 16H9.6C9.03995 16 8.75992 16 8.54601 15.891C8.35785 15.7951 8.20487 15.6422 8.10899 15.454C8 15.2401 8 14.9601 8 14.4V9.6Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+
+    <div class="pomodoro-card">
+        <div class="inactive-session">
+            <span class="pomodoro-title">No Active Session</span>
+            <button class="cta-btn" onclick="showModal('sessionModal')">Start a New Session</button>
         </div>
-        <div class="clear-sessions-container">
-            <button type="button" id="clear-sessions" class="delete-all-btn" onclick="showModal('clearSessionsModal')">
-                Clear All Sessions
-            </button>
+        <div class="active-session" data-active="{% if session.study_session %}true{% else %}false{% endif %}">
+            <div class="pomodoro-header">
+                <span class="pomodoro-title">Current Session</span>
+                <span class="current-session-title">{%if session.study_session %}{{ session.study_session.title }}{%
+                    endif %}</span>
+            </div>
+            <span class="pomodoro-timer" id="pomodoro-timer"></span>
+            <div class="pomodoro-card-btns">
+                <button id="add-btn" class="add-btn">
+                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 16V10M9 13H15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button id="end-btn" class="end-btn">
+                    <svg width="36px" height="36px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M8 9.6C8 9.03995 8 8.75992 8.10899 8.54601C8.20487 8.35785 8.35785 8.20487 8.54601 8.10899C8.75992 8 9.03995 8 9.6 8H14.4C14.9601 8 15.2401 8 15.454 8.10899C15.6422 8.20487 15.7951 8.35785 15.891 8.54601C16 8.75992 16 9.03995 16 9.6V14.4C16 14.9601 16 15.2401 15.891 15.454C15.7951 15.6422 15.6422 15.7951 15.454 15.891C15.2401 16 14.9601 16 14.4 16H9.6C9.03995 16 8.75992 16 8.54601 15.891C8.35785 15.7951 8.20487 15.6422 8.10899 15.454C8 15.2401 8 14.9601 8 14.4V9.6Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
