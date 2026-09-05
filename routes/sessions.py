@@ -19,8 +19,8 @@ def start_session():
         subject_id = data.get('subject_id')
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id) VALUES (?, ?, ?, ?)",
-                            (session_title, period, subject_id, session['user_id']))
+        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id, session_full_period) VALUES (?, ?, ?, ?, ?)",
+                            (session_title, period, subject_id, session['user_id'], period))
         conn.commit()
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         subject_name = cursor.fetchone()[0]
@@ -28,7 +28,7 @@ def start_session():
         session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'title': session_title, 'initial_duration': int(period), 'start_timestamp': time.time()}
         cursor.close()
-        return jsonify({'success': True, 'subject_name': subject_name, 'session_id': session_id})
+        return jsonify({'success': True, 'subject_name': subject_name, 'session_id': session_id, 'session_full_period': period})
     except Exception as e:
         print(f"Error starting session: {e}")
         return jsonify({'success': False, 'message': 'Database error'}), 500
@@ -45,8 +45,8 @@ def update_session_duration():
             return jsonify({'success': False, 'message': 'Invalid data'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + ? WHERE id = ? AND user_id = ?",
-                    (added_time, session['study_session']['id'], session['user_id']))
+        cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + ?, session_full_period = session_full_period + ? WHERE id = ? AND user_id = ?",
+                    (added_time, added_time, session['study_session']['id'], session['user_id']))
         conn.commit()
         session['study_session']['initial_duration'] += added_time
         session.modified = True
@@ -105,10 +105,10 @@ def sessions_history():
         
         cursor.execute("SELECT subjects.id, subjects.name," \
         " study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes," \
-        " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date FROM study_sessions JOIN subjects" \
+        " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date, study_sessions.session_full_period FROM study_sessions JOIN subjects" \
         " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
-        
+    
         cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
         sum_duration = cursor.fetchone()
         total_duration = sum_duration[0] if sum_duration and sum_duration[0] is not None else 0
@@ -146,6 +146,7 @@ def sessions_history():
         average_duration = 0
         top_subject = None
         top_subject_percentage = 0
+        progress_data = []
     return render_template('sessions_history.html', sessions=sessions, total_duration=total_duration, total_sessions=total_sessions, average_duration=average_duration, top_subject=top_subject, top_subject_percentage=top_subject_percentage)
 
 @sessions_bp.route('/rename_session/<int:session_id>', methods=['POST'])

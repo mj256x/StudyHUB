@@ -11,6 +11,7 @@ function createSessionRow(sessionData) {
     const tableBody = document.querySelector('.table-body');
     const activeSession = document.querySelector('.active-session');
     const isDisabled = (activeSession && activeSession.dataset.active === 'true') ? 'disabled-btn' : '';
+    const isActive = (activeSession && activeSession.dataset.active === 'true') ? 'active-progress' : '';
     const newRow = `
                 <tr>
                     <td>
@@ -40,11 +41,9 @@ function createSessionRow(sessionData) {
                         </div>
                     </td>
                     <td>
-                        <div class="d-flex flex-row justify-content-between align-items-center gap-2">
-                            <span>${sessionData[2]}</span>
-                            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 75%"></div>
-                        </div>
+                        <div class="progress position-relative" role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-session-full-period="${sessionData[4]}" data-session-duration="${sessionData[2]}">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated ${isActive}"></div>
+                            <span class="progress-text"></span>
                         </div>
                     </td>
                     <td>${nowDateTime}</td>
@@ -105,11 +104,13 @@ function initializePomodoro() {
     }
 
     updateDisplay();
+    updateSessionProgressBar();
 
     timerInterval = setInterval(() => {
         if (window.totalSecondsLeft > 0) {
             window.totalSecondsLeft--;
             updateDisplay();
+            updateSessionProgressBar();
         } else {
             clearInterval(timerInterval);
             sessionEnded();
@@ -117,12 +118,24 @@ function initializePomodoro() {
     }, 1000);
 }
 
+function updateSessionProgressBar() {
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    if (!pomodoroBtn || pomodoroBtn.dataset.active === 'false') return;
+    const progressBar = document.querySelector('.progress-bar.active-progress');
+    if (!progressBar) return;
+    let totalDurationMinutes = parseInt(progressBar.parentElement.getAttribute('data-session-full-period')) || 0;
+    let elapsedMinutes = totalDurationMinutes - Math.ceil(window.totalSecondsLeft / 60);
+    let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
+    progressBar.style.setProperty('width', `${progressPercentage}%`);
+    progressBar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
+}
+
 function updateDisplay() {
     const timerDisplay = document.getElementById('timer-display');
     const activeSessionTimer = document.getElementById('pomodoro-timer');
     if (!timerDisplay || !activeSessionTimer) return;
 
-    const remainingSeconds = Math.max(0, Math.floor(window.totalSecondsLeft || 0));
+    const remainingSeconds = Math.floor(window.totalSecondsLeft || 0);
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
@@ -147,7 +160,12 @@ function setupPomodoroControls() {
                 const data = await response.json();
                 if (data.success) {
                     window.totalSecondsLeft += addedMinutes * 60;
+                    const activeProgressBar = document.querySelector('.progress-bar.active-progress');
+                    if (activeProgressBar) {
+                        activeProgressBar.parentElement.setAttribute('data-session-full-period', parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) + addedMinutes);
+                    }
                     updateDisplay();
+                    updateSessionProgressBar();
                 }
             } catch (error) {
                 console.error('Error adding time:', error);
@@ -167,7 +185,12 @@ function setupPomodoroControls() {
                 const data = await response.json();
                 if (data.success) {
                     window.totalSecondsLeft += addedMinutes * 60;
+                    const activeProgressBar = document.querySelector('.progress-bar.active-progress');
+                    if (activeProgressBar) {
+                        activeProgressBar.parentElement.setAttribute('data-session-full-period', parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) + addedMinutes);
+                    }
                     updateDisplay();
+                    updateSessionProgressBar();
                 }
             } catch (error) {
                 console.error('Error adding time:', error);
@@ -195,13 +218,23 @@ async function sessionEnded() {
     const startSessionBtn = document.getElementById('start-session-btn');
     const deleteSessionBtn = document.querySelector('.custom-delete-btn.disabled-btn');
     const clearSessionsBtn = document.getElementById('clear-sessions');
+    const activeProgressBar = document.querySelector('.progress-bar.active-progress');
     if (timerInterval) clearInterval(timerInterval);
 
     try {
         let startTimestamp = parseFloat(pomodoroBtn.dataset.startTimestamp);
         let currentTime = Date.now() / 1000;
-        let elapsedTimeSeconds = Math.max(0, currentTime - startTimestamp);
-        let elapsedMinutes = Math.round(elapsedTimeSeconds / 60);
+        let elapsedTimeSeconds = currentTime - startTimestamp;
+        let elapsedMinutes = Math.floor(elapsedTimeSeconds / 60);
+
+        if (activeProgressBar) {
+            let totalDurationMinutes = parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) || 0;
+            if (elapsedMinutes > totalDurationMinutes) {
+                elapsedMinutes = totalDurationMinutes;
+            }
+            let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
+            activeProgressBar.style.setProperty('width', progressPercentage + '%', 'important');
+        }
 
         const response = await fetch('/session_ended', {
             method: 'POST',
@@ -210,6 +243,7 @@ async function sessionEnded() {
         });
         const data = await response.json();
         if (data.success) {
+            activeProgressBar.classList.remove('active-progress');
             clearSessionsBtn.classList.remove('disabled-btn');
             deleteSessionBtn.classList.remove('disabled-btn');
             startSessionBtn.classList.remove('disabled-btn');
@@ -249,7 +283,8 @@ document.getElementById('sessionForm').addEventListener('submit', async function
                 data.subject_name,
                 formObject.session_title,
                 formObject.period,
-                data.session_id
+                data.session_id,
+                data.session_full_period
             ];
             const clearSessionsBtn = document.getElementById('clear-sessions');
             if (clearSessionsBtn) {
@@ -298,6 +333,16 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
         }
     }
+
+    const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
+    console.log('Found progress bars:', progressBars);
+    progressBars.forEach(bar => {
+        let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
+        let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;
+        let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
+        bar.style.setProperty('width', `${progressPercentage}%`);
+        bar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
+    });
 
     const activeSessionCard = document.querySelector('.active-session');
     const inactiveSessionCard = document.querySelector('.inactive-session');
