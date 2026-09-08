@@ -3,23 +3,27 @@ let timerInterval = null;
 function createSessionRow(sessionData) {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    const nowDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+    const nowDateTime = `${day} ${monthNames[now.getMonth()]} ${year} ${hours}:${minutes}`;
     const tableBody = document.querySelector('.table-body');
     const activeSession = document.querySelector('.active-session');
     const isDisabled = (activeSession && activeSession.dataset.active === 'true') ? 'disabled-btn' : '';
     const isActive = (activeSession && activeSession.dataset.active === 'true') ? 'active-progress' : '';
     const newRow = `
-                <tr>
-                    <td>
+                <tr class="session-row">
+                    <td class="subject-name">
                         ${sessionData[0]}
                     </td>
                     <td>
                         <div class="d-flex flex-row justify-content-between align-items-center gap-2">
                             <span>${sessionData[1]}</span>
+                            <span class="active-badge">
+                                <span class="dot active"></span>
+                                <span class="text">Active</span>
+                            </span>
                             <div class="d-flex flex-row justify-content-between align-items-center gap-2">
                                 <button type="button" class="rename-btn"
                                         onclick="renameSession('renameModal', '${sessionData[3]}', '${sessionData[1]}')">
@@ -49,7 +53,9 @@ function createSessionRow(sessionData) {
                     <td>${nowDateTime}</td>
                 </tr>
                 `;
-    tableBody.insertAdjacentHTML('beforeend', newRow);
+    tableBody.insertAdjacentHTML('afterbegin', newRow);
+    resetSubjectFilter();
+    updateSessionTable(1);
 }
 
 async function deleteSession(sessionId, btn) {
@@ -62,6 +68,8 @@ async function deleteSession(sessionId, btn) {
             const row = btn.closest('tr');
             if (row) {
                 row.remove();
+                resetSubjectFilter();
+                updateSessionTable(1);
             }
         }
     } catch (error) {
@@ -219,6 +227,7 @@ async function sessionEnded() {
     const deleteSessionBtn = document.querySelector('.custom-delete-btn.disabled-btn');
     const clearSessionsBtn = document.getElementById('clear-sessions');
     const activeProgressBar = document.querySelector('.progress-bar.active-progress');
+    const activeBadge = document.querySelector('.active-badge');
     if (timerInterval) clearInterval(timerInterval);
 
     try {
@@ -243,6 +252,7 @@ async function sessionEnded() {
         });
         const data = await response.json();
         if (data.success) {
+            activeBadge.style.setProperty('display', 'none', 'important');
             activeProgressBar.classList.remove('active-progress');
             clearSessionsBtn.classList.remove('disabled-btn');
             deleteSessionBtn.classList.remove('disabled-btn');
@@ -262,6 +272,126 @@ async function sessionEnded() {
         console.error('Error ending session:', error);
     }
 }
+
+const perPage = 3;
+
+function updateSessionTable(page, selectedSubject = null) {
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const totalPages = document.getElementById('totalPages');
+    if (selectedSubject) {
+        const filteredRows = document.querySelectorAll('.filtered-row');
+        totalPages.textContent = Math.ceil(filteredRows.length / perPage);
+        filteredRows.forEach((row, index) => {
+            if (index >= startIndex && index < endIndex) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    } else {
+        const sessionRows = document.querySelectorAll('.session-row');
+        totalPages.textContent = Math.ceil(sessionRows.length / perPage);
+        sessionRows.forEach((row, index) => {
+            if (index >= startIndex && index < endIndex) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+}
+
+let subjects_list = [];
+function getSubjects() {
+    const subjectNames = document.querySelectorAll('.subject-name');
+    subjectNames.forEach(subject => {
+        const subjectName = subject.textContent.trim();
+        if (!subjects_list.includes(subjectName)) {
+            subjects_list.push(subjectName);
+        }
+    });
+}
+
+function resetSubjectFilter() {
+    const sessionRows = document.querySelectorAll('.session-row');
+    const dropdownMenu = document.querySelector('.dropdown-menu.subjects-menu');
+    const buttons = dropdownMenu.querySelectorAll('.dropdown-item');
+    sessionRows.forEach(row => {
+        row.style.display = 'table-row';
+        row.classList.remove('filtered-row');
+    });
+    buttons.forEach(btn => {
+        btn.setAttribute('data-active', 'false');
+        btn.classList.remove('dropdown-item-selected');
+    });
+    document.getElementById('pageInput').value = 1;
+}
+
+function filterBySubject(subject, button) {
+    const sessionRows = document.querySelectorAll('.session-row');
+    let currentActiveButton = button.getAttribute('data-active') === 'true';
+    let newActiveState = !currentActiveButton;
+    resetSubjectFilter();
+    if (newActiveState) {
+        button.setAttribute('data-active', 'true');
+        button.classList.add('dropdown-item-selected');
+        sessionRows.forEach(row => {
+            const subjectCell = row.querySelector('.subject-name');
+            if (subjectCell) {
+                const subjectName = subjectCell.textContent.trim();
+                if (subjectName === subject) {
+                    row.style.display = 'table-row';
+                    row.classList.add('filtered-row');
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+        updateSessionTable(1, subject);
+    } else {
+        resetSubjectFilter();
+        updateSessionTable(1);
+    }
+}
+
+document.getElementById('prevBtn').addEventListener('click', function () {
+    const pageInput = document.getElementById('pageInput');
+    let currentPage = parseInt(pageInput.value, 10);
+    if (currentPage > 1) {
+        pageInput.value = currentPage - 1;
+    }
+    const selectedSubjectButton = document.querySelector('.dropdown-item-selected');
+    if (selectedSubjectButton) {
+        updateSessionTable(pageInput.value, selectedSubjectButton.textContent.trim());
+    }
+    else {
+        updateSessionTable(pageInput.value);
+    }
+});
+
+document.getElementById('nextBtn').addEventListener('click', function () {
+    const pageInput = document.getElementById('pageInput');
+    let currentPage = parseInt(pageInput.value, 10);
+    const sessionRows = document.querySelectorAll('.session-row');
+    const filteredRows = document.querySelectorAll('.filtered-row');
+    let totalPages = 0;
+    if (filteredRows.length > 0) {
+        totalPages = Math.ceil(filteredRows.length / perPage);
+    } else {
+        totalPages = Math.ceil(sessionRows.length / perPage);
+    }
+    const selectedSubjectButton = document.querySelector('.dropdown-item-selected');
+    if (currentPage < totalPages) {
+        pageInput.value = currentPage + 1;
+    }
+    if (selectedSubjectButton) {
+        updateSessionTable(pageInput.value, selectedSubjectButton.textContent.trim());
+    }
+    else {
+        updateSessionTable(pageInput.value);
+    }
+});
 
 document.getElementById('sessionForm').addEventListener('submit', async function (event) {
     event.preventDefault();
@@ -323,6 +453,19 @@ document.getElementById('sessionForm').addEventListener('submit', async function
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    resetSubjectFilter();
+    updateSessionTable(1);
+    getSubjects();
+    const subjectsMenu = document.querySelector('.dropdown-menu.subjects-menu');
+    if (subjectsMenu) {
+        subjectsMenu.innerHTML = '';
+        subjects_list.forEach(subject => {
+            const li = `<li>
+                            <button type="button" class="dropdown-item" data-active="false" onclick="filterBySubject('${subject}', this)">${subject}</button>
+                        </li>`;
+            subjectsMenu.insertAdjacentHTML('beforeend', li);
+        });
+    }
     let totalDuration = document.getElementById('total-duration').dataset.totalDuration;
     if (totalDuration) {
         if (totalDuration < 60) {
@@ -335,7 +478,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
-    console.log('Found progress bars:', progressBars);
     progressBars.forEach(bar => {
         let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
         let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;

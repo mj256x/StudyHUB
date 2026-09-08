@@ -67,14 +67,22 @@
             <tr class="table-main-header">
                 <th>Session History</th>
                 <th colspan="2">
-                    <input type="search" placeholder="Search..." style="width: 100%;">
+                    <input type="search" placeholder="Search..." class="session-search" id="sessionSearch">
                 </th>
                 <th>
-                    <select style="width: 100%;">
-                        <option selected disabled hidden>Subject Filter</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
-                    </select>
+                    <div class="dropdown">
+                        <button class="subject-filter" id="subjectFilterBtn" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <span>Filter by Subject</span>
+                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu subjects-menu">
+                        </ul>
+                    </div>
                 </th>
             </tr>
             <tr class="table-secondary-header">
@@ -97,13 +105,19 @@
         </thead>
         <tbody class="table-body">
             {% for study_record in sessions %}
-            <tr>
-                <td>
+            <tr class="session-row">
+                <td class="subject-name">
                     {{ study_record[1] }}
                 </td>
                 <td>
                     <div class="d-flex flex-row justify-content-between align-items-center gap-2">
                         <span>{{ study_record[3] }}</span>
+                        {% if session.study_session and session.study_session.id==study_record[2] %}
+                        <span class="active-badge">
+                            <span class="dot active"></span>
+                            <span class="text">Active</span>
+                        </span>
+                        {% endif %}
                         <div class="d-flex flex-row justify-content-between align-items-center gap-2">
                             <button type="button" class="rename-btn"
                                 onclick="renameSession('renameModal', '{{ study_record[2] }}', '{{ study_record[3] }}')">
@@ -117,8 +131,7 @@
                             </button>
                             <button type="button"
                                 class="custom-delete-btn {% if session.study_session and session.study_session.id==study_record[2] %}disabled-btn{% endif %}"
-                                onclick="deleteSession('{{ study_record[2] }}', this)"
-                                onmouseenter="checkActiveSession(this, '{{ study_record[2] }}')">
+                                onclick="deleteSession('{{ study_record[2] }}', this)">
                                 <svg class="custom-delete-icon" width="22px" height="22px" viewBox="0 0 24 24"
                                     fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -155,7 +168,8 @@
                 </td>
                 <td colspan="3" class="pagination-controls">
                     <button id="prevBtn">&lt;</button>
-                    <span>Page <input type="number" id="pageInput" value="1" style="width: 50px;"> of 5</span>
+                    <span>Page <input type="text" id="pageInput" value="1" readonly> of <span
+                            id="totalPages">3</span></span>
                     <button id="nextBtn">&gt;</button>
                 </td>
             </tr>

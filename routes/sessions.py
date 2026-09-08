@@ -146,7 +146,6 @@ def sessions_history():
         average_duration = 0
         top_subject = None
         top_subject_percentage = 0
-        progress_data = []
     return render_template('sessions_history.html', sessions=sessions, total_duration=total_duration, total_sessions=total_sessions, average_duration=average_duration, top_subject=top_subject, top_subject_percentage=top_subject_percentage)
 
 @sessions_bp.route('/rename_session/<int:session_id>', methods=['POST'])

@@ -25,7 +25,7 @@ main {
 
 a {
     text-decoration: none !important;
-    color: #000000 !important;
+    color: #ececec !important;
 }
 
 #logo {
@@ -101,7 +101,7 @@ ul {
     gap: 10px !important;
     border: 2px transparent solid !important;
     border-radius: 10px !important;
-    color: #000000 !important;
+    color: #ececec !important;
     transition: all 0.2s linear !important;
 }
 
@@ -123,7 +123,6 @@ ul {
 
 .nav-link {
     position: relative;
-    color: #333;
     padding: 15px 0;
 }
 
@@ -135,7 +134,7 @@ ul {
     border-radius: 4px;
     bottom: 0;
     left: 0;
-    background-color: #343335;
+    background-color: #bdbcbe;
     transform: scaleX(0);
     transform-origin: bottom left;
     transition: transform 0.3s ease-in-out;
@@ -279,7 +278,7 @@ ul {
 
 .save-btn,
 .cancel-btn {
-    color: #000000 !important;
+    color: #ececec !important;
     background-color: transparent !important;
     border: 2px solid #8b7acf !important;
     border-radius: 20px !important;
@@ -563,7 +562,7 @@ ul {
 .subject-link a,
 .file-link a {
     text-decoration: none !important;
-    color: #000000 !important;
+    color: #ececec !important;
 }
 
 .subject-link a:hover,
@@ -799,7 +798,7 @@ ul {
 
 .footer-link {
     text-decoration: none !important;
-    color: #000000 !important;
+    color: #ececec !important;
     transition: all 0.2s linear !important;
 }
 
@@ -816,17 +815,17 @@ ul {
 }
 
 .contact-text {
-    color: #000000 !important;
+    color: #ececec !important;
     position: relative !important;
     top: 10px !important;
 }
 
 .contact-link {
-    color: #000000 !important;
+    color: #ececec !important;
 }
 
 .contact-link:hover {
-    color: #292929 !important;
+    color: #d4d1d1 !important;
 }
 
 p {
@@ -1444,7 +1443,103 @@ th {
     padding-left: 50% !important;
 }
 
+.session-search,
+.subject-filter {
+    width: 100% !important;
+    outline: none !important;
+    color: #fff !important;
+    padding: 6px 12px !important;
+    background-color: #7d72ab !important;
+    border: 2px solid #8b7acf !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 10px 2px #876cab80 !important;
+    font-size: 1.05rem !important;
+}
 
+.subject-filter {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.session-search::placeholder {
+    color: #e0d9f0 !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+}
+
+.dropdown-menu.subjects-menu.show {
+    width: 100% !important;
+}
+
+.active-badge {
+    width: 80px !important;
+    height: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background-color: #0d7c27 !important;
+    border: 2px solid #3ef469 !important;
+    border-radius: 20px !important;
+}
+
+.active-badge .text {
+    color: #27ea2a !important;
+    font-size: 0.8rem !important;
+}
+
+.dot {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    background-color: #1bc126 !important;
+    transition: all 0.2s linear !important;
+}
+
+.dot.active {
+    background-color: #2ae76f;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0px transparent;
+        /* Glow is completely gone */
+    }
+
+    100% {
+        box-shadow: 0 0 14px #2fd86d;
+        /* Glow appears fully */
+    }
+}
+
+#prevBtn,
+#nextBtn,
+#pageInput {
+    background-color: #7868b6 !important;
+    color: #fff !important;
+    border: 2px solid #8b7acf !important;
+    border-radius: 10px !important;
+    padding: 5px 15px !important;
+    cursor: pointer !important;
+    transition: all 0.2s linear !important;
+}
+
+#pageInput {
+    width: 50px !important;
+    text-align: center !important;
+    outline: none !important;
+}
+
+#prevBtn:hover,
+#nextBtn:hover,
+#pageInput:hover {
+    background-color: #6859a3 !important;
+    border-color: #8b7acf !important;
+}
 
 .danger-custom-btn {
     background-color: #e33737 !important;
