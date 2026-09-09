@@ -50,7 +50,7 @@ function createSessionRow(sessionData) {
                             <span class="progress-text"></span>
                         </div>
                     </td>
-                    <td>${nowDateTime}</td>
+                    <td class="session-date">${nowDateTime}</td>
                 </tr>
                 `;
     tableBody.insertAdjacentHTML('afterbegin', newRow);
@@ -285,6 +285,7 @@ function updateSessionTable(page) {
     const filteredRows = document.querySelectorAll('.filtered-row');
     const searchedRows = document.querySelectorAll('.searched-row');
     const sessionRows = document.querySelectorAll('.session-row');
+    const sortedRows = document.querySelectorAll('.sorted-row');
     const noMatchRows = document.querySelectorAll('.no-match-row');
     if (filteredRows.length > 0) {
         totalPages.textContent = Math.ceil(filteredRows.length / perPage);
@@ -298,6 +299,15 @@ function updateSessionTable(page) {
     } else if (searchedRows.length > 0) {
         totalPages.textContent = Math.ceil(searchedRows.length / perPage);
         searchedRows.forEach((row, index) => {
+            if (index >= startIndex && index < endIndex) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    } else if (sortedRows.length > 0) {
+        totalPages.textContent = Math.ceil(sortedRows.length / perPage);
+        sortedRows.forEach((row, index) => {
             if (index >= startIndex && index < endIndex) {
                 row.style.display = 'table-row';
             } else {
@@ -357,6 +367,7 @@ function resetFilter() {
         row.classList.remove('filtered-row');
         row.classList.remove('searched-row');
         row.classList.remove('no-match-row');
+        row.classList.remove('sorted-row');
     });
     buttons.forEach(btn => {
         btn.setAttribute('data-active', 'false');
@@ -408,12 +419,18 @@ document.getElementById('nextBtn').addEventListener('click', function () {
     const sessionRows = document.querySelectorAll('.session-row');
     const filteredRows = document.querySelectorAll('.filtered-row');
     const searchedRows = document.querySelectorAll('.searched-row');
+    const sortedRows = document.querySelectorAll('.sorted-row');
+    const noMatchRows = document.querySelectorAll('.no-match-row');
     let totalPages = 0;
     if (filteredRows.length > 0) {
         totalPages = Math.ceil(filteredRows.length / perPage);
     } else if (searchedRows.length > 0) {
         totalPages = Math.ceil(searchedRows.length / perPage);
-    } else {
+    } else if (sortedRows.length > 0) {
+        totalPages = Math.ceil(sortedRows.length / perPage);
+    } else if (noMatchRows.length === sessionRows.length) {
+        totalPages = 1;
+    } else if (sessionRows.length > 0) {
         totalPages = Math.ceil(sessionRows.length / perPage);
     }
     if (currentPage < totalPages) {
@@ -439,6 +456,81 @@ document.getElementById('sessionSearch').addEventListener('input', function () {
         }
     });
     updateSessionTable(1);
+});
+
+document.getElementById('sortBtn').addEventListener('click', function () {
+    showModal('sortTableModal');
+});
+
+function sortInputs() {
+    flatpickr("#start_date", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        allowInput: true,
+    });
+
+    flatpickr("#end_date", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        allowInput: true,
+    });
+}
+
+function sortSessions(startDate, endDate) {
+    resetFilter();
+    const sessionRows = document.querySelectorAll('.session-row');
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    sessionRows.forEach(row => {
+        const sessionDateCell = row.querySelector('.session-date');
+        if (sessionDateCell) {
+            const t = sessionDateCell.textContent.trim();
+            // Format: "09 Sep 2026 14:30"
+            const sessionDate = new Date(
+                parseInt(t.slice(7, 11)),
+                monthNames.indexOf(t.slice(3, 6)),
+                parseInt(t.slice(0, 2)),
+                parseInt(t.slice(12, 14)),
+                parseInt(t.slice(15, 17))
+            );
+            if (sessionDate >= startDate && sessionDate <= endDate) {
+                row.style.display = 'table-row';
+                row.classList.add('sorted-row');
+            } else {
+                row.style.display = 'none';
+                row.classList.add('no-match-row');
+            }
+        }
+    });
+}
+
+document.getElementById('sortTableForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const formObject = Object.fromEntries(formData.entries());
+    const yearStart = parseInt(formObject.start_date.slice(0, 4), 10);
+    const monthStart = parseInt(formObject.start_date.slice(5, 7), 10);
+    const dayStart = parseInt(formObject.start_date.slice(8, 10), 10);
+    const hourStart = parseInt(formObject.start_date.slice(11, 13), 10);
+    const minuteStart = parseInt(formObject.start_date.slice(14, 16), 10);
+    const yearEnd = parseInt(formObject.end_date.slice(0, 4), 10);
+    const monthEnd = parseInt(formObject.end_date.slice(5, 7), 10);
+    const dayEnd = parseInt(formObject.end_date.slice(8, 10), 10);
+    const hourEnd = parseInt(formObject.end_date.slice(11, 13), 10);
+    const minuteEnd = parseInt(formObject.end_date.slice(14, 16), 10);
+
+    const startDate = new Date(
+        yearStart, monthStart - 1, dayStart,
+        hourStart, minuteStart
+    );
+    const endDate = new Date(
+        yearEnd, monthEnd - 1, dayEnd,
+        hourEnd, minuteEnd
+    );
+
+    sortSessions(startDate, endDate);
+    updateSessionTable(1);
+    this.reset();
 });
 
 document.getElementById('sessionForm').addEventListener('submit', async function (event) {
@@ -504,6 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
     resetFilter();
     updateSessionTable(1);
     getSubjects();
+    sortInputs();
     const subjectsMenu = document.querySelector('.dropdown-menu.subjects-menu');
     if (subjectsMenu) {
         subjectsMenu.innerHTML = '';
