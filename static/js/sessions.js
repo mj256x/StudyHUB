@@ -17,7 +17,7 @@ function createSessionRow(sessionData) {
                     <td class="subject-name">
                         ${sessionData[0]}
                     </td>
-                    <td>
+                    <td class="session-title">
                         <div class="d-flex flex-row justify-content-between align-items-center gap-2">
                             <span>${sessionData[1]}</span>
                             <span class="active-badge">
@@ -54,7 +54,8 @@ function createSessionRow(sessionData) {
                 </tr>
                 `;
     tableBody.insertAdjacentHTML('afterbegin', newRow);
-    resetSubjectFilter();
+    resetFilter();
+    document.getElementById('sessionSearch').value = '';
     updateSessionTable(1);
 }
 
@@ -68,7 +69,7 @@ async function deleteSession(sessionId, btn) {
             const row = btn.closest('tr');
             if (row) {
                 row.remove();
-                resetSubjectFilter();
+                resetFilter();
                 updateSessionTable(1);
             }
         }
@@ -252,6 +253,8 @@ async function sessionEnded() {
         });
         const data = await response.json();
         if (data.success) {
+            resetFilter();
+            updateSessionTable(1);
             activeBadge.style.setProperty('display', 'none', 'important');
             activeProgressBar.classList.remove('active-progress');
             clearSessionsBtn.classList.remove('disabled-btn');
@@ -275,12 +278,15 @@ async function sessionEnded() {
 
 const perPage = 3;
 
-function updateSessionTable(page, selectedSubject = null) {
+function updateSessionTable(page) {
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     const totalPages = document.getElementById('totalPages');
-    if (selectedSubject) {
-        const filteredRows = document.querySelectorAll('.filtered-row');
+    const filteredRows = document.querySelectorAll('.filtered-row');
+    const searchedRows = document.querySelectorAll('.searched-row');
+    const sessionRows = document.querySelectorAll('.session-row');
+    const noMatchRows = document.querySelectorAll('.no-match-row');
+    if (filteredRows.length > 0) {
         totalPages.textContent = Math.ceil(filteredRows.length / perPage);
         filteredRows.forEach((row, index) => {
             if (index >= startIndex && index < endIndex) {
@@ -289,8 +295,37 @@ function updateSessionTable(page, selectedSubject = null) {
                 row.style.display = 'none';
             }
         });
-    } else {
-        const sessionRows = document.querySelectorAll('.session-row');
+    } else if (searchedRows.length > 0) {
+        totalPages.textContent = Math.ceil(searchedRows.length / perPage);
+        searchedRows.forEach((row, index) => {
+            if (index >= startIndex && index < endIndex) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    } else if (noMatchRows.length == sessionRows.length) {
+        totalPages.textContent = 1;
+        sessionRows.forEach(row => {
+            row.style.display = 'none';
+        });
+        const tableBody = document.querySelector('.table-body');
+        const existingNoMatchRow = document.querySelector('.no-match-msg');
+        if (existingNoMatchRow) {
+            existingNoMatchRow.remove();
+        }
+        const noMatchRow = `<tr class="no-match-msg">
+                                <td colspan="4">
+                                <div class="d-flex flex-column justify-content-center align-items-center gap-2">
+                                <svg width="46px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 21L16.65 16.65M11 6C13.7614 6 16 8.23858 16 11M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>No matching sessions found.</span>
+                                </div>
+                                </td>
+                            </tr>`;
+        tableBody.innerHTML += noMatchRow;
+    } else if (sessionRows.length > 0) {
         totalPages.textContent = Math.ceil(sessionRows.length / perPage);
         sessionRows.forEach((row, index) => {
             if (index >= startIndex && index < endIndex) {
@@ -313,13 +348,15 @@ function getSubjects() {
     });
 }
 
-function resetSubjectFilter() {
+function resetFilter() {
     const sessionRows = document.querySelectorAll('.session-row');
     const dropdownMenu = document.querySelector('.dropdown-menu.subjects-menu');
     const buttons = dropdownMenu.querySelectorAll('.dropdown-item');
     sessionRows.forEach(row => {
         row.style.display = 'table-row';
         row.classList.remove('filtered-row');
+        row.classList.remove('searched-row');
+        row.classList.remove('no-match-row');
     });
     buttons.forEach(btn => {
         btn.setAttribute('data-active', 'false');
@@ -332,7 +369,8 @@ function filterBySubject(subject, button) {
     const sessionRows = document.querySelectorAll('.session-row');
     let currentActiveButton = button.getAttribute('data-active') === 'true';
     let newActiveState = !currentActiveButton;
-    resetSubjectFilter();
+    resetFilter();
+    document.getElementById('sessionSearch').value = '';
     if (newActiveState) {
         button.setAttribute('data-active', 'true');
         button.classList.add('dropdown-item-selected');
@@ -348,9 +386,9 @@ function filterBySubject(subject, button) {
                 }
             }
         });
-        updateSessionTable(1, subject);
+        updateSessionTable(1);
     } else {
-        resetSubjectFilter();
+        resetFilter();
         updateSessionTable(1);
     }
 }
@@ -361,13 +399,7 @@ document.getElementById('prevBtn').addEventListener('click', function () {
     if (currentPage > 1) {
         pageInput.value = currentPage - 1;
     }
-    const selectedSubjectButton = document.querySelector('.dropdown-item-selected');
-    if (selectedSubjectButton) {
-        updateSessionTable(pageInput.value, selectedSubjectButton.textContent.trim());
-    }
-    else {
-        updateSessionTable(pageInput.value);
-    }
+    updateSessionTable(pageInput.value);
 });
 
 document.getElementById('nextBtn').addEventListener('click', function () {
@@ -375,22 +407,38 @@ document.getElementById('nextBtn').addEventListener('click', function () {
     let currentPage = parseInt(pageInput.value, 10);
     const sessionRows = document.querySelectorAll('.session-row');
     const filteredRows = document.querySelectorAll('.filtered-row');
+    const searchedRows = document.querySelectorAll('.searched-row');
     let totalPages = 0;
     if (filteredRows.length > 0) {
         totalPages = Math.ceil(filteredRows.length / perPage);
+    } else if (searchedRows.length > 0) {
+        totalPages = Math.ceil(searchedRows.length / perPage);
     } else {
         totalPages = Math.ceil(sessionRows.length / perPage);
     }
-    const selectedSubjectButton = document.querySelector('.dropdown-item-selected');
     if (currentPage < totalPages) {
         pageInput.value = currentPage + 1;
     }
-    if (selectedSubjectButton) {
-        updateSessionTable(pageInput.value, selectedSubjectButton.textContent.trim());
-    }
-    else {
-        updateSessionTable(pageInput.value);
-    }
+    updateSessionTable(pageInput.value);
+});
+
+document.getElementById('sessionSearch').addEventListener('input', function () {
+    resetFilter();
+    const searchTerm = this.value.toLowerCase();
+    const sessionRows = document.querySelectorAll('.session-row');
+    sessionRows.forEach(row => {
+        const sessionTitle = row.querySelector('.session-title').textContent.toLowerCase();
+        const subjectName = row.querySelector('.subject-name').textContent.toLowerCase();
+        if (sessionTitle.includes(searchTerm) || subjectName.includes(searchTerm)) {
+            row.style.display = 'table-row';
+            row.classList.add('searched-row');
+            document.querySelector('.no-match-msg')?.remove();
+        } else {
+            row.style.display = 'none';
+            row.classList.add('no-match-row');
+        }
+    });
+    updateSessionTable(1);
 });
 
 document.getElementById('sessionForm').addEventListener('submit', async function (event) {
@@ -453,7 +501,7 @@ document.getElementById('sessionForm').addEventListener('submit', async function
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    resetSubjectFilter();
+    resetFilter();
     updateSessionTable(1);
     getSubjects();
     const subjectsMenu = document.querySelector('.dropdown-menu.subjects-menu');
