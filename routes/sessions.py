@@ -17,16 +17,16 @@ def start_session():
         session_title = data.get('session_title')
         period = data.get('period')
         subject_id = data.get('subject_id')
+        session_date = data.get('session_date')
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id, session_full_period) VALUES (?, ?, ?, ?, ?)",
-                            (session_title, period, subject_id, session['user_id'], period))
-        conn.commit()
+        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id, session_full_period, session_date) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?)",
+                            (session_title, period, subject_id, session['user_id'], period, session_date))
+        session_id = cursor.fetchone()[0]
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         subject_name = cursor.fetchone()[0]
-        cursor.execute("SELECT id FROM study_sessions WHERE session_name = ? AND duration_minutes = ? AND user_id = ?", (session_title, period, session['user_id']))
-        session_id = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'title': session_title, 'initial_duration': int(period), 'start_timestamp': time.time()}
+        conn.commit()
         cursor.close()
         return jsonify({'success': True, 'subject_name': subject_name, 'session_id': session_id, 'session_full_period': period})
     except Exception as e:
@@ -41,7 +41,7 @@ def update_session_duration():
     try:
         data = request.get_json()
         added_time = data.get('added_time')
-        if not added_time:
+        if added_time is None:
             return jsonify({'success': False, 'message': 'Invalid data'}), 400
         conn = get_db()
         cursor = conn.cursor()
@@ -106,7 +106,7 @@ def sessions_history():
         cursor.execute("SELECT subjects.id, subjects.name," \
         " study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes," \
         " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date, study_sessions.session_full_period FROM study_sessions JOIN subjects" \
-        " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY session_date DESC", (session['user_id'],))
+        " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY study_sessions.session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
     
         cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = ?", (session['user_id'],))

@@ -1,4 +1,5 @@
 let timerInterval = null;
+let subjects_list = [];
 
 function createSessionRow(sessionData) {
     const now = new Date();
@@ -53,9 +54,16 @@ function createSessionRow(sessionData) {
                     <td class="session-date">${nowDateTime}</td>
                 </tr>
                 `;
-    tableBody.insertAdjacentHTML('afterbegin', newRow);
+    if (tableBody) {
+        tableBody.insertAdjacentHTML('afterbegin', newRow);
+    }
+    const sessionSearchInput = document.getElementById('sessionSearch');
+    if (sessionSearchInput && sessionSearchInput.value.trim() !== '') {
+        sessionSearchInput.value = '';
+    }
+    getSubjects();
+    renderSubjectsMenu();
     resetFilter();
-    document.getElementById('sessionSearch').value = '';
     updateSessionTable(1);
 }
 
@@ -69,7 +77,8 @@ async function deleteSession(sessionId, btn) {
             const row = btn.closest('tr');
             if (row) {
                 row.remove();
-                resetFilter();
+                getSubjects();
+                renderSubjectsMenu();
                 updateSessionTable(1);
             }
         }
@@ -128,8 +137,6 @@ function initializePomodoro() {
 }
 
 function updateSessionProgressBar() {
-    const pomodoroBtn = document.getElementById('pomodoro-btn');
-    if (!pomodoroBtn || pomodoroBtn.dataset.active === 'false') return;
     const progressBar = document.querySelector('.progress-bar.active-progress');
     if (!progressBar) return;
     let totalDurationMinutes = parseInt(progressBar.parentElement.getAttribute('data-session-full-period')) || 0;
@@ -142,13 +149,39 @@ function updateSessionProgressBar() {
 function updateDisplay() {
     const timerDisplay = document.getElementById('timer-display');
     const activeSessionTimer = document.getElementById('pomodoro-timer');
-    if (!timerDisplay || !activeSessionTimer) return;
 
     const remainingSeconds = Math.floor(window.totalSecondsLeft || 0);
     const minutes = Math.floor(remainingSeconds / 60);
     const seconds = remainingSeconds % 60;
-    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    activeSessionTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    if (timerDisplay) {
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    if (activeSessionTimer) {
+        activeSessionTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+}
+
+async function addTimeToSession() {
+    const addedMinutes = 5;
+    try {
+        const response = await fetch('/update_session_duration', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ added_time: addedMinutes }),
+        });
+        const data = await response.json();
+        if (data.success) {
+            window.totalSecondsLeft += addedMinutes * 60;
+            const activeProgressBar = document.querySelector('.progress-bar.active-progress');
+            if (activeProgressBar) {
+                activeProgressBar.parentElement.setAttribute('data-session-full-period', parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) + addedMinutes);
+            }
+            updateDisplay();
+            updateSessionProgressBar();
+        }
+    } catch (error) {
+        console.error('Error adding time:', error);
+    }
 }
 
 function setupPomodoroControls() {
@@ -158,65 +191,19 @@ function setupPomodoroControls() {
     const endBtn = document.getElementById('end-btn');
 
     if (addTimeBtn) {
-        addTimeBtn.addEventListener('click', async () => {
-            const addedMinutes = 5;
-            try {
-                const response = await fetch('/update_session_duration', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ added_time: addedMinutes }),
-                });
-                const data = await response.json();
-                if (data.success) {
-                    window.totalSecondsLeft += addedMinutes * 60;
-                    const activeProgressBar = document.querySelector('.progress-bar.active-progress');
-                    if (activeProgressBar) {
-                        activeProgressBar.parentElement.setAttribute('data-session-full-period', parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) + addedMinutes);
-                    }
-                    updateDisplay();
-                    updateSessionProgressBar();
-                }
-            } catch (error) {
-                console.error('Error adding time:', error);
-            }
-        });
+        addTimeBtn.addEventListener('click', addTimeToSession);
     }
 
     if (addBtn) {
-        addBtn.addEventListener('click', async () => {
-            const addedMinutes = 5;
-            try {
-                const response = await fetch('/update_session_duration', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ added_time: addedMinutes }),
-                });
-                const data = await response.json();
-                if (data.success) {
-                    window.totalSecondsLeft += addedMinutes * 60;
-                    const activeProgressBar = document.querySelector('.progress-bar.active-progress');
-                    if (activeProgressBar) {
-                        activeProgressBar.parentElement.setAttribute('data-session-full-period', parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) + addedMinutes);
-                    }
-                    updateDisplay();
-                    updateSessionProgressBar();
-                }
-            } catch (error) {
-                console.error('Error adding time:', error);
-            }
-        });
+        addBtn.addEventListener('click', addTimeToSession);
     }
 
     if (endSessionBtn) {
-        endSessionBtn.addEventListener('click', async () => {
-            await sessionEnded();
-        });
+        endSessionBtn.addEventListener('click', sessionEnded);
     }
 
     if (endBtn) {
-        endBtn.addEventListener('click', async () => {
-            await sessionEnded();
-        });
+        endBtn.addEventListener('click', sessionEnded);
     }
 }
 
@@ -229,6 +216,7 @@ async function sessionEnded() {
     const clearSessionsBtn = document.getElementById('clear-sessions');
     const activeProgressBar = document.querySelector('.progress-bar.active-progress');
     const activeBadge = document.querySelector('.active-badge');
+
     if (timerInterval) clearInterval(timerInterval);
 
     try {
@@ -237,33 +225,27 @@ async function sessionEnded() {
         let elapsedTimeSeconds = currentTime - startTimestamp;
         let elapsedMinutes = Math.floor(elapsedTimeSeconds / 60);
 
-        if (activeProgressBar) {
-            let totalDurationMinutes = parseInt(activeProgressBar.parentElement.getAttribute('data-session-full-period')) || 0;
-            if (elapsedMinutes > totalDurationMinutes) {
-                elapsedMinutes = totalDurationMinutes;
-            }
-            let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
-            activeProgressBar.style.setProperty('width', progressPercentage + '%', 'important');
-        }
-
         const response = await fetch('/session_ended', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ elapsed_minutes: elapsedMinutes }),
         });
+
         const data = await response.json();
         if (data.success) {
             resetFilter();
             updateSessionTable(1);
-            activeBadge.style.setProperty('display', 'none', 'important');
-            activeProgressBar.classList.remove('active-progress');
-            clearSessionsBtn.classList.remove('disabled-btn');
-            deleteSessionBtn.classList.remove('disabled-btn');
-            startSessionBtn.classList.remove('disabled-btn');
+            activeBadge?.style.setProperty('display', 'none', 'important');
+            activeProgressBar?.classList.remove('active-progress');
+            clearSessionsBtn?.classList.remove('disabled-btn');
+            deleteSessionBtn?.classList.remove('disabled-btn');
+            startSessionBtn?.classList.remove('disabled-btn');
+            if (activeSessionCard && inactiveSessionCard) {
+                activeSessionCard.dataset.active = 'false';
+                activeSessionCard.style.setProperty('display', 'none', 'important');
+                inactiveSessionCard.style.setProperty('display', 'flex', 'important');
+            }
             pomodoroBtn.dataset.sessionActive = 'false';
-            activeSessionCard.dataset.active = 'false';
-            activeSessionCard.style.setProperty('display', 'none', 'important');
-            inactiveSessionCard.style.setProperty('display', 'flex', 'important');
             pomodoroBtn.style.display = 'none';
             document.getElementById('session-duration').textContent = elapsedMinutes;
             document.getElementById('session-subject').textContent = data.subject_name;
@@ -287,7 +269,7 @@ function updateSessionTable(page) {
     const sessionRows = document.querySelectorAll('.session-row');
     const sortedRows = document.querySelectorAll('.sorted-row');
     const noMatchRows = document.querySelectorAll('.no-match-row');
-    if (filteredRows.length > 0) {
+    if (filteredRows && filteredRows.length > 0) {
         totalPages.textContent = Math.ceil(filteredRows.length / perPage);
         filteredRows.forEach((row, index) => {
             if (index >= startIndex && index < endIndex) {
@@ -314,8 +296,8 @@ function updateSessionTable(page) {
                 row.style.display = 'none';
             }
         });
-    } else if (noMatchRows.length == sessionRows.length) {
-        totalPages.textContent = 1;
+    } else if (sessionRows.length > 0 && noMatchRows.length == sessionRows.length) {
+        totalPages.textContent = '1';
         sessionRows.forEach(row => {
             row.style.display = 'none';
         });
@@ -347,9 +329,10 @@ function updateSessionTable(page) {
     }
 }
 
-let subjects_list = [];
 function getSubjects() {
     const subjectNames = document.querySelectorAll('.subject-name');
+    if (subjectNames.length === 0) return;
+    subjects_list = [];
     subjectNames.forEach(subject => {
         const subjectName = subject.textContent.trim();
         if (!subjects_list.includes(subjectName)) {
@@ -358,22 +341,42 @@ function getSubjects() {
     });
 }
 
+function renderSubjectsMenu() {
+    const subjectsMenu = document.querySelector('.dropdown-menu.subjects-menu');
+    if (subjectsMenu) {
+        subjectsMenu.innerHTML = '';
+        subjects_list.forEach(subject => {
+            const li = `<li>
+                            <button type="button" class="dropdown-item" data-active="false" onclick="filterBySubject('${subject}', this)">${subject}</button>
+                        </li>`;
+            subjectsMenu.insertAdjacentHTML('beforeend', li);
+        });
+    }
+}
+
 function resetFilter() {
     const sessionRows = document.querySelectorAll('.session-row');
+    if (sessionRows.length > 0) {
+        sessionRows.forEach(row => {
+            row.style.display = 'table-row';
+            row.classList.remove('filtered-row');
+            row.classList.remove('searched-row');
+            row.classList.remove('no-match-row');
+            row.classList.remove('sorted-row');
+        });
+    }
     const dropdownMenu = document.querySelector('.dropdown-menu.subjects-menu');
-    const buttons = dropdownMenu.querySelectorAll('.dropdown-item');
-    sessionRows.forEach(row => {
-        row.style.display = 'table-row';
-        row.classList.remove('filtered-row');
-        row.classList.remove('searched-row');
-        row.classList.remove('no-match-row');
-        row.classList.remove('sorted-row');
-    });
-    buttons.forEach(btn => {
-        btn.setAttribute('data-active', 'false');
-        btn.classList.remove('dropdown-item-selected');
-    });
-    document.getElementById('pageInput').value = 1;
+    if (dropdownMenu) {
+        const buttons = dropdownMenu.querySelectorAll('.dropdown-item');
+        buttons.forEach(btn => {
+            btn.setAttribute('data-active', 'false');
+            btn.classList.remove('dropdown-item-selected');
+        });
+    }
+    const pageInput = document.getElementById('pageInput');
+    if (pageInput) {
+        pageInput.value = '1';
+    }
 }
 
 function filterBySubject(subject, button) {
@@ -404,16 +407,16 @@ function filterBySubject(subject, button) {
     }
 }
 
-document.getElementById('prevBtn').addEventListener('click', function () {
+document.getElementById('prevBtn')?.addEventListener('click', function () {
     const pageInput = document.getElementById('pageInput');
     let currentPage = parseInt(pageInput.value, 10);
     if (currentPage > 1) {
-        pageInput.value = currentPage - 1;
+        pageInput.value = String(currentPage - 1);
     }
-    updateSessionTable(pageInput.value);
+    updateSessionTable(parseInt(pageInput.value), 10);
 });
 
-document.getElementById('nextBtn').addEventListener('click', function () {
+document.getElementById('nextBtn')?.addEventListener('click', function () {
     const pageInput = document.getElementById('pageInput');
     let currentPage = parseInt(pageInput.value, 10);
     const sessionRows = document.querySelectorAll('.session-row');
@@ -434,12 +437,12 @@ document.getElementById('nextBtn').addEventListener('click', function () {
         totalPages = Math.ceil(sessionRows.length / perPage);
     }
     if (currentPage < totalPages) {
-        pageInput.value = currentPage + 1;
+        pageInput.value = String(currentPage + 1);
     }
-    updateSessionTable(pageInput.value);
+    updateSessionTable(parseInt(pageInput.value), 10);
 });
 
-document.getElementById('sessionSearch').addEventListener('input', function () {
+document.getElementById('sessionSearch')?.addEventListener('input', function () {
     resetFilter();
     const searchTerm = this.value.toLowerCase();
     const sessionRows = document.querySelectorAll('.session-row');
@@ -458,7 +461,7 @@ document.getElementById('sessionSearch').addEventListener('input', function () {
     updateSessionTable(1);
 });
 
-document.getElementById('sortBtn').addEventListener('click', function () {
+document.getElementById('sortBtn')?.addEventListener('click', function () {
     showModal('sortTableModal');
 });
 
@@ -481,27 +484,29 @@ function sortSessions(startDate, endDate) {
     const sessionRows = document.querySelectorAll('.session-row');
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    sessionRows.forEach(row => {
-        const sessionDateCell = row.querySelector('.session-date');
-        if (sessionDateCell) {
-            const t = sessionDateCell.textContent.trim();
-            // Format: "09 Sep 2026 14:30"
-            const sessionDate = new Date(
-                parseInt(t.slice(7, 11)),
-                monthNames.indexOf(t.slice(3, 6)),
-                parseInt(t.slice(0, 2)),
-                parseInt(t.slice(12, 14)),
-                parseInt(t.slice(15, 17))
-            );
-            if (sessionDate >= startDate && sessionDate <= endDate) {
-                row.style.display = 'table-row';
-                row.classList.add('sorted-row');
-            } else {
-                row.style.display = 'none';
-                row.classList.add('no-match-row');
+    if (sessionRows) {
+        sessionRows.forEach(row => {
+            const sessionDateCell = row.querySelector('.session-date');
+            if (sessionDateCell) {
+                const t = sessionDateCell.textContent.trim();
+                const sessionDate = new Date(
+                    parseInt(t.slice(7, 11)),
+                    monthNames.indexOf(t.slice(3, 6)),
+                    parseInt(t.slice(0, 2)),
+                    parseInt(t.slice(12, 14)),
+                    parseInt(t.slice(15, 17))
+                );
+                if (sessionDate >= startDate && sessionDate <= endDate) {
+                    row.style.display = 'table-row';
+                    row.classList.add('sorted-row');
+                } else {
+                    row.style.display = 'none';
+                    row.classList.add('no-match-row');
+                }
             }
-        }
-    });
+        });
+    }
+    updateSessionTable(1);
 }
 
 document.getElementById('sortTableForm').addEventListener('submit', function (event) {
@@ -529,7 +534,6 @@ document.getElementById('sortTableForm').addEventListener('submit', function (ev
     );
 
     sortSessions(startDate, endDate);
-    updateSessionTable(1);
     this.reset();
 });
 
@@ -537,6 +541,23 @@ document.getElementById('sessionForm').addEventListener('submit', async function
     event.preventDefault();
     const formData = new FormData(this);
     const formObject = Object.fromEntries(formData.entries());
+
+    const dateObj = new Date();
+    const YYYY = dateObj.getFullYear();
+    const MM = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const DD = String(dateObj.getDate()).padStart(2, '0');
+    const hh = String(dateObj.getHours()).padStart(2, '0');
+    const mm = String(dateObj.getMinutes()).padStart(2, '0');
+    const ss = String(dateObj.getSeconds()).padStart(2, '0');
+    const mss = String(dateObj.getMilliseconds()).padStart(3, '0');
+    const localDeviceString = `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}.${mss}`;
+    formObject.session_date = localDeviceString;
+
+    if (formObject.subject_id && formObject.session_title && formObject.period) {
+        console.log(true);
+        var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('sessionModal'));
+        myModal.hide();
+    }
 
     try {
         const response = await fetch('/start_session', {
@@ -580,10 +601,13 @@ document.getElementById('sessionForm').addEventListener('submit', async function
                 pomodoroBtn.dataset.sessionActive = 'true';
                 pomodoroBtn.dataset.initialDuration = formObject.period;
                 pomodoroBtn.dataset.startTimestamp = (Date.now() / 1000).toString();
-                pomodoroBtn.style.display = 'flex';
+                pomodoroBtn.style.setProperty('display', 'flex', 'important');
                 initializePomodoro();
             }
-            createSessionRow(sessionData);
+            const sessionsDetails = document.querySelector('.sessions-details');
+            if (sessionsDetails) {
+                createSessionRow(sessionData);
+            }
             this.reset();
         }
     }
@@ -595,37 +619,32 @@ document.getElementById('sessionForm').addEventListener('submit', async function
 document.addEventListener('DOMContentLoaded', function () {
     resetFilter();
     updateSessionTable(1);
-    getSubjects();
     sortInputs();
-    const subjectsMenu = document.querySelector('.dropdown-menu.subjects-menu');
-    if (subjectsMenu) {
-        subjectsMenu.innerHTML = '';
-        subjects_list.forEach(subject => {
-            const li = `<li>
-                            <button type="button" class="dropdown-item" data-active="false" onclick="filterBySubject('${subject}', this)">${subject}</button>
-                        </li>`;
-            subjectsMenu.insertAdjacentHTML('beforeend', li);
-        });
-    }
-    let totalDuration = document.getElementById('total-duration').dataset.totalDuration;
-    if (totalDuration) {
-        if (totalDuration < 60) {
-            document.getElementById('total-duration').textContent = totalDuration + ' minutes';
+    getSubjects();
+    renderSubjectsMenu();
+
+    let t = document.getElementById('total-duration');
+    if (t) {
+        let totalStudyTime = parseInt(t.dataset.totalDuration, 10);
+        if (totalStudyTime < 60) {
+            document.getElementById('total-duration').textContent = totalStudyTime + ' minutes';
         } else {
-            const hours = Math.floor(totalDuration / 60);
-            const minutes = totalDuration % 60;
+            const hours = Math.floor(totalStudyTime / 60);
+            const minutes = totalStudyTime % 60;
             document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
         }
     }
 
     const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
-    progressBars.forEach(bar => {
-        let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
-        let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;
-        let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
-        bar.style.setProperty('width', `${progressPercentage}%`);
-        bar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
-    });
+    if (progressBars.length > 0) {
+        progressBars.forEach(bar => {
+            let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
+            let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;
+            let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
+            bar.style.setProperty('width', `${progressPercentage}%`);
+            bar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
+        });
+    }
 
     const activeSessionCard = document.querySelector('.active-session');
     const inactiveSessionCard = document.querySelector('.inactive-session');
@@ -639,8 +658,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const pomodoroBtn = document.getElementById('pomodoro-btn');
-    if (pomodoroBtn && pomodoroBtn.dataset.sessionActive === 'true' && pomodoroBtn.dataset.initialDuration && pomodoroBtn.dataset.startTimestamp) {
-        pomodoroBtn.style.display = 'flex';
+    if (pomodoroBtn && pomodoroBtn.dataset.sessionActive === 'true') {
+        pomodoroBtn.style.setProperty('display', 'flex', 'important');
         initializePomodoro();
     }
     setupPomodoroControls();
