@@ -113,19 +113,3 @@ def dashboard_tasks():
     except Exception as e:
         print(f"Error fetching dashboard tasks: {e}")
         return jsonify({'success': False, 'message': f'Database error: {str(e)}'}), 500
-
-@home_bp.route('/toggle_dashboard_task/<int:task_id>', methods=['POST'])
-def toggle_dashboard_task(task_id):
-    if 'user_id' not in session:
-        return jsonify({'success': False, 'message': 'Authentication required'}), 401
-
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE main_tasks SET is_completed = 1 WHERE id = ? AND user_id = ?", (task_id, session['user_id']))
-        conn.commit()
-        cursor.close()
-        return jsonify({'success': True})
-    except Exception as e:
-        print(f"Error toggling task completion: {e}")
-        return jsonify({'success': False, 'message': 'Database error'}), 500

@@ -312,8 +312,8 @@
                 <form id="moveCopyForm" action="#" method="POST">
                     <div class="modal-body">
                         <select name="new_subject_id" class="form-control form-select" required>
-                            <option value="" disabled selected>Select a subject</option>
-                            {% for sub in all_subjects %}
+                            <option value="" disabled selected hidden>Select a subject</option>
+                            {% for sub in allSubjects %}
                             <option class="subject-option" value="{{ sub[1] }}">{{ sub[0] }}</option>
                             {% endfor %}
                         </select>
@@ -344,13 +344,13 @@
                         </div>
                         <div class="selectors">
                             <select id="subject-select" name="subject_id" class="form-control form-select" required>
-                                <option value="" selected disabled>Select Subject</option>
-                                {% for subject in subjects %}
+                                <option value="" selected disabled hidden>Select Subject</option>
+                                {% for subject in allSubjects %}
                                 <option value="{{ subject[1] }}">{{ subject[0] }}</option>
                                 {% endfor %}
                             </select>
                             <select id="priority" name="priority" class="form-control form-select" required>
-                                <option value="" selected disabled>Select Priority</option>
+                                <option value="" selected disabled hidden>Select Priority</option>
                                 <option value="High">High</option>
                                 <option value="Medium">Medium</option>
                                 <option value="Low">Low</option>
@@ -428,7 +428,7 @@
                             <label for="new_subject_input" class="text-nowrap">Current Subject:</label>
                             <select id="new_subject_input" name="new_subject_id" class="form-control form-select"
                                 required>
-                                {% for subject in subjects %}
+                                {% for subject in allSubjects %}
                                 <option class="subjects-options" value="{{ subject[1] }}">{{ subject[0] }}
                                 </option>
                                 {% endfor %}
@@ -602,7 +602,7 @@
                                     max="45" required value="25" lang="en-US">
                                 <select id='subject_id' name="subject_id" class="form-select" required>
                                     <option value="" selected disabled hidden>Select Subject</option>
-                                    {% for subject in Subjects %}
+                                    {% for subject in allSubjects %}
                                     <option value="{{ subject[1] }}">{{ subject[0] }}</option>
                                     {% endfor %}
                                 </select>

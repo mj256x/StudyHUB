@@ -4,20 +4,41 @@ function loadDashboardStats() {
         .then(data => {
             if (data.success) {
                 document.getElementById('total-subjects').textContent = data.total_subjects;
-                document.getElementById('pending-tasks').textContent = data.pending_tasks;
-                if (data.total_minutes === 0 && data.total_subjects === 0 && data.pending_tasks === 0) {
-                    document.getElementById('new-user-message').style.setProperty('display', 'flex', 'important');
+                if (data.pending_tasks === 0) {
+                    document.getElementById('pending-tasks').style.setProperty('display', 'none', 'important');
+                    document.querySelector('#view-tasks-btn').style.setProperty('display', 'none', 'important');
+                    document.getElementById('no-pending-tasks').style.setProperty('display', 'block', 'important');
+                    document.querySelector('.create-btn').style.setProperty('display', 'flex', 'important');
                 }
-                if (data.total_minutes < 60) {
-                    document.getElementById('study-time').textContent = data.total_minutes;
-                    document.getElementById('min-hour').textContent = 'minutes';
+                document.getElementById('pending-tasks').textContent = data.pending_tasks;
+                if (data.total_minutes === 0) {
+                    document.getElementById('study-time').style.setProperty('display', 'none', 'important');
+                    document.getElementById('view-sessions-btn').style.setProperty('display', 'none', 'important');
+                    document.getElementById('no-sessions').style.setProperty('display', 'block', 'important');
+                    document.getElementById('stNewSession').style.setProperty('display', 'flex', 'important');
+
+                } else if (data.total_minutes < 60) {
+                    document.getElementById('study-time').textContent = data.total_minutes + 'm';
                 } else {
-                    document.getElementById('study-time').textContent = Math.floor(data.total_minutes / 60);
-                    document.getElementById('min-hour').textContent = 'hours';
+                    const hours = Math.floor(data.total_minutes / 60);
+                    const minutes = data.total_minutes % 60;
+                    document.getElementById('study-time').textContent = hours + 'h ' + minutes + 'm';
                 }
             }
-        })
+        }
+        )
         .catch(error => console.error('Error loading stats:', error));
+}
+
+function addNewTask() {
+    document.querySelector('#task_modal_title').textContent = 'Add New Main Task';
+    const form = document.getElementById('addTaskCardForm');
+    const subjectSelectContainer = document.getElementById('subject-select');
+    form.action = '/add_main_tasks';
+    subjectSelectContainer.style.display = 'block';
+    subjectSelectContainer.disabled = false;
+    subjectSelectContainer.required = true;
+    showModal('addTaskModal');
 }
 
 async function markMainTaskDone(taskId) {
@@ -31,6 +52,7 @@ async function markMainTaskDone(taskId) {
         if (data.success) {
             document.querySelectorAll('.task-card').forEach(el => el.remove());
             loadDashboardTasks();
+            loadDashboardStats();
         }
     }
     catch (error) {
@@ -49,6 +71,7 @@ async function deleteMainTask(taskId) {
         if (data.success) {
             document.querySelectorAll('.task-card').forEach(el => el.remove());
             loadDashboardTasks();
+            loadDashboardStats();
         }
     }
     catch (error) {

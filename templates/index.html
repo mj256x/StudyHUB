@@ -98,70 +98,65 @@
     </div>
 </section>
 
-<section class="dashboard-stats">
+<section class="quick-stats">
     <h2><strong style="color: #efeded;">Quick Statistics</strong></h2>
-    <div class="row g-3">
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body text-center dashboard-stat-card">
-                    <div class="mb-3">
-                        <i class="fas fa-book" style="font-size: 2.5rem; color: #7c16e2;"></i>
-                    </div>
-                    <h5 class="card-title text-muted">Active Subjects</h5>
-                    <p class="display-6 fw-bold" id="total-subjects">-</p>
-                    <button class="btn btn-outline-primary my-custom-btn view-btn"
-                        onclick="window.location.href='/subjects'">
-                        View Subjects
-                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
+    <div class="quick-stats-cards">
+        <div class="card">
+            <div class="card-body quick-stat-card">
+                <i class="fas fa-book" style="font-size: 2.5rem; color: #aeccbe;"></i>
+                <h4 class="card-title fw-bold">Active Subjects</h4>
+                <h3 id="total-subjects">-</h3>
+                <button class="view-btn" onclick="window.location.href='/subjects'">
+                    <span>View Subjects</span>
+                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body text-center dashboard-stat-card">
-                    <div class="mb-3">
-                        <i class="fas fa-tasks" style="font-size: 2.5rem; color: #067532;"></i>
-                    </div>
-                    <h5 class="card-title text-muted">Pending Tasks</h5>
-                    <p class="display-6 fw-bold" id="pending-tasks">-</p>
-                    <button class="btn btn-outline-primary my-custom-btn view-btn"
-                        onclick="window.location.href='/tasks'">
-                        View Tasks
-                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
+        <div class="card">
+            <div class="card-body quick-stat-card">
+                <i class="fas fa-tasks" style="font-size: 2.5rem; color: #29c43b;"></i>
+                <h4 class="card-title fw-bold">Pending Tasks</h4>
+                <h3 id="pending-tasks">-</h3>
+                <button id="view-tasks-btn" class="view-btn" onclick="window.location.href='/tasks'">
+                    <span>View Tasks</span>
+                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <h5 id="no-pending-tasks" style="display: none;">You have no pending tasks.</h5>
+                <button class="create-btn" style="display: none;" onclick="addNewTask()">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Create a New Task</span>
+                </button>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body text-center dashboard-stat-card">
-                    <div class="mb-3">
-                        <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #96a80a;"></i>
-                    </div>
-                    <h5 class="card-title text-muted">Total Study Time</h5>
-                    <div class="d-flex flex-row justify-content-center align-items-center">
-                        <p class="display-6 fw-bold" id="study-time">-</p>
-                        <small class="text-muted" id="min-hour">-</small>
-                    </div>
-                    <button class="btn btn-outline-primary my-custom-btn view-btn"
-                        onclick="window.location.href='/sessions_history'">
-                        View Session History
-                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
+        <div class="card">
+            <div class="card-body quick-stat-card">
+                <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #ffc107"></i>
+                <h4 class="card-title fw-bold">Total Study Time</h4>
+                <h3 id="study-time">-</h3>
+                <button id="view-sessions-btn" class="view-btn" onclick="window.location.href='/sessions_history'">
+                    <span>View Session History</span>
+                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <h5 id="no-sessions" style="display: none;">You didn't Start any Study Sessions yet.</h5>
+                <button id="stNewSession" class="create-btn" style="display: none;" onclick="showModal('sessionModal')">
+                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <span>Start a New Session</span>
+                </button>
             </div>
         </div>
     </div>

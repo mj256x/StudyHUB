@@ -1,3 +1,23 @@
+async function uploadProfilePicture(input) {
+    const file = input.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('pfp', file);
+        try {
+            const response = await fetch('/upload_profile_picture', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+        }
+    }
+}
+
 function showModal(modalId, subjectId = null) {
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId));
     myModal.show();
@@ -16,6 +36,11 @@ document.querySelectorAll('.nav-link').forEach(link => {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    flatpickr("#deadline", {
+        dateFormat: "Y-m-d",
+        locale: "en"
+    });
 
     const searchInput = document.getElementById('search-input');
     searchInput.addEventListener('input', () => {
@@ -54,22 +79,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-async function uploadProfilePicture(input) {
-    const file = input.files[0];
-    if (file) {
-        const formData = new FormData();
-        formData.append('pfp', file);
-        try {
-            const response = await fetch('/upload_profile_picture', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (data.success) {
-                location.reload();
-            }
-        } catch (error) {
-            console.error('Error uploading profile picture:', error);
-        }
-    }
-}

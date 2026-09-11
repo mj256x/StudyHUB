@@ -1,10 +1,3 @@
-document.addEventListener('DOMContentLoaded', function () {
-    flatpickr("#deadline", {
-        dateFormat: "Y-m-d",
-        locale: "en"
-    });
-});
-
 function MainTaskCard(isDone, mainTaskId) {
     const mainTaskCard = document.getElementById('main-task-card-' + mainTaskId);
     const mainTaskHeader = document.getElementById('main-task-header-' + mainTaskId);

@@ -344,6 +344,7 @@ ul {
     border: 2px #8b7acf solid !important;
     border-radius: 10px !important;
     width: 100% !important;
+    color: #ececec !important;
     transition: all 0.2s ease;
 }
 
@@ -1025,8 +1026,13 @@ ul {
     border-color: #3ef469 !important;
 }
 
-.dashboard-stats,
+.quick-stats,
 .to-do-tasks {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
     background-color: #5a4d94;
     width: 100%;
     padding: 20px;
@@ -1034,16 +1040,34 @@ ul {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-stat-card {
-    background-color: #5a4d94;
+.quick-stats-cards {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+.quick-stat-card {
+    background-color: #5f558a;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .view-btn {
+    background-color: #6953c2 !important;
     border: 2px solid #7a6fba !important;
     border-radius: 20px !important;
+    padding: 10px 20px !important;
+    color: #ececec !important;
+    transition: all 0.3s linear !important;
+}
+
+.view-btn:hover {
+    background-color: #5e49b5 !important;
+    border-color: #8b7acf !important;
 }
 
 #today-tasks,
