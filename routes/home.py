@@ -18,17 +18,14 @@ def index():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM main_tasks WHERE user_id = ? AND is_completed = 0", (session['user_id'],))
-        tasks = cursor.fetchone()[0]
         cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = ?", (session['user_id'],))
         subjects = cursor.fetchone()[0]
         cursor.close()
     except Exception as e:
         print(f"Error fetching pending tasks: {e}")
-        tasks = 0
         subjects = 0
 
-    new_user = 'true' if tasks == 0 and subjects == 0 else 'false'
+    new_user = 'true' if subjects == 0 else 'false'
 
     return render_template('index.html', new_user=new_user)
 
@@ -43,15 +40,12 @@ def dashboard_stats():
         conn = get_db()
         cursor = conn.cursor()
         
-        # Get total active subjects
         cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = ?", (session['user_id'],))
         total_subjects = cursor.fetchone()[0]
         
-        # Get pending tasks
         cursor.execute("SELECT COUNT(*) FROM main_tasks WHERE user_id = ? AND is_completed = 0", (session['user_id'],))
         pending_tasks = cursor.fetchone()[0]
         
-        # Get total study time
         cursor.execute("SELECT ISNULL(SUM(duration_minutes), 0) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
         total_minutes = cursor.fetchone()[0]
         
@@ -76,35 +70,18 @@ def dashboard_tasks():
         conn = get_db()
         cursor = conn.cursor()
         
-        # Get tasks due today or tomorrow (only incomplete ones)
-        # Priority order: High (1) > Medium (2) > Low (3)
-        cursor.execute("""
-            SELECT 
-                id, title, deadline, subject_id, is_completed, priority
-            FROM main_tasks 
-            WHERE user_id = ? 
-            AND is_completed = 0
-            AND CAST(deadline AS DATE) IN (CAST(GETDATE() AS DATE), CAST(DATEADD(DAY, 1, GETDATE()) AS DATE))
-            ORDER BY 
-                CAST(deadline AS DATE) ASC,
-                CASE 
-                    WHEN priority = 'High' THEN 1
-                    WHEN priority = 'Medium' THEN 2
-                    WHEN priority = 'Low' THEN 3
-                    ELSE 4
-                END ASC
-        """, (session['user_id'],))
+        cursor.execute("SELECT id, title, deadline, is_completed, priority FROM main_tasks" \
+            " WHERE user_id = ? " \
+            " AND CAST(deadline AS DATE) IN (CAST(GETDATE() AS DATE), CAST(DATEADD(DAY, 1, GETDATE()) AS DATE))", (session['user_id'],))
         tasks = cursor.fetchall()
         
-        # Format tasks data
         tasks_data = []
         today = datetime.now().date()
         
         for task in tasks:
-            deadline_str = str(task[2])  # Convert to string to handle different types
+            deadline_str = str(task[2])
             
             try:
-                # Try to parse the deadline - it could be in format "YYYY-MM-DD HH:MM:SS" or just "YYYY-MM-DD"
                 if ' ' in deadline_str:
                     deadline_date = datetime.strptime(deadline_str.split()[0], '%Y-%m-%d').date()
                 else:
@@ -114,16 +91,15 @@ def dashboard_tasks():
                 is_tomorrow = deadline_date == (today + timedelta(days=1))
             except Exception as parse_error:
                 print(f"Error parsing deadline '{deadline_str}': {parse_error}")
-                is_today = False  # Default to tomorrow if parsing fails
+                is_today = False
                 is_tomorrow = False
             
             tasks_data.append({
                 'id': task[0],
                 'title': task[1],
                 'deadline': deadline_str,
-                'subject_id': task[3],
-                'is_completed': task[4],
-                'priority': task[5],
+                'is_completed': task[3],
+                'priority': task[4],
                 'is_today': is_today,
                 'is_tomorrow': is_tomorrow
             })

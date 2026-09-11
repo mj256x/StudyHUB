@@ -130,10 +130,19 @@ def delete_subject(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
+        cursor.execute("SELECT id FROM main_tasks WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        main_tasks = cursor.fetchall()
+        for task in main_tasks:
+            cursor.execute("DELETE FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (task[0], session['user_id']))
+
+        cursor.execute("DELETE FROM main_tasks WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM study_sessions WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         for file in files:
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
+
+        cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         cursor.execute("DELETE FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()

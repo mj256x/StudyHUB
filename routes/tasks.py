@@ -195,7 +195,7 @@ def change_main_task_subject(main_task_id):
 @tasks_bp.route('/delete_main_task/<int:main_task_id>', methods=['POST'])
 def delete_main_task(main_task_id):
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -203,9 +203,10 @@ def delete_main_task(main_task_id):
         cursor.execute("DELETE FROM main_tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        return jsonify({'success': True, 'message': 'Main task deleted successfully.'}), 200
     except Exception as e:
         print(f"Error deleting main task: {e}")
-    return redirect(url_for('tasks.tasks'))
+        return jsonify({'success': False, 'message': 'Error occurred while deleting main task. Please try again.'}), 500
 
 @tasks_bp.route('/delete_sub_task/<int:sub_task_id>', methods=['POST'])
 def delete_sub_task(sub_task_id):

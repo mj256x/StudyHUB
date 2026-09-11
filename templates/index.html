@@ -4,59 +4,102 @@
 
 {% block main %}
 {% if new_user == 'true' %}
-<div id="new-user-message">
-    <div class="hero-card">
-        <h1 class="hero-title">
-            Every big achievement starts with a single subject.
-        </h1>
-        <p class="hero-subtitle">
-            Organize your lectures, track tasks, and log study sessions seamlessly.
-            Create your first subject folder to unlock your workspace.
-        </p>
-        <button class="cta-btn" onclick="showAddSubjectModal()">
-            Create Your First Subject
-        </button>
-    </div>
+<div class="hero-card" id="new-user-message">
+    <h1 class="hero-title">
+        Your Learning Journey Starts Here.
+    </h1>
+    <p class="hero-subtitle">
+        Organize your lectures, track tasks, and log study sessions seamlessly.
+        Create your first subject folder to unlock your workspace.
+    </p>
+    <button class="create-btn" onclick="showModal('addSubjectModal')">
+        <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+        <span>Create Your First Subject</span>
+    </button>
 </div>
 {% elif new_user == 'false' %}
 <section class="to-do-tasks">
-    <h2><strong>Today's Agenda</strong></h2>
-    <div class="card border-0">
-        <div class="card-body" id="agenda-section">
-            <div id="agenda-container" style="display: block;">
-                <div id="today-tasks" style="display: none;">
-                    <h3>
-                        Today
-                    </h3>
-                    <div id="today-tasks-list" class="tasks-cards">
-                        <div id="no-tasks-message-1" style="display: none;">
-                            <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
-                            <p class="mt-2">No tasks scheduled!</p>
+    <h2><strong style="color: #efeded;">Today's Agenda</strong></h2>
+    <div class="card">
+        <div class="agenda-card-body" id="agenda-section">
+            <div id="today-tasks">
+                <h3>Today</h3>
+                <hr class="agenda-separator">
+                <div class="accordion" id="accordionToday">
+                    <div class="accordion-item today-pending-tasks">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTodayPending" aria-expanded="true"
+                                aria-controls="collapseTodayPending">
+                                In Progress
+                            </button>
+                        </h2>
+                        <div id="collapseTodayPending" class="accordion-collapse collapse show">
+                            <div class="accordion-body today-pending-tasks-body">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item today-completed-tasks">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTodayCompleted" aria-expanded="true"
+                                aria-controls="collapseTodayCompleted">
+                                Completed
+                            </button>
+                        </h2>
+                        <div id="collapseTodayCompleted" class="accordion-collapse collapse">
+                            <div class="accordion-body today-completed-tasks-body">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="tomorrow-tasks" style="display: none;">
-                    <h3>
-                        Tomorrow
-                    </h3>
-                    <div id="tomorrow-tasks-list" class="tasks-cards">
-                        <div id="no-tasks-message-2" style="display: none;">
-                            <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
-                            <p class="mt-2">No tasks scheduled!</p>
+            </div>
+
+            <div id="tomorrow-tasks">
+                <h3>Tomorrow</h3>
+                <hr class="agenda-separator">
+                <div class="accordion" id="accordionTomorrow">
+                    <div class="accordion-item tomorrow-pending-tasks">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTomorrowPending" aria-expanded="true"
+                                aria-controls="collapseTomorrowPending">
+                                In Progress
+                            </button>
+                        </h2>
+                        <div id="collapseTomorrowPending" class="accordion-collapse collapse show">
+                            <div class="accordion-body tomorrow-pending-tasks-body">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item tomorrow-completed-tasks">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTomorrowCompleted" aria-expanded="true"
+                                aria-controls="collapseTomorrowCompleted">
+                                Completed
+                            </button>
+                        </h2>
+                        <div id="collapseTomorrowCompleted" class="accordion-collapse collapse">
+                            <div class="accordion-body tomorrow-completed-tasks-body">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div id="no-tasks-message" class="msg" style="display: none;">
-                    <i class="fas fa-check-circle" style="font-size: 2rem; opacity: 0.5; color: #067532;"></i>
-                    <p class="mt-2">No tasks scheduled!</p>
-                </div>
+            </div>
+            <div id="no-tasks-message" class="msg">
+                <i class="fas fa-check-circle" style="font-size: 2rem; color: #359b54;"></i>
+                <span class="fw-bold">No tasks scheduled!</span>
             </div>
         </div>
     </div>
 </section>
 
 <section class="dashboard-stats">
-    <h2><strong>Quick Statistics</strong></h2>
+    <h2><strong style="color: #efeded;">Quick Statistics</strong></h2>
     <div class="row g-3">
         <div class="col-12 col-md-4">
             <div class="card shadow-sm border-0 h-100">
@@ -123,20 +166,6 @@
         </div>
     </div>
 </section>
-
-<template id="task-item-template">
-    <div class="task-item">
-        <h4 class="task-title"></h4>
-        <span class="badge task-badge"></span>
-        <button class="btn btn-outline-primary my-custom-btn view-btn mark-done-btn" type="submit"><svg width="22px"
-                height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572M22 4L12 14.01L9 11.01"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg> Mark
-            as Done</button>
-    </div>
-</template>
 {% endif %}
 {% endblock %}
 
@@ -144,16 +173,12 @@
 <hr class="footer-separator">
 <div class="footer-content">
     <div class="rights">
-        <a href="{{ url_for('home.index') }}" class="navbar-brand">
-            <img id="logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="StudyHUB">
-            <span class="fw-bold">StudyHUB</span>
-        </a>
+        <span class="fw-bold">StudyHUB</span>
         <a href="https://cs50.harvard.edu/x/project/" target="_blank" class="footer-link">
-            <p>&copy; CS50 Final Project 2026</p>
+            <span>&copy; CS50 Final Project 2026</span>
         </a>
     </div>
     <div class="contact-links">
-        <p class="contact-text">Feel free to contact me:</p>
         <a href="mailto:mohammed256jamal@gmail.com" target="_blank" class="contact-link">
             <i class="fa fa-envelope" style="font-size:25px"></i>
         </a>

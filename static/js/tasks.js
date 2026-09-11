@@ -156,6 +156,23 @@ async function deleteSubTask(subTaskId, mainTaskId) {
     }
 }
 
+async function deleteMainTask(mainTaskId) {
+    try {
+        const response = await fetch('/delete_main_task/' + mainTaskId, {
+            method: 'POST',
+        });
+        const data = await response.json();
+        if (data.success) {
+            const card = document.getElementById('main-task-card-' + mainTaskId);
+            if (card) {
+                card.remove();
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting main task:', error);
+    }
+}
+
 function openTaskCardModal(type, MainTaskId = null) {
     const form = document.getElementById('addTaskCardForm');
     const subjectSelectContainer = document.getElementById('subject-select');
