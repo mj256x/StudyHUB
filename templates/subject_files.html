@@ -147,8 +147,8 @@
     </button>
 </div>
 {% endif %}
-<form id="uploadForm" action="{{ url_for('subjects.upload_file', subject_id=subject_id) }}" method="POST"
-    enctype="multipart/form-data">
+<form id="uploadForm" style="display: none;" action="{{ url_for('subjects.upload_file', subject_id=subject_id) }}"
+    method="POST" enctype="multipart/form-data">
     <input type="file" id="fileInput" name="file" style="display: none;"
         onchange="document.getElementById('uploadForm').submit()">
 </form>
