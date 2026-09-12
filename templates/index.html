@@ -23,77 +23,75 @@
 {% elif new_user == 'false' %}
 <section class="to-do-tasks">
     <h2><strong style="color: #efeded;">Today's Agenda</strong></h2>
-    <div class="card">
-        <div class="agenda-card-body" id="agenda-section">
-            <div id="today-tasks">
-                <h3>Today</h3>
-                <hr class="agenda-separator">
-                <div class="accordion" id="accordionToday">
-                    <div class="accordion-item today-pending-tasks">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTodayPending" aria-expanded="true"
-                                aria-controls="collapseTodayPending">
-                                In Progress
-                            </button>
-                        </h2>
-                        <div id="collapseTodayPending" class="accordion-collapse collapse show">
-                            <div class="accordion-body today-pending-tasks-body">
-                            </div>
+    <div class="agenda-card-body" id="agenda-section">
+        <div id="today-tasks">
+            <h3>Today</h3>
+            <hr class="agenda-separator">
+            <div class="accordion" id="accordionToday">
+                <div class="accordion-item today-pending-tasks">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTodayPending" aria-expanded="true"
+                            aria-controls="collapseTodayPending">
+                            In Progress
+                        </button>
+                    </h2>
+                    <div id="collapseTodayPending" class="accordion-collapse collapse show">
+                        <div class="accordion-body today-pending-tasks-body">
                         </div>
                     </div>
-                    <div class="accordion-item today-completed-tasks">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTodayCompleted" aria-expanded="true"
-                                aria-controls="collapseTodayCompleted">
-                                Completed
-                            </button>
-                        </h2>
-                        <div id="collapseTodayCompleted" class="accordion-collapse collapse">
-                            <div class="accordion-body today-completed-tasks-body">
-                            </div>
+                </div>
+                <div class="accordion-item today-completed-tasks">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTodayCompleted" aria-expanded="true"
+                            aria-controls="collapseTodayCompleted">
+                            Completed
+                        </button>
+                    </h2>
+                    <div id="collapseTodayCompleted" class="accordion-collapse collapse">
+                        <div class="accordion-body today-completed-tasks-body">
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="tomorrow-tasks">
-                <h3>Tomorrow</h3>
-                <hr class="agenda-separator">
-                <div class="accordion" id="accordionTomorrow">
-                    <div class="accordion-item tomorrow-pending-tasks">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTomorrowPending" aria-expanded="true"
-                                aria-controls="collapseTomorrowPending">
-                                In Progress
-                            </button>
-                        </h2>
-                        <div id="collapseTomorrowPending" class="accordion-collapse collapse show">
-                            <div class="accordion-body tomorrow-pending-tasks-body">
-                            </div>
+        <div id="tomorrow-tasks">
+            <h3>Tomorrow</h3>
+            <hr class="agenda-separator">
+            <div class="accordion" id="accordionTomorrow">
+                <div class="accordion-item tomorrow-pending-tasks">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTomorrowPending" aria-expanded="true"
+                            aria-controls="collapseTomorrowPending">
+                            In Progress
+                        </button>
+                    </h2>
+                    <div id="collapseTomorrowPending" class="accordion-collapse collapse show">
+                        <div class="accordion-body tomorrow-pending-tasks-body">
                         </div>
                     </div>
-                    <div class="accordion-item tomorrow-completed-tasks">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseTomorrowCompleted" aria-expanded="true"
-                                aria-controls="collapseTomorrowCompleted">
-                                Completed
-                            </button>
-                        </h2>
-                        <div id="collapseTomorrowCompleted" class="accordion-collapse collapse">
-                            <div class="accordion-body tomorrow-completed-tasks-body">
-                            </div>
+                </div>
+                <div class="accordion-item tomorrow-completed-tasks">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseTomorrowCompleted" aria-expanded="true"
+                            aria-controls="collapseTomorrowCompleted">
+                            Completed
+                        </button>
+                    </h2>
+                    <div id="collapseTomorrowCompleted" class="accordion-collapse collapse">
+                        <div class="accordion-body tomorrow-completed-tasks-body">
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="no-tasks-message" class="msg">
-                <i class="fas fa-check-circle" style="font-size: 2rem; color: #359b54;"></i>
-                <span class="fw-bold">No tasks scheduled!</span>
-            </div>
+        </div>
+        <div id="no-tasks-message" class="msg">
+            <i class="fas fa-check-circle" style="font-size: 2rem; color: #359b54;"></i>
+            <span class="fw-bold">No tasks scheduled!</span>
         </div>
     </div>
 </section>
