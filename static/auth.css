@@ -1,9 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* ===== Core palette (kept in sync with style.css) ===== */
+    --c-void: #0D1B2A;
+    --c-deep: #1B3A6B;
+    --c-plum: #3D5A80;
+    --c-mauve: #6B8CAE;
+    --c-blush: #A8C5E0;
+    --c-cream: #CDE1F2;
+    --c-frost: #E8F1FA;
+
+    --c-bg-page: var(--c-void);
+    --c-accent: var(--c-mauve);
+    --c-accent-dark: color-mix(in srgb, var(--c-mauve), black 25%);
+    --c-highlight: var(--c-frost);
+
+    --c-text: var(--c-cream);
+    --c-text-on-light: var(--c-void);
+    --c-text-muted-on-light: color-mix(in srgb, var(--c-void), var(--c-frost) 45%);
+
+    --c-success: #4E9B6E;
+    --c-danger: #C23B5C;
+
+    --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --font-body: 'Manrope', 'Segoe UI', -apple-system, sans-serif;
+}
+
 body {
-    background: linear-gradient(135deg, #5046e5 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, var(--c-bg-page) 0%, var(--c-plum) 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: var(--font-body);
 }
 
 .auth-container {
@@ -18,8 +47,8 @@ body {
 .get-started-card {
     width: 80%;
     height: auto;
-    background: linear-gradient(180deg, #5d51ff 0%, #4338ca 100%);
-    color: white;
+    background: linear-gradient(180deg, var(--c-mauve) 0%, var(--c-deep) 100%);
+    color: var(--c-text);
     padding: 3rem;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
@@ -30,12 +59,18 @@ body {
     gap: 3rem;
 }
 
+.get-started-card h1,
+.get-started-card h2,
+.get-started-card h3 {
+    font-family: var(--font-display);
+}
+
 .auth-btn {
     display: inline-block;
     padding: 0.5rem 1rem;
     background-color: transparent;
-    color: white;
-    border: 2px solid white;
+    color: var(--c-text);
+    border: 2px solid var(--c-text);
     border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
@@ -43,8 +78,8 @@ body {
 }
 
 .auth-btn:hover {
-    background-color: white;
-    color: #5d51ff;
+    background-color: var(--c-text);
+    color: var(--c-mauve);
 }
 
 .bi.bi-person-fill {
@@ -52,8 +87,8 @@ body {
     width: 7rem;
     height: 7rem;
     border-radius: 50%;
-    background-color: #5d51ff;
-    color: white;
+    background-color: var(--c-plum);
+    color: var(--c-text);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -62,7 +97,7 @@ body {
 .inputs-card {
     width: 100%;
     height: auto;
-    background: white;
+    background: var(--c-highlight);
     padding: 3rem;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -84,14 +119,16 @@ body {
 .custom-input {
     width: 100%;
     border: none;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid color-mix(in srgb, var(--c-mauve), var(--c-highlight) 55%);
     border-radius: 0;
     padding-left: 2.5rem;
+    color: var(--c-text-on-light);
+    font-family: var(--font-body);
 }
 
 .custom-input:focus {
     box-shadow: none;
-    border-color: #5d51ff;
+    border-color: var(--c-mauve);
 }
 
 .input-group-custom {
@@ -104,7 +141,7 @@ body {
     left: 5px;
     top: 50%;
     transform: translateY(-50%);
-    color: #a0aec0;
+    color: var(--c-text-muted-on-light);
 }
 
 .input-group-custom .opened-eye,
@@ -115,7 +152,7 @@ body {
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
-    color: #a0aec0;
+    color: var(--c-text-muted-on-light);
     cursor: pointer;
 }
 
@@ -129,20 +166,20 @@ body {
 }
 
 .input-group-custom svg.checked {
-    color: green;
-    fill: #ccffcc;
+    color: var(--c-success);
+    fill: color-mix(in srgb, var(--c-success), var(--c-highlight) 75%);
 }
 
 .input-group-custom svg.unchecked {
-    color: red;
-    fill: #ffcccc;
+    color: var(--c-danger);
+    fill: color-mix(in srgb, var(--c-danger), var(--c-highlight) 75%);
 }
 
 .submit-btn {
     width: 100%;
     padding: 0.75rem;
-    background-color: #5d51ff;
-    color: white;
+    background-color: var(--c-mauve);
+    color: var(--c-text);
     border: none;
     border-radius: 25px;
     font-weight: bold;
@@ -151,11 +188,11 @@ body {
 }
 
 .submit-btn:hover {
-    background-color: #4338ca;
+    background-color: var(--c-accent-dark);
 }
 
 .input-error {
-    color: red;
+    color: var(--c-danger);
     font-size: 0.9rem;
     margin-top: -0.5rem;
     margin-bottom: 0.5rem;
@@ -174,7 +211,7 @@ body {
 .password-check span {
     width: 100%;
     height: 0.25rem;
-    color: #abb0b7;
+    color: var(--c-text-muted-on-light);
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -184,5 +221,5 @@ body {
 }
 
 .password-check span.active {
-    color: green;
+    color: var(--c-success);
 }
