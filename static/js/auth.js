@@ -8,6 +8,27 @@ const confirmPasswordError = document.getElementById('confirmPasswordError');
 const passwordCheckTerms = document.querySelectorAll('.password-check span');
 const openedEyeCp = document.querySelector('.opened-eye-cp');
 const closedEyeCp = document.querySelector('.closed-eye-cp');
+const alertIcons = {
+    success: '<svg class="bi flex-shrink-0 me-2" width="24px" height="24px" role="img" aria-label="Success:"><use xlink:href="#success-icon" /></svg>',
+    warning: '<svg class="bi flex-shrink-0 me-2" width="24px" height="24px" role="img" aria-label="Warning:"><use xlink:href="#warning-icon" /></svg>',
+    danger: '<svg class="bi flex-shrink-0 me-2" width="24px" height="24px" role="img" aria-label="Danger:"><use xlink:href="#warning-icon" /></svg>',
+};
+
+function showAlert(type, message) {
+    const alert = document.querySelector('#alert');
+    if (alert) {
+        alert.className = 'alert';
+        void alert.offsetWidth;
+        alert.querySelector('.alert-icon').innerHTML = alertIcons[type];
+        alert.querySelector('.alert-message').textContent = message;
+        alert.classList.add(`alert-${type}`);
+        alert.classList.add('show');
+        setTimeout(() => {
+            alert.classList.remove('show');
+            alert.classList.add('dismiss');
+        }, 3000);
+    }
+}
 
 function showError(inputElement, valid) {
     const uncheckedIcon = inputElement.parentElement?.querySelector('.unchecked');

@@ -51,15 +51,14 @@
                             </button>
                         </li>
                         <li>
-                            <a href="{{ file[1] }}" download>
-                                <button class="dropdown-item">
-                                    <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M21 21H3M18 11L12 17M12 17L6 11M12 17V3" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Download File</span>
-                                </button>
+                            <a class="dropdown-item" href="{{ url_for('subjects.download_file', file_id=file[2]) }}"
+                                target="download-frame">
+                                <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 21H3M18 11L12 17M12 17L6 11M12 17V3" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span>Download File</span>
                             </a>
                         </li>
                         <li>
@@ -88,7 +87,7 @@
                         </li>
                         <li>
                             <form action="{{ url_for('subjects.delete_file', file_id=file[2]) }}" method="POST">
-                                <button class="dropdown-item" type="submit">
+                                <button class="dropdown-item delete-subject-main-task-btn" type="submit">
                                     <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -118,7 +117,7 @@
                 <span>Upload File</span>
             </button>
         </div>
-        <button type="button" class="show-completed-btn" data-active="false"
+        <button type="button" class="show-completed-btn" id="show-done-btn" data-active="false"
             onclick="showCompletedFiles(this, '{{ subject_id }}')">
             <svg id="done-svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
@@ -152,6 +151,7 @@
     <input type="file" id="fileInput" name="file" style="display: none;"
         onchange="document.getElementById('uploadForm').submit()">
 </form>
+<iframe name="download-frame" hidden></iframe>
 {% endblock %}
 
 {% block scripts %}

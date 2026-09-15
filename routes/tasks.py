@@ -59,6 +59,7 @@ def add_main_tasks():
         cursor.close()
     except Exception as e:
         print(f"Error adding task: {e}")
+    flash('Main task added successfully!', 'success')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/add_sub_tasks/<int:main_task_id>', methods=['POST'])
@@ -76,8 +77,10 @@ def add_sub_tasks(main_task_id):
         cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Sub-task added successfully!', 'success')
     except Exception as e:
         print(f"Error adding sub-task: {e}")
+        flash('Error adding sub-task. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/rename_sub_task/<int:sub_task_id>', methods=['POST'])
@@ -86,14 +89,19 @@ def rename_sub_task(sub_task_id):
         return redirect(url_for('auth.login'))
     
     new_title = request.form['new_sub_task_name']
+    if not new_title.strip():
+        flash('Sub-task name cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE sub_tasks SET title = ? WHERE id = ? AND user_id = ?", (new_title, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Sub-task renamed successfully!', 'success')
     except Exception as e:
         print(f"Error renaming sub-task: {e}")
+        flash('Error renaming sub-task. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/rename_main_task/<int:main_task_id>', methods=['POST'])
@@ -102,14 +110,19 @@ def rename_main_task(main_task_id):
         return redirect(url_for('auth.login'))
     
     new_title = request.form['new_main_task_name']
+    if not new_title.strip():
+        flash('Main task name cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE main_tasks SET title = ? WHERE id = ? AND user_id = ?", (new_title, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Main task renamed successfully!', 'success')
     except Exception as e:
         print(f"Error renaming main task: {e}")
+        flash('Error renaming main task. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/change_sub_task_deadline/<int:sub_task_id>', methods=['POST'])
@@ -118,14 +131,19 @@ def change_sub_task_deadline(sub_task_id):
         return redirect(url_for('auth.login'))
     
     new_deadline = request.form['new_deadline']
+    if not new_deadline.strip():
+        flash('Deadline cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE sub_tasks SET deadline = ? WHERE id = ? AND user_id = ?", (new_deadline, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Sub-task deadline updated successfully!', 'success')
     except Exception as e:
         print(f"Error changing deadline: {e}")
+        flash('Error changing sub-task deadline. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/change_main_task_deadline/<int:main_task_id>', methods=['POST'])
@@ -134,14 +152,19 @@ def change_main_task_deadline(main_task_id):
         return redirect(url_for('auth.login'))
 
     new_deadline = request.form['new_deadline']
+    if not new_deadline.strip():
+        flash('Deadline cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE main_tasks SET deadline = ? WHERE id = ? AND user_id = ?", (new_deadline, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Main task deadline updated successfully!', 'success')
     except Exception as e:
         print(f"Error changing main task deadline: {e}")
+        flash('Error changing main task deadline. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/change_sub_task_priority/<int:sub_task_id>', methods=['POST'])
@@ -150,14 +173,19 @@ def change_sub_task_priority(sub_task_id):
         return redirect(url_for('auth.login'))
     
     new_priority = request.form['new_priority']
+    if not new_priority.strip():
+        flash('Priority cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE sub_tasks SET priority = ? WHERE id = ? AND user_id = ?", (new_priority, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Sub-task priority updated successfully!', 'success')
     except Exception as e:
         print(f"Error changing sub-task priority: {e}")
+        flash('Error changing sub-task priority. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/change_main_task_priority/<int:main_task_id>', methods=['POST'])
@@ -166,14 +194,19 @@ def change_main_task_priority(main_task_id):
         return redirect(url_for('auth.login'))
     
     new_priority = request.form['new_priority']
+    if not new_priority.strip():
+        flash('Priority cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE main_tasks SET priority = ? WHERE id = ? AND user_id = ?", (new_priority, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Main task priority updated successfully!', 'success')
     except Exception as e:
         print(f"Error changing main task priority: {e}")
+        flash('Error changing main task priority. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/change_main_task_subject/<int:main_task_id>', methods=['POST'])
@@ -182,14 +215,19 @@ def change_main_task_subject(main_task_id):
         return redirect(url_for('auth.login'))
 
     new_subject_id = request.form['new_subject_id']
+    if not new_subject_id.strip():
+        flash('Subject cannot be empty.', 'danger')
+        return redirect(url_for('tasks.tasks'))
     try:
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute("UPDATE main_tasks SET subject_id = ? WHERE id = ? AND user_id = ?", (new_subject_id, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Main task subject updated successfully!', 'success')
     except Exception as e:
         print(f"Error changing main task subject: {e}")
+        flash('Error changing main task subject. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/delete_main_task/<int:main_task_id>', methods=['POST'])
@@ -313,8 +351,10 @@ def delete_all_tasks():
         cursor.execute("DELETE FROM main_tasks WHERE user_id = ?", (session['user_id'],))
         conn.commit()
         cursor.close()
+        flash('All tasks deleted successfully!', 'success')
     except Exception as e:
         print(f"Error deleting all tasks: {e}")
+        flash('Error deleting all tasks. Please try again.', 'danger')
     return redirect(url_for('tasks.tasks'))
 
 @tasks_bp.route('/get_done_tasks')

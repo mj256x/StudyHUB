@@ -82,6 +82,7 @@ async function toggleSubTaskDone(subTaskId, mainTaskId) {
                 subTaskText.classList.add('done-text');
                 subTaskText.style.textDecoration = 'line-through';
                 subTaskDotsBtn.classList.add('done-dots-btn');
+                showAlert('success', 'Sub-task marked as done!');
             } else {
                 card.classList.remove('done-card');
                 sub_doneSvg.classList.remove('done-text');
@@ -89,16 +90,24 @@ async function toggleSubTaskDone(subTaskId, mainTaskId) {
                 subTaskText.classList.remove('done-text');
                 subTaskText.style.textDecoration = 'none';
                 subTaskDotsBtn.classList.remove('done-dots-btn');
+                showAlert('info', 'Sub-task marked as not done!');
             }
             if (data.main_task_status) {
                 MainTaskCard(true, mainTaskId);
+                setTimeout(() => {
+                    showAlert('info', 'All sub-tasks are done! Main task marked as done.');
+                }, 4000);
             }
             else {
                 MainTaskCard(false, mainTaskId);
+                setTimeout(() => {
+                    showAlert('info', 'Main task marked as UnDone.');
+                }, 4000);
             }
         }
     } catch (error) {
         console.error('Error toggling sub-task status:', error);
+        showAlert('danger', 'An error occurred while toggling the sub-task status.');
     }
 }
 
@@ -114,10 +123,12 @@ async function toggleMainTaskDone(mainTaskId) {
             if (data.new_status) {
                 MainTaskCard(true, mainTaskId);
                 SubTasksCards(true, mainTaskId);
+                showAlert('success', 'Main task marked as done!');
             }
             else {
                 MainTaskCard(false, mainTaskId);
                 SubTasksCards(false, mainTaskId);
+                showAlert('info', 'Main task marked as not done!');
             }
         }
 
@@ -136,16 +147,24 @@ async function deleteSubTask(subTaskId, mainTaskId) {
             const card = document.getElementById('sub-task-card-' + subTaskId);
             if (card) {
                 card.remove();
+                showAlert('success', 'Sub-task deleted successfully!');
             }
             if (data.main_task_status) {
                 MainTaskCard(true, mainTaskId);
+                setTimeout(() => {
+                    showAlert('info', 'All sub-tasks are done! Main task marked as done.');
+                }, 4000);
             }
             else {
                 MainTaskCard(false, mainTaskId);
+                setTimeout(() => {
+                    showAlert('info', 'Main task marked as UnDone.');
+                }, 4000);
             }
         }
     } catch (error) {
         console.error('Error deleting sub-task:', error);
+        showAlert('danger', 'An error occurred while deleting the sub-task.');
     }
 }
 
@@ -156,13 +175,18 @@ async function deleteMainTask(mainTaskId) {
         });
         const data = await response.json();
         if (data.success) {
-            const card = document.getElementById('main-task-card-' + mainTaskId);
+            const card = document.querySelector(`[data-task-id="${mainTaskId}"]`);
             if (card) {
                 card.remove();
+                showAlert('success', 'Main task deleted successfully!');
+                if (document.querySelectorAll('.hidden-card').length === document.querySelectorAll('[data-task-id]').length) {
+                    location.reload();
+                }
             }
         }
     } catch (error) {
         console.error('Error deleting main task:', error);
+        showAlert('danger', 'An error occurred while deleting the main task.');
     }
 }
 
@@ -338,11 +362,16 @@ async function showDoneTasks(btn) {
                 doneTasksText.classList.add('done-text');
                 doneTasksText.innerText = "Show All Tasks";
             }
+            if (data.success && !Object.values(data.tasks).some(Boolean)) {
+                showAlert('info', 'No done tasks to show.');
+                noResultsMsg('No done tasks found.', `showDoneTasks(document.getElementById('done-tasks-btn'))`, 'Show All Tasks');
+            }
         } catch (error) {
             console.error('Error fetching done tasks:', error);
         }
     }
     else {
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
         const tasksCards = document.querySelectorAll('[data-task-id]');
         tasksCards.forEach(card => {
             card.style.display = 'block';
@@ -387,6 +416,13 @@ function filterBySubject(subjectId, btn) {
     }
 }
 
+function dismissNoResultsMessage() {
+    document.querySelectorAll('.hidden-card').forEach(card => {
+        card.classList.remove('hidden-card');
+    });
+    document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
+}
+
 function filterByPriority(type, priority, btn, mainTaskId = null) {
     let currentActive = btn.getAttribute('data-active') === 'true';
     let newActive = !currentActive;
@@ -401,6 +437,7 @@ function filterByPriority(type, priority, btn, mainTaskId = null) {
 
     if (newActive) {
         if (type === 'main') {
+            dismissNoResultsMessage();
             const mainCards = document.querySelectorAll('[data-task-priority]');
             mainCards.forEach(card => {
                 const cardPriority = card.getAttribute('data-task-priority');
@@ -408,30 +445,61 @@ function filterByPriority(type, priority, btn, mainTaskId = null) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
+                    card.classList.add('hidden-card');
                 }
             });
+            if (document.querySelectorAll('.hidden-card').length === mainCards.length) {
+                showAlert('info', 'No tasks found with the selected priority.');
+                noResultsMsg('No tasks found with the selected priority.', `filterByPriority('main', '${priority}', document.getElementById('${btn.id}'))`, 'Show All Tasks');
+            }
         } else if (type === 'sub') {
+            document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
             const subCards = document.querySelectorAll(`[data-sub-task-main-task-id="${mainTaskId}"]`);
             subCards.forEach(card => {
+                card.classList.remove('hidden-sub-task-card');
                 const cardPriority = card.getAttribute('data-sub-task-priority');
                 if (cardPriority && cardPriority.toLowerCase() === priority) {
                     card.style.setProperty('display', 'flex', 'important');
                 } else {
                     card.style.setProperty('display', 'none', 'important');
+                    card.classList.add('hidden-sub-task-card');
                 }
             });
+            const hiddenSubCards = Array.from(subCards).filter(card => card.classList.contains('hidden-sub-task-card'));
+            if (hiddenSubCards.length === subCards.length) {
+                showAlert('info', 'No sub-tasks found with the selected priority.');
+                const cardBody = document.getElementById('sub-tasks-container-' + mainTaskId);
+                if (cardBody) {
+                    const noResultsMessage = `
+                    <div class="no-sub-tasks-message" id="no-sub-tasks-message-${mainTaskId}">
+                        <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+                            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 10.5V7M12 14H12.01M7 18V20.3355C7 20.8684 7 21.1348 7.10923 21.2716C7.20422 21.3906 7.34827 21.4599 7.50054 21.4597C7.67563 21.4595 7.88367 21.2931 8.29976 20.9602L10.6852 19.0518C11.1725 18.662 11.4162 18.4671 11.6875 18.3285C11.9282 18.2055 12.1844 18.1156 12.4492 18.0613C12.7477 18 13.0597 18 13.6837 18H16.2C17.8802 18 18.7202 18 19.362 17.673C19.9265 17.3854 20.3854 16.9265 20.673 16.362C21 15.7202 21 14.8802 21 13.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V14C3 14.93 3 15.395 3.10222 15.7765C3.37962 16.8117 4.18827 17.6204 5.22354 17.8978C5.60504 18 6.07003 18 7 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>No sub-tasks found with the selected priority.</p>
+                        </div>
+                        <button class="create-btn" onclick="filterByPriority('sub', '${priority}', document.getElementById('${btn.id}'), '${mainTaskId}')">Show All Sub-Tasks</button>
+                    </div>
+                    `;
+                    document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
+                    cardBody.insertAdjacentHTML('afterbegin', noResultsMessage);
+                }
+            }
         }
         btn.setAttribute('data-active', 'true');
         btn.classList.add('dropdown-item-selected');
     } else {
         if (type === 'main') {
+            dismissNoResultsMessage();
             const mainCards = document.querySelectorAll('[data-task-priority]');
             mainCards.forEach(card => {
                 card.style.display = 'block';
             });
         } else if (type === 'sub') {
+            document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
             const subCards = document.querySelectorAll(`[data-sub-task-main-task-id="${mainTaskId}"]`);
             subCards.forEach(card => {
+                card.classList.remove('hidden-sub-task-card');
                 card.style.removeProperty('display');
             });
         }
@@ -514,6 +582,7 @@ function filterByDeadline(type, filterType, btn, mainTaskId = null) {
 
     if (newActive) {
         if (type === 'main') {
+            dismissNoResultsMessage();
             const mainCards = document.querySelectorAll('[data-task-deadline]');
             mainCards.forEach(card => {
                 const deadline = card.getAttribute('data-task-deadline');
@@ -529,11 +598,18 @@ function filterByDeadline(type, filterType, btn, mainTaskId = null) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
+                    card.classList.add('hidden-card');
                 }
             });
+            if (document.querySelectorAll('.hidden-card').length === mainCards.length) {
+                showAlert('info', 'No tasks found with the selected deadline filter.');
+                noResultsMsg('No tasks found with the selected deadline filter.', `filterByDeadline('main', '${filterType}', document.getElementById('${btn.id}'))`, 'Show All Tasks');
+            }
         } else if (type === 'sub') {
+            document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
             const subCards = document.querySelectorAll(`[data-sub-task-main-task-id="${mainTaskId}"]`);
             subCards.forEach(card => {
+                card.classList.remove('hidden-sub-task-card');
                 const deadline = card.getAttribute('data-sub-task-deadline');
                 const status = getDeadlineStatus(deadline);
                 let matches = false;
@@ -547,20 +623,44 @@ function filterByDeadline(type, filterType, btn, mainTaskId = null) {
                     card.style.setProperty('display', 'flex', 'important');
                 } else {
                     card.style.setProperty('display', 'none', 'important');
+                    card.classList.add('hidden-sub-task-card');
                 }
             });
+            const hiddenSubCards = Array.from(subCards).filter(card => card.classList.contains('hidden-sub-task-card'));
+            if (hiddenSubCards.length === subCards.length) {
+                showAlert('info', 'No sub-tasks found with the selected deadline.');
+                const cardBody = document.getElementById('sub-tasks-container-' + mainTaskId);
+                if (cardBody) {
+                    const noResultsMessage = `
+                    <div class="no-sub-tasks-message" id="no-sub-tasks-message-${mainTaskId}">
+                        <div class="d-flex flex-row justify-content-center align-items-center gap-2">
+                            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 10.5V7M12 14H12.01M7 18V20.3355C7 20.8684 7 21.1348 7.10923 21.2716C7.20422 21.3906 7.34827 21.4599 7.50054 21.4597C7.67563 21.4595 7.88367 21.2931 8.29976 20.9602L10.6852 19.0518C11.1725 18.662 11.4162 18.4671 11.6875 18.3285C11.9282 18.2055 12.1844 18.1156 12.4492 18.0613C12.7477 18 13.0597 18 13.6837 18H16.2C17.8802 18 18.7202 18 19.362 17.673C19.9265 17.3854 20.3854 16.9265 20.673 16.362C21 15.7202 21 14.8802 21 13.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V14C3 14.93 3 15.395 3.10222 15.7765C3.37962 16.8117 4.18827 17.6204 5.22354 17.8978C5.60504 18 6.07003 18 7 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>No sub-tasks found with the selected deadline.</p>
+                        </div>
+                        <button class="create-btn" onclick="filterByDeadline('sub', '${filterType}', document.getElementById('${btn.id}'), '${mainTaskId}')">Show All Sub-Tasks</button>
+                    </div>
+                    `;
+                    document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
+                    cardBody.insertAdjacentHTML('afterbegin', noResultsMessage);
+                }
+            }
         }
         btn.setAttribute('data-active', 'true');
         btn.classList.add('dropdown-item-selected');
     } else {
         if (type === 'main') {
+            dismissNoResultsMessage();
             const mainCards = document.querySelectorAll('[data-task-deadline]');
             mainCards.forEach(card => {
                 card.style.display = 'block';
             });
         } else if (type === 'sub') {
+            document.querySelector(`#no-sub-tasks-message-${mainTaskId}`)?.remove();
             const subCards = document.querySelectorAll(`[data-sub-task-main-task-id="${mainTaskId}"]`);
             subCards.forEach(card => {
+                card.classList.remove('hidden-sub-task-card');
                 card.style.removeProperty('display');
             });
         }

@@ -53,10 +53,15 @@ async function markMainTaskDone(taskId) {
             document.querySelectorAll('.task-card').forEach(el => el.remove());
             loadDashboardTasks();
             loadDashboardStats();
+            if (data.new_status) {
+                showAlert('success', 'Task marked as Done successfully!');
+            } else {
+                showAlert('info', 'Task marked as UnDone successfully!');
+            }
         }
     }
     catch (error) {
-        console.error('Error marking task as done:', error);
+        showAlert('danger', 'Something went wrong while marking task as Done!');
     }
 }
 
@@ -72,10 +77,11 @@ async function deleteMainTask(taskId) {
             document.querySelectorAll('.task-card').forEach(el => el.remove());
             loadDashboardTasks();
             loadDashboardStats();
+            showAlert('success', 'Task deleted successfully!');
         }
     }
     catch (error) {
-        console.error('Error deleting task:', error);
+        showAlert('danger', 'Something went wrong while deleting task!');
     }
 }
 

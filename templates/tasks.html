@@ -150,7 +150,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" id="sub-tasks-container-{{ main_task[0] }}">
                 {% for sub_task in sub_tasks if sub_task[3] == main_task[0] %}
                 <div id="sub-task-card-{{ sub_task[0] }}" class="sub-task-card {% if sub_task[5] %}done-card{% endif %}"
                     data-sub-task-priority="{{ sub_task[4] }}" data-sub-task-main-task-id="{{ sub_task[3] }}"
@@ -303,6 +303,7 @@
                                 <ul class="dropdown-menu">
                                     <li>
                                         <button type="button" class="dropdown-item priority-filter-btn"
+                                            id="high-priority-btn-{{ main_task[0] }}"
                                             onclick="filterByPriority('sub','high', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -317,6 +318,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item priority-filter-btn"
+                                            id="medium-priority-btn-{{ main_task[0] }}"
                                             onclick="filterByPriority('sub','medium', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -331,6 +333,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item priority-filter-btn"
+                                            id="low-priority-btn-{{ main_task[0] }}"
                                             onclick="filterByPriority('sub','low', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -367,6 +370,7 @@
                                 <ul class="dropdown-menu">
                                     <li>
                                         <button type="button" class="dropdown-item deadline-filter-btn"
+                                            id="filter-today-btn-{{ main_task[0] }}"
                                             onclick="filterByDeadline('sub', 'today', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -382,6 +386,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item deadline-filter-btn"
+                                            id="filter-tomorrow-btn-{{ main_task[0] }}"
                                             onclick="filterByDeadline('sub', 'tomorrow', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -398,6 +403,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item deadline-filter-btn"
+                                            id="filter-this-week-btn-{{ main_task[0] }}"
                                             onclick="filterByDeadline('sub', 'this-week', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -416,6 +422,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item deadline-filter-btn"
+                                            id="filter-overdue-btn-{{ main_task[0] }}"
                                             onclick="filterByDeadline('sub', 'overdue', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -432,6 +439,7 @@
                                     </li>
                                     <li>
                                         <button type="button" class="dropdown-item deadline-filter-btn"
+                                            id="filter-upcoming-btn-{{ main_task[0] }}"
                                             onclick="filterByDeadline('sub', 'upcoming', this, '{{ main_task[0] }}')"
                                             data-active="false">
                                             <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -494,7 +502,8 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <button type="button" class="dropdown-item priority-filter-btn"
-                                    onclick="filterByPriority('main','high', this)" data-active="false">
+                                    onclick="filterByPriority('main','high', this)" data-active="false"
+                                    id="high-priority-btn">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -507,7 +516,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item priority-filter-btn"
-                                    onclick="filterByPriority('main','medium', this)" data-active="false">
+                                    onclick="filterByPriority('main','medium', this)" data-active="false"
+                                    id="medium-priority-btn">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -520,7 +530,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item priority-filter-btn"
-                                    onclick="filterByPriority('main','low', this)" data-active="false">
+                                    onclick="filterByPriority('main','low', this)" data-active="false"
+                                    id="low-priority-btn">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -555,7 +566,8 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <button type="button" class="dropdown-item deadline-filter-btn"
-                                    onclick="filterByDeadline('main', 'today', this)" data-active="false">
+                                    onclick="filterByDeadline('main', 'today', this)" id="today-filter-btn"
+                                    data-active="false">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -569,7 +581,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item deadline-filter-btn"
-                                    onclick="filterByDeadline('main', 'tomorrow', this)" data-active="false">
+                                    onclick="filterByDeadline('main', 'tomorrow', this)" id="tomorrow-filter-btn"
+                                    data-active="false">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -584,7 +597,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item deadline-filter-btn"
-                                    onclick="filterByDeadline('main', 'this-week', this)" data-active="false">
+                                    onclick="filterByDeadline('main', 'this-week', this)" id="this-week-filter-btn"
+                                    data-active="false">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -600,7 +614,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item deadline-filter-btn"
-                                    onclick="filterByDeadline('main', 'overdue', this)" data-active="false">
+                                    onclick="filterByDeadline('main', 'overdue', this)" id="overdue-filter-btn"
+                                    data-active="false">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -615,7 +630,8 @@
                             </li>
                             <li>
                                 <button type="button" class="dropdown-item deadline-filter-btn"
-                                    onclick="filterByDeadline('main', 'upcoming', this)" data-active="false">
+                                    onclick="filterByDeadline('main', 'upcoming', this)" id="upcoming-filter-btn"
+                                    data-active="false">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -670,7 +686,8 @@
                     </div>
                 </li>
                 <li>
-                    <button class="dropdown-item" data-active="false" onclick="showDoneTasks(this)" type="button">
+                    <button class="dropdown-item" data-active="false" id="done-tasks-btn" onclick="showDoneTasks(this)"
+                        type="button">
                         <svg id="done-tasks-icon" width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path

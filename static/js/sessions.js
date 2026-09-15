@@ -80,10 +80,12 @@ async function deleteSession(sessionId, btn) {
                 getSubjects();
                 renderSubjectsMenu();
                 updateSessionTable(1);
+                showAlert('success', 'Session deleted successfully.');
             }
         }
     } catch (error) {
         console.error('Error deleting session:', error);
+        showAlert('error', 'An error occurred while deleting the session. Please try again.');
     }
 }
 
@@ -261,6 +263,12 @@ async function sessionEnded() {
 const perPage = 3;
 
 function updateSessionTable(page) {
+    if (page === 1) {
+        const pageInput = document.getElementById('pageInput');
+        if (pageInput) {
+            pageInput.value = '1';
+        }
+    }
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     const totalPages = document.getElementById('totalPages');
@@ -608,11 +616,13 @@ document.getElementById('sessionForm').addEventListener('submit', async function
             if (sessionsDetails) {
                 createSessionRow(sessionData);
             }
+            showAlert('success', 'Session started successfully!');
             this.reset();
         }
     }
     catch (error) {
         console.error('Error submitting session form:', error);
+        showAlert('error', 'An error occurred while starting the session. Please try again.');
     }
 });
 

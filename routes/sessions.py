@@ -156,6 +156,7 @@ def rename_session(session_id):
     try:
         new_title = request.form['new_session_title']
         if not new_title:
+            flash('Session title cannot be empty.', 'danger')
             return redirect(url_for('sessions.sessions_history'))
         conn = get_db()
         cursor = conn.cursor()
@@ -166,8 +167,10 @@ def rename_session(session_id):
             session['study_session']['title'] = new_title
             session['study_session']['id'] = session_id
             session.modified = True
+        flash('Session renamed successfully.', 'success')
     except Exception as e:
         print(f"Database error: {e}")
+        flash('Error occurred while renaming session.', 'danger')
     return redirect(url_for('sessions.sessions_history'))
 
 @sessions_bp.route('/delete_session/<int:session_id>', methods=['POST'])

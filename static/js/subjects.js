@@ -47,9 +47,11 @@ async function toggleFavorite(subjectId, btnElement) {
             if (data.new_status) {
                 svg.classList.add('favorite-icon');
                 textSpan.innerText = 'Remove from Favorites';
+                showAlert('success', 'Subject added to favorites!');
             } else {
                 svg.classList.remove('favorite-icon');
                 textSpan.innerText = 'Add to Favorites';
+                showAlert('info', 'Subject removed from favorites!');
             }
         }
     } catch (error) {
@@ -74,10 +76,14 @@ async function toggleCompleted(subjectId, btnElement) {
             if (data.new_status) {
                 svg.classList.add('completed-icon');
                 textSpan.innerText = 'Mark as Incomplete';
+                showAlert('success', 'Subject marked as completed!');
             } else {
                 afterResetOrClicked(svg, textSpan);
+                showAlert('info', 'Subject marked as incomplete!');
             }
-            location.reload();
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
         }
     }
     catch (error) {
@@ -97,6 +103,7 @@ async function showCompleted(btn) {
             });
             const data = await response.json();
             if (data.success && data.subjects) {
+                document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
                 const subjectCards = document.querySelectorAll('[data-subject-id]');
                 subjectCards.forEach(card => {
                     const subjectId = card.getAttribute('data-subject-id');
@@ -112,10 +119,15 @@ async function showCompleted(btn) {
                 svg.classList.add('completed-icon');
                 btnText.innerText = "Show All";
             }
+            if (data.success && !Object.values(data.subjects).some(Boolean)) {
+                showAlert('info', 'No completed subjects found!');
+                noResultsMsg('No completed subjects found.', `showCompleted(document.getElementById('${btn.id}'))`, 'Show All Subjects');
+            }
         } catch (error) {
             console.error('Error fetching completed subjects:', error);
         }
     } else {
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
         const subjectCards = document.querySelectorAll('[data-subject-id]');
         subjectCards.forEach(card => {
             card.style.display = 'block';
@@ -139,6 +151,7 @@ async function showFavorites(btn) {
             });
             const data = await response.json();
             if (data.success && data.subjects) {
+                document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
                 const subjectCards = document.querySelectorAll('[data-subject-id]');
                 subjectCards.forEach(card => {
                     const subjectId = card.getAttribute('data-subject-id');
@@ -152,11 +165,17 @@ async function showFavorites(btn) {
                 btn.setAttribute('data-active', 'true');
                 svg.classList.add('favorite-icon');
                 btnText.innerText = "Show All";
+                showAlert('info', 'Showing favorite subjects!');
+            }
+            if (data.success && !Object.values(data.subjects).some(Boolean)) {
+                showAlert('info', 'No favorite subjects found!');
+                noResultsMsg('No favorite subjects found.', `showFavorites(document.getElementById('fav-btn'))`, 'Show All Subjects');
             }
         } catch (error) {
-            console.error('Error fetching favorite subjects:', error);
+            showAlert('danger', 'Error fetching favorite subjects!');
         }
     } else {
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
         const subjectCards = document.querySelectorAll('[data-subject-id]');
         subjectCards.forEach(card => {
             card.style.display = 'block';
@@ -193,10 +212,15 @@ async function showCompletedFiles(btn, subjectId) {
                 btn.classList.add('done-text');
                 btnText.innerText = "Show All";
             }
+            if (data.success && !Object.values(data.files).some(Boolean)) {
+                showAlert('info', 'No completed Lectures found!');
+                noResultsMsg('No completed Lectures found.', `showCompletedFiles(document.getElementById('show-done-btn'), ${subjectId})`, 'Show All Lectures');
+            }
         } catch (error) {
             console.error('Error fetching completed files:', error);
         }
     } else {
+        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
         const fileCards = document.querySelectorAll('[data-file-id]');
         fileCards.forEach(card => {
             card.style.display = 'block';
@@ -251,6 +275,7 @@ async function toggleDone(fileId) {
                 doneBtn.classList.add('done-btn-active');
                 fileTitle.classList.add('done-text');
                 dotsBtn.classList.add('done-dots-btn');
+                showAlert('success', 'File marked as done!');
             } else {
                 card.classList.remove('done-card');
                 btnText.innerText = 'Mark as Done';
@@ -259,9 +284,11 @@ async function toggleDone(fileId) {
                 doneBtn.classList.remove('done-btn-active');
                 fileTitle.classList.remove('done-text');
                 dotsBtn.classList.remove('done-dots-btn');
+                showAlert('info', 'File marked as undone!');
             }
         }
     } catch (error) {
         console.error('Error toggling done status:', error);
+        showAlert('danger', 'An error occurred while toggling the done status.');
     }
 }

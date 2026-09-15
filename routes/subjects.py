@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
+from io import BytesIO
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 from database import get_db, supabase
 from math import floor
 
@@ -37,9 +38,11 @@ def subjects():
 @subjects_bp.route('/add_subject', methods=['POST'])
 def add_subject():
     if 'user_id' not in session:
+        flash('You need to be logged in to add a subject.', 'danger')
         return redirect(url_for('auth.login'))
     subject_name = request.form.get('subject_name')
     if not subject_name:
+        flash('Subject name cannot be empty.', 'danger')
         return redirect(url_for('subjects.subjects'))
     try:
         conn = get_db()
@@ -47,8 +50,10 @@ def add_subject():
         cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Subject added successfully!', 'success')
     except Exception as e:       
         print(f"Database error: {e}")
+        flash('An error occurred while adding the subject.', 'danger')
     return redirect(url_for('subjects.subjects'))
 
 @subjects_bp.route('/reset_progress/<int:subject_id>', methods=['POST'])
@@ -62,8 +67,10 @@ def reset_progress(subject_id):
         cursor.execute("UPDATE subjects SET is_completed = 0 WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Progress reset successfully!', 'success')
     except Exception as e:
         print(f"Database error: {e}")
+        flash('An error occurred while resetting progress.', 'danger')
     return redirect(url_for('subjects.subjects'))
 
 @subjects_bp.route('/rename_subject/<int:subject_id>', methods=['POST'])
@@ -72,6 +79,7 @@ def rename_subject(subject_id):
         return redirect(url_for('auth.login'))
     new_name = request.form['new_subject_name']
     if not new_name:
+        flash('Subject name cannot be empty.', 'danger')
         return redirect(url_for('subjects.subjects'))
     try:
         conn = get_db()
@@ -79,8 +87,10 @@ def rename_subject(subject_id):
         cursor.execute("UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?", (new_name, subject_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Subject renamed successfully!', 'success')
     except Exception as e:
         print(f"Database error: {e}")
+        flash('An error occurred while renaming the subject.', 'danger')
     return redirect(url_for('subjects.subjects'))
 
 @subjects_bp.route('/toggle_completed/<int:subject_id>', methods=['POST'])
@@ -146,8 +156,10 @@ def delete_subject(subject_id):
         cursor.execute("DELETE FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('Subject and all associated data have been deleted successfully.', 'success')
     except Exception as e:
         print(f"Database error: {e}")
+        flash('An error occurred while deleting the subject.', 'danger')
     return redirect(url_for('subjects.subjects'))
 
 
@@ -198,8 +210,10 @@ def delete_all_subjects():
         cursor.execute("DELETE FROM subjects WHERE user_id = ?", (session['user_id'],))
         conn.commit()
         cursor.close()
+        flash('All subjects and their associated files, tasks and sessions have been deleted.', 'success')
     except Exception as e:
         print(f"Database error: {e}")
+        flash('An error occurred while deleting the subjects', 'danger')
     return redirect(url_for('subjects.subjects'))
 
 # Subject Files Routes
@@ -230,10 +244,22 @@ def upload_file(subject_id):
         return redirect(url_for('auth.login'))
     
     file = request.files.get('file')
+    if not file:
+        flash('No file selected.', 'danger')
+        return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
     if len(file.filename) > 30:
+        flash('File name is too long.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=subject_id))
     try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM files WHERE subject_id = ? AND file_name = ? AND user_id = ?", (subject_id, file.filename, session['user_id']))
+        existing_file = cursor.fetchone()
+        if existing_file:
+            flash('File already exists.', 'warning')
+            return redirect(url_for('subjects.subject_files', subject_id=subject_id))
+        
         filename = f"{subject_id}/{file.filename}"
         supabase.storage.from_("files").upload(
             path=filename,
@@ -242,14 +268,15 @@ def upload_file(subject_id):
         )
         
         file_url = supabase.storage.from_("files").get_public_url(filename)
-        conn = get_db()
-        cursor = conn.cursor()
+        
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
                 (subject_id, file.filename, file_url, session['user_id']))
         conn.commit()
-        cursor.close()        
+        cursor.close()
+        flash('File uploaded successfully.', 'success')
     except Exception as e:
         print(f'Error occurred while uploading file: {e}')
+        flash('An error occurred while uploading the file.', 'danger')
     return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
 @subjects_bp.route('/toggle_done/<int:file_id>', methods=['POST'])
@@ -268,6 +295,29 @@ def toggle_done(file_id):
     except Exception as e:
         print(f"Error updating file status: {e}")
     return jsonify({'success': True, 'new_status': new_status})
+
+@subjects_bp.route('/download_file/<int:file_id>')
+def download_file(file_id):
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    subject_id = None
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        cursor.close()
+        if not file_record:
+            return redirect(url_for('subjects.subjects'))
+
+        file_name, subject_id = file_record
+        file_data = supabase.storage.from_("files").download(f"{subject_id}/{file_name}")
+        return send_file(BytesIO(file_data), as_attachment=True, download_name=file_name)
+    except Exception as e:
+        print(f"Error downloading file: {e}")
+        if subject_id is None:
+            return redirect(url_for('subjects.subjects'))
+        return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
 @subjects_bp.route('/move_file/<int:file_id>', methods=['POST'])
 def move_file(file_id):
@@ -291,9 +341,11 @@ def move_file(file_id):
                         (new_subject_id, new_file_url, file_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('File moved successfully!', 'success')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     except Exception as e:
         print(f"Error moving file: {e}")
+        flash('An error occurred while moving the file.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
 
 @subjects_bp.route('/copy_file/<int:file_id>', methods=['POST'])
@@ -317,9 +369,11 @@ def copy_file(file_id):
                     (new_subject_id, file_name, new_file_url, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('File copied successfully!', 'success')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     except Exception as e:
         print(f"Error copying file: {e}")
+        flash('An error occurred while copying the file.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     
 @subjects_bp.route('/delete_file/<int:file_id>', methods=['POST'])
@@ -337,8 +391,10 @@ def delete_file(file_id):
         cursor.execute("DELETE FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('File deleted successfully!', 'success')
     except Exception as e:
         print(f"Error deleting file: {e}")
+        flash('An error occurred while deleting the file.', 'danger')
     return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
 @subjects_bp.route('/delete_all_files/<int:subject_id>', methods=['POST'])
@@ -355,8 +411,10 @@ def delete_all_files(subject_id):
         cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
+        flash('All files deleted successfully!', 'success')
     except Exception as e:
         print(f"Error deleting all files: {e}")
+        flash('An error occurred while deleting all files.', 'danger')
     return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
 @subjects_bp.route('/get_completed_files/<int:subject_id>')

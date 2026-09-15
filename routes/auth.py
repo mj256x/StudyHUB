@@ -28,6 +28,7 @@ def login():
         
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
+            flash('Logged in successfully!', 'success')
             return redirect(url_for('home.index'))
         else:
             return redirect(url_for('auth.login'))
@@ -56,6 +57,7 @@ def register():
             cursor = conn.cursor()
             cursor.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
             if cursor.fetchone():
+                flash('Username or email already exists.', 'danger')
                 return redirect(url_for('auth.register'))
             cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)", (username, password_hash, email))
             conn.commit()
@@ -63,7 +65,7 @@ def register():
         except Exception as e:
             print(f"Database error: {e}")
             return redirect(url_for('auth.register'))
-        
+        flash('Registered successfully! Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('register.html')
