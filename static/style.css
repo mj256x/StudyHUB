@@ -42,7 +42,7 @@
     --c-success: #4E9B6E;
     --c-success-strong: #58D68D;
     --c-success-soft: color-mix(in srgb, var(--c-success), var(--c-cream) 55%);
-    --c-danger: #C23B5C;
+    --c-danger: #ce1818;
     --c-danger-strong: #FF6B87;
     --c-danger-deep: color-mix(in srgb, var(--c-danger), black 25%);
     --c-warning: #D9A441;
@@ -967,21 +967,20 @@ ul {
 }
 
 .warning-container {
+    width: fit-content !important;
     background-color: var(--c-alert-bg) !important;
-    border-left: 4px solid var(--c-danger-strong) !important;
-    border-radius: 4px !important;
+    border-left: 4px solid var(--c-danger) !important;
+    border-radius: 8px !important;
     padding: 15px !important;
     display: flex !important;
     flex-direction: row !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
     align-items: center !important;
-    gap: 10px !important;
+    gap: 20px !important;
 }
 
 .warning-text {
     color: var(--c-alert-text) !important;
-    position: relative !important;
-    top: 10px !important;
 }
 
 

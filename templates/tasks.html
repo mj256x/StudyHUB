@@ -700,7 +700,8 @@
             </ul>
         </div>
     </div>
-    <button class="delete-all-btn" onclick="showModal('deleteTasksAlertModal')" type="button">
+    <button class="delete-all-btn" data-action="delete_all_tasks" onclick="showModal('deleteAlertModal', this)"
+        type="button">
         Delete All Tasks
     </button>
 </div>

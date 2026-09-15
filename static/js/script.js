@@ -297,15 +297,34 @@ document.getElementById('change-email-form').addEventListener('submit', async fu
     }
 });
 
-function showModal(modalId, subjectId = null) {
+function showModal(modalId, btn = null, subjectId = null) {
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId));
-    myModal.show();
-    if (subjectId) {
-        const form = document.getElementById('deleteFilesForm');
-        if (form) {
-            form.action = '/delete_all_files/' + subjectId;
+    if (btn) {
+        const action = btn.getAttribute('data-action');
+        if (action) {
+            const form = document.getElementById('deleteAllForm');
+            document.getElementById(modalId).querySelector('.modal-title').textContent = btn.textContent.trim();
+            if (form) {
+                console.log('Setting form action to: /' + action);
+                form.action = '/' + action;
+                console.log('Form action set to: ' + form.action);
+                if (action === 'delete_all_tasks' || action === 'delete_all_subjects' || action === 'clear_sessions_history') {
+                    form.querySelector('.warning-text').textContent = `Are you sure you want to ${btn.textContent.trim()}?`;
+                } else if (action === 'delete_account') {
+                    form.querySelector('.warning-text').textContent = 'Are you sure you want to Delete Your Account?';
+                }
+            }
         }
     }
+    if (subjectId) {
+        const form = document.getElementById('deleteAllForm');
+        if (form) {
+            document.getElementById(modalId).querySelector('.modal-title').textContent = 'Delete All Lectures';
+            form.action = '/delete_all_files/' + subjectId;
+            form.querySelector('.warning-text').textContent = 'Are you sure you want to Delete All Lectures?';
+        }
+    }
+    myModal.show();
 }
 
 const alertIcons = {

@@ -156,7 +156,8 @@
                 </li>
         </div>
     </div>
-    <button class="delete-all-btn" onclick="showModal('deleteSubjectsAlertModal')" type="submit">
+    <button class="delete-all-btn" data-action="delete_all_subjects" onclick="showModal('deleteAlertModal', this)"
+        type="submit">
         Delete All Subjects
     </button>
 </div>
@@ -165,7 +166,7 @@
     <h1 class="no-activities-title">No Subjects Found</h1>
     <p class="no-activities-subtitle">You haven't added any subjects yet. Click the button below to add your first
         subject.</p>
-    <button class="create-btn" onclick="showModal('addFolderModal')">
+    <button class="create-btn" onclick="showModal('addSubjectModal')">
         <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" />
