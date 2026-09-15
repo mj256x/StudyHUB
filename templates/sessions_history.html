@@ -22,8 +22,10 @@
     <div class="session-summary-card">
         <div class="summary-content">
             <span class="summary-title">Total Study Time</span>
-            <span id="total-duration" data-total-duration="{{ total_duration }}" class="summary-value">
-                {{ total_duration}} minutes
+            <span id="total-duration" class="summary-value">
+                <p class="placeholder-glow">
+                    <span class="placeholder col-12"></span>
+                </p>
             </span>
         </div>
         <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -35,7 +37,11 @@
     <div class="session-summary-card">
         <div class="summary-content">
             <span class="summary-title">Total Sessions</span>
-            <span class="summary-value">{{ total_sessions }} Sessions</span>
+            <span id="total-sessions" class="summary-value">
+                <p class="placeholder-glow">
+                    <span class="placeholder col-12"></span>
+                </p>
+            </span>
         </div>
         <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -46,7 +52,11 @@
     <div class="session-summary-card">
         <div class="summary-content">
             <span class="summary-title">Average Session Duration</span>
-            <span class="summary-value">{{ average_duration|round(2) }} minutes</span>
+            <span id="average-duration" class="summary-value">
+                <p class="placeholder-glow">
+                    <span class="placeholder col-12"></span>
+                </p>
+            </span>
         </div>
         <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -170,16 +180,23 @@
         </tfoot>
     </table>
 
-    <div class="d-flex flex-column justify-content-center align-items-center gap-3 mt-4" style="min-width: 25%;">
+    <div class="d-flex flex-column justify-content-center align-items-center gap-3 mt-4" style="min-width: 30%;">
         <div class="session-summary-card">
             <div class="summary-content">
                 <span class="summary-title">Top Subject</span>
-                <span class="summary-value">{{ top_subject[0][0] }} <span class="summary-title">{{ top_subject[0][1] }}
-                        minutes</span></span>
+                <span id="top-subject" class="summary-value">
+                    <p class="placeholder-glow">
+                        <span class="placeholder col-12"></span>
+                    </p>
+                </span>
+                <div class="d-flex flex-row justify-content-center align-items-center gap-1">
+                    <span id="top-subject-study-time" class="summary-title"></span>
+                    <span id="top-subject-session-count" class="summary-title"></span>
+                </div>
             </div>
-            <div class="circular-progress" style="--percent: {{ top_subject_percentage }};">
+            <div class="circular-progress" style="--percent: 0%;">
                 <div class="circular-progress-bar">
-                    <strong>{{ top_subject_percentage }}%</strong>
+                    <strong id="top-subject-progress"></strong>
                 </div>
             </div>
         </div>

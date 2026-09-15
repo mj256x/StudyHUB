@@ -24,6 +24,9 @@
 <section class="to-do-tasks">
     <h2><strong style="color: #efeded;">Today's Agenda</strong></h2>
     <div class="agenda-card-body" id="agenda-section">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
         <div id="today-tasks">
             <h3>Today</h3>
             <hr class="agenda-separator">
@@ -103,7 +106,11 @@
             <div class="card-body quick-stat-card">
                 <i class="fas fa-book" style="font-size: 2.5rem; color: #aeccbe;"></i>
                 <h4 class="card-title fw-bold">Active Subjects</h4>
-                <h3 id="total-subjects">-</h3>
+                <h3 id="total-subjects">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </h3>
                 <button class="view-btn" onclick="window.location.href='/subjects'">
                     <span>View Subjects</span>
                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,7 +124,11 @@
             <div class="card-body quick-stat-card">
                 <i class="fas fa-tasks" style="font-size: 2.5rem; color: #29c43b;"></i>
                 <h4 class="card-title fw-bold">Pending Tasks</h4>
-                <h3 id="pending-tasks">-</h3>
+                <h3 id="pending-tasks">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </h3>
                 <button id="view-tasks-btn" class="view-btn" onclick="window.location.href='/tasks'">
                     <span>View Tasks</span>
                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -139,7 +150,11 @@
             <div class="card-body quick-stat-card">
                 <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #ffc107"></i>
                 <h4 class="card-title fw-bold">Total Study Time</h4>
-                <h3 id="study-time">-</h3>
+                <h3 id="study-time">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </h3>
                 <button id="view-sessions-btn" class="view-btn" onclick="window.location.href='/sessions_history'">
                     <span>View Session History</span>
                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -39,7 +39,7 @@
     --c-border-faint: color-mix(in srgb, var(--c-mauve), var(--c-bg-panel) 50%);
 
     /* ===== Semantic status colors ===== */
-    --c-success: #4E9B6E;
+    --c-success: #1ab142;
     --c-success-strong: #58D68D;
     --c-success-soft: color-mix(in srgb, var(--c-success), var(--c-cream) 55%);
     --c-danger: #ce1818;
@@ -145,6 +145,10 @@ body {
 .show-password-btn:hover {
     background-color: var(--c-bg-hover);
     border-color: var(--c-border);
+}
+
+.spinner-border {
+    margin: 20px auto;
 }
 
 .alert {
@@ -744,7 +748,7 @@ ul {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: conic-gradient(var(--c-border) calc(var(--percent) * 1%), var(--c-bg-panel) 0);
+    background: conic-gradient(var(--c-success) calc(var(--percent) * 1%), var(--c-bg-surface-bright) 0);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -923,14 +927,13 @@ ul {
 }
 
 .delete-all-btn {
-    width: 150px !important;
-    height: auto !important;
+    width: fit-content !important;
     background-color: color-mix(in srgb, var(--c-danger) 6%, transparent) !important;
     color: var(--c-danger-strong) !important;
     border: 2px solid color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
     border-radius: 10px !important;
     cursor: pointer !important;
-    padding: 6px 12px !important;
+    padding: 10px 15px !important;
     transition: all 0.2s linear !important;
 }
 
@@ -1601,6 +1604,26 @@ ul {
     user-select: none !important;
 }
 
+.summary-value {
+    display: block !important;
+    min-width: 250px !important;
+}
+
+.summary-value .placeholder-glow {
+    display: block !important;
+    width: 100% !important;
+    min-height: 1rem !important;
+}
+
+.summary-value .placeholder {
+    margin-top: 10px;
+    margin-bottom: -5px;
+    display: block !important;
+    width: 100% !important;
+    height: 1rem !important;
+    border-radius: 10px;
+}
+
 .sessions-details {
     width: 100% !important;
     display: flex !important;
@@ -1611,7 +1634,7 @@ ul {
 }
 
 .custom-table {
-    min-width: 75% !important;
+    min-width: 70% !important;
     border-collapse: separate !important;
     border-spacing: 0 !important;
     transition: transform 0.4s ease !important;

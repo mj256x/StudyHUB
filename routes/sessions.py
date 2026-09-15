@@ -102,51 +102,58 @@ def sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        
         cursor.execute("SELECT subjects.id, subjects.name," \
         " study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes," \
         " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date, study_sessions.session_full_period FROM study_sessions JOIN subjects" \
         " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY study_sessions.session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
-    
+        cursor.close()
+    except Exception as e:
+        print(f"Error fetching sessions: {e}")
+        sessions = []
+    return render_template('sessions_history.html', sessions=sessions)
+
+@sessions_bp.route('/get_sessions_summary', methods=['GET'])
+def get_sessions_summary():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
         cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
-        sum_duration = cursor.fetchone()
-        total_duration = sum_duration[0] if sum_duration and sum_duration[0] is not None else 0
-        
+        total_duration = cursor.fetchone()[0] or 0
         cursor.execute("SELECT COUNT(*) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
-        sum_sessions = cursor.fetchone()
-        total_sessions = sum_sessions[0] if sum_sessions and sum_sessions[0] is not None else 0
-        
-        average_duration = total_duration / total_sessions if total_sessions > 0 else 0
-        
+        total_sessions = cursor.fetchone()[0] or 0
+        average_duration = floor(total_duration / total_sessions) if total_sessions > 0 else 0
         cursor.execute("SELECT TOP 1 s.name AS subject_name, "
-        "SUM(ss.duration_minutes) AS total_duration_minutes, s.id AS subject_id "
+        "SUM(ss.duration_minutes) AS total_duration_minutes, COUNT(ss.id) AS session_count "
         "FROM subjects AS s "
         "JOIN study_sessions AS ss ON ss.subject_id = s.id "
         "WHERE ss.user_id = ? "
         "GROUP BY s.id, s.name "
         "ORDER BY SUM(ss.duration_minutes) DESC",
-        (session['user_id'],)
-        )
-        top_subject = cursor.fetchall()
-        cursor.execute("SELECT COUNT(*) FROM files WHERE user_id = ? and subject_id = ?", (session['user_id'], top_subject[0][2]))
-        files_count = cursor.fetchone()[0]
-        if files_count > 0:
-            cursor.execute("SELECT COUNT(*) FROM files WHERE user_id = ? and subject_id = ? AND is_completed = 1", (session['user_id'], top_subject[0][2]))
-            completed_files_count = cursor.fetchone()[0]
-            top_subject_percentage = floor(int((completed_files_count / files_count) * 100))
-        else:
-            top_subject_percentage = 0
+        (session['user_id'],))
+        top_subject = cursor.fetchone()
+        top_subject_name = top_subject[0] if top_subject else None
+        top_subject_session_count = top_subject[2] if top_subject else 0
+        top_subject_study_time = top_subject[1] if top_subject else 0
+        top_subject_percentage = floor((top_subject[1] / total_duration) * 100) if top_subject and total_duration > 0 else 0
         cursor.close()
+
+        return jsonify({
+            'success': True,
+            'total_duration': total_duration,
+            'total_sessions': total_sessions,
+            'average_duration': average_duration,
+            'top_subject_name': top_subject_name,
+            'top_subject_study_time': top_subject_study_time,
+            'top_subject_session_count': top_subject_session_count,
+            'top_subject_percentage': top_subject_percentage
+        })
     except Exception as e:
-        print(f"Error fetching sessions: {e}")
-        sessions = []
-        total_duration = 0
-        total_sessions = 0
-        average_duration = 0
-        top_subject = None
-        top_subject_percentage = 0
-    return render_template('sessions_history.html', sessions=sessions, total_duration=total_duration, total_sessions=total_sessions, average_duration=average_duration, top_subject=top_subject, top_subject_percentage=top_subject_percentage)
+        print(f"Error fetching sessions summary: {e}")
+        return jsonify({'success': False, 'message': 'Database error'}), 500
 
 @sessions_bp.route('/rename_session/<int:session_id>', methods=['POST'])
 def rename_session(session_id):

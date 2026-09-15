@@ -1,4 +1,5 @@
 function loadDashboardStats() {
+    document.querySelectorAll('.spinner-border').forEach(spinner => spinner.style.setProperty('display', 'flex', 'important'));
     fetch('/dashboard_stats')
         .then(response => response.json())
         .then(data => {
@@ -28,6 +29,7 @@ function loadDashboardStats() {
         }
         )
         .catch(error => console.error('Error loading stats:', error));
+    document.querySelectorAll('.spinner-border').forEach(spinner => spinner.style.setProperty('display', 'none', 'important'));
 }
 
 function addNewTask() {
@@ -92,6 +94,7 @@ async function loadDashboardTasks() {
     todaySection.style.setProperty('display', 'none', 'important');
     tomorrowSection.style.setProperty('display', 'none', 'important');
     noTasksMsg.style.setProperty('display', 'none', 'important');
+    document.querySelectorAll('.spinner-border').forEach(spinner => spinner.style.setProperty('display', 'flex', 'important'));
     try {
         const response = await fetch('/dashboard_tasks',
             {
@@ -120,6 +123,9 @@ async function loadDashboardTasks() {
     }
     catch (error) {
         console.error('Error loading tasks:', error);
+    }
+    finally {
+        document.querySelectorAll('.spinner-border').forEach(spinner => spinner.style.setProperty('display', 'none', 'important'));
     }
 }
 
@@ -214,6 +220,7 @@ function createTaskCard(task, isCompleted) {
 document.addEventListener('DOMContentLoaded', function () {
     const newUserMessage = document.getElementById('new-user-message');
     if (newUserMessage == null) {
+        document.querySelector('.spinner-border').style.setProperty('display', 'none', 'important');
         loadDashboardStats();
         loadDashboardTasks();
     }

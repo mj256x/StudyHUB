@@ -67,6 +67,59 @@ function createSessionRow(sessionData) {
     updateSessionTable(1);
 }
 
+async function getSessionsSummary() {
+    const totalDurationElement = document.getElementById('total-duration');
+    const totalSessionsElement = document.getElementById('total-sessions');
+    const averageDurationElement = document.getElementById('average-duration');
+    const topSubjectElement = document.getElementById('top-subject');
+    const topSubjectProgressElement = document.getElementById('top-subject-progress');
+    document.querySelectorAll('.placeholder-glow').forEach(placeholder => {
+        placeholder.style.setProperty('display', 'inline-block', 'important');
+    });
+    try {
+        const response = await fetch('/get_sessions_summary', {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.success) {
+            if (totalDurationElement) {
+                let totalStudyTime = data.total_duration;
+                if (totalStudyTime < 60) {
+                    totalDurationElement.textContent = totalStudyTime + ' minutes';
+                } else {
+                    const hours = Math.floor(totalStudyTime / 60);
+                    const minutes = totalStudyTime % 60;
+                    totalDurationElement.textContent = hours + ' hours ' + minutes + ' minutes';
+                }
+            }
+            if (totalSessionsElement) {
+                totalSessionsElement.textContent = data.total_sessions + ' sessions';
+            }
+            if (averageDurationElement) {
+                averageDurationElement.textContent = data.average_duration.toFixed(2) + ' minutes';
+            }
+            if (topSubjectElement) {
+                document.getElementById('top-subject-study-time').textContent = data.top_subject_study_time + ' minutes';
+                document.getElementById('top-subject-session-count').textContent = data.top_subject_session_count + ' sessions';
+                topSubjectElement.textContent = data.top_subject_name;
+            }
+            if (topSubjectProgressElement) {
+                document.querySelector('.circular-progress').style.setProperty('--percent', data.top_subject_percentage, 'important');
+                topSubjectProgressElement.textContent = data.top_subject_percentage + '%';
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching sessions summary:', error);
+    }
+    finally {
+        setTimeout(() => {
+            document.querySelectorAll('.placeholder-glow').forEach(placeholder => {
+                placeholder.style.setProperty('display', 'none', 'important');
+            }), 2000
+        });
+    }
+}
+
 async function deleteSession(sessionId, btn) {
     try {
         const response = await fetch('/delete_session/' + sessionId, {
@@ -627,23 +680,12 @@ document.getElementById('sessionForm').addEventListener('submit', async function
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    getSessionsSummary();
     resetFilter();
     updateSessionTable(1);
     sortInputs();
     getSubjects();
     renderSubjectsMenu();
-
-    let t = document.getElementById('total-duration');
-    if (t) {
-        let totalStudyTime = parseInt(t.dataset.totalDuration, 10);
-        if (totalStudyTime < 60) {
-            document.getElementById('total-duration').textContent = totalStudyTime + ' minutes';
-        } else {
-            const hours = Math.floor(totalStudyTime / 60);
-            const minutes = totalStudyTime % 60;
-            document.getElementById('total-duration').textContent = hours + ' hours ' + minutes + ' minutes';
-        }
-    }
 
     const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
     if (progressBars.length > 0) {
