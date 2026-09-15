@@ -8,34 +8,42 @@ user_bp = Blueprint('user', __name__)
 @user_bp.route('/change_username', methods=['POST'])
 def change_username():
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
-    new_username = request.form['new_username']
-    if not new_username:
-        return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
     try:
+        data = request.get_json()
+        newUsername= data.get('newUsername')
+        if not newUsername:
+            return jsonify({'success': False, 'message': 'Username cannot be empty.'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE users SET username = ? WHERE id = ?", (new_username, session['user_id']))
+        cursor.execute("SELECT id FROM users WHERE username = ?", (newUsername,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            return jsonify({'success': False, 'message': 'Username already exists.'}), 400
+        cursor.execute("UPDATE users SET username = ? WHERE id = ?", (newUsername, session['user_id']))
         conn.commit()
         cursor.close()
+        return jsonify({'success': True, 'message': 'Username changed successfully!'})
     except Exception as e:
         print(f"Database error: {e}")
-    return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'An error occurred while changing the username.'}), 500
 
 @user_bp.route('/change_password', methods=['POST'])
 def change_password():
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
 
-    current_password = request.form['current_password']
-    new_password = request.form['new_password']
-    confirm_new_password = request.form['confirm_password']
+
+    data = request.get_json()
+    current_password = data.get('currentPassword')
+    new_password = data.get('newPassword')
+    confirm_new_password = data.get('confirmPassword')
 
     if not current_password or not new_password or not confirm_new_password:
-        return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'All fields are required.'}), 400
 
     if new_password != confirm_new_password:
-        return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'New password and confirmation do not match.'}), 400
 
     try:
         conn = get_db()
@@ -44,33 +52,39 @@ def change_password():
         stored_password_hash = cursor.fetchone()[0]
 
         if not check_password_hash(stored_password_hash, current_password):
-            return redirect(url_for('home.index'))
+            return jsonify({'success': False, 'message': 'Current password is incorrect.'}), 400
 
         new_hashed_password = generate_password_hash(new_password)
         cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hashed_password, session['user_id']))
         conn.commit()
         cursor.close()
+        return jsonify({'success': True, 'message': 'Password changed successfully!'})
     except Exception as e:
         print(f"Database error: {e}")
-    return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'An error occurred while changing the password.'}), 500
 
 @user_bp.route('/change_email', methods=['POST'])
 def change_email():
     if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
-    new_email = request.form['new_email']
-    if not new_email:
-        return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'Authentication required'}), 401
+
     try:
+        data = request.get_json()
+        newEmail = data.get('newEmail')
+        if not newEmail:
+            return jsonify({'success': False, 'message': 'Email cannot be empty.'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE users SET email = ? WHERE id = ?", (new_email, session['user_id']))
+        cursor.execute("SELECT id FROM users WHERE email = ?", (newEmail,))
+        if cursor.fetchone():
+            return jsonify({'success': False, 'message': 'Email already exists.'}), 400
+        cursor.execute("UPDATE users SET email = ? WHERE id = ?", (newEmail, session['user_id']))
         conn.commit()
         cursor.close()
-        flash('Email changed successfully!', 'success')
+        return jsonify({'success': True, 'message': 'Email changed successfully!'})
     except Exception as e:
         print(f"Database error: {e}")
-    return redirect(url_for('home.index'))
+        return jsonify({'success': False, 'message': 'An error occurred while changing the email.'}), 500
 
 @user_bp.route('/delete_account', methods=['POST'])
 def delete_account():
@@ -101,6 +115,7 @@ def delete_account():
         return redirect(url_for('auth.logout'))
     except Exception as e:
         print(f"Database error: {e}")
+        flash('An error occurred while deleting the account.', 'error')
 
     return redirect(url_for('auth.logout'))
 
@@ -128,7 +143,7 @@ def upload_profile_picture():
         cursor.execute("UPDATE users SET profile_picture = ? WHERE id = ?", (pfp_url, session['user_id']))
         conn.commit()
         cursor.close()
-        return jsonify({'success': True}), 200
+        return jsonify({'success': True, 'pfp': pfp_url}), 200
     except Exception as e:
         print(f"Error uploading profile picture: {e}")
         return jsonify({'success': False}), 500

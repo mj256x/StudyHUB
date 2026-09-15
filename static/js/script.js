@@ -10,13 +10,292 @@ async function uploadProfilePicture(input) {
             });
             const data = await response.json();
             if (data.success) {
-                location.reload();
+                const profilePicture = document.querySelectorAll('.user-pfp');
+                profilePicture.forEach(pfp => {
+                    pfp.src = data.pfp;
+                });
+                showAlert('success', 'Profile picture updated successfully!');
             }
         } catch (error) {
             console.error('Error uploading profile picture:', error);
+            showAlert('danger', 'Failed to upload profile picture. Please try again.');
         }
     }
 }
+
+const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+function showError(inputElement, valid) {
+    const uncheckedIcon = inputElement.parentElement?.querySelector('.unchecked');
+    const checkedIcon = inputElement.parentElement?.querySelector('.checked');
+
+
+    if (valid) {
+        if (checkedIcon) checkedIcon.style.display = 'block';
+        if (uncheckedIcon) uncheckedIcon.style.display = 'none';
+        if (inputElement === document.getElementById('confirm_password')) {
+            if (document.querySelector('.password-check').style.display === 'flex') {
+                checkedIcon.style.right = '40px';
+                checkedIcon.style.top = '395px';
+            } else {
+                checkedIcon.style.right = '40px';
+                checkedIcon.style.top = '255px';
+            }
+        } else if (inputElement === document.getElementById('new_password')) {
+            checkedIcon.style.top = '165px';
+            checkedIcon.style.right = '40px';
+        }
+        inputElement.style.setProperty('border-color', 'green', 'important');
+    } else {
+        if (checkedIcon) checkedIcon.style.display = 'none';
+        if (uncheckedIcon) uncheckedIcon.style.display = 'block';
+        if (inputElement === document.getElementById('confirm_password')) {
+            if (document.querySelector('.password-check').style.display === 'flex') {
+                uncheckedIcon.style.top = '395px';
+                uncheckedIcon.style.right = '40px';
+            } else {
+                uncheckedIcon.style.top = '255px';
+                uncheckedIcon.style.right = '40px';
+            }
+        } else if (inputElement === document.getElementById('new_password')) {
+            uncheckedIcon.style.top = '165px';
+            uncheckedIcon.style.right = '40px';
+        }
+        inputElement.style.setProperty('border-color', 'red', 'important');
+    }
+}
+
+function clearError(inputElement) {
+    const icons = inputElement.parentElement?.querySelectorAll('.unchecked, .checked');
+    icons?.forEach((icon) => {
+        icon.style.display = 'none';
+    });
+    inputElement.style.removeProperty('border-color');
+}
+
+function togglePasswordVisibility(btn) {
+    const passwordFields = document.querySelectorAll('#current_password, #new_password, #confirm_password');
+    const showed = btn.getAttribute('data-showed') === 'true';
+    btn.setAttribute('data-showed', !showed);
+    passwordFields.forEach(field => {
+        field.type = showed ? 'password' : 'text';
+    });
+    btn.querySelector('.show-password-text').textContent = showed ? 'Show Passwords' : 'Hide Passwords';
+    btn.querySelector('.opened-eye').style.display = showed ? 'block' : 'none';
+    btn.querySelector('.closed-eye').style.display = showed ? 'none' : 'block';
+}
+
+document.getElementById('new_username').addEventListener('input', function () {
+    const newUsername = this.value.trim();
+    if (newUsername.length > 0) {
+        if (usernameRegex.test(newUsername)) {
+            showError(this, true);
+            document.querySelector('.username-error').textContent = '';
+        } else {
+            showError(this, false);
+            document.querySelector('.username-error').textContent = '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )';
+        }
+    } else {
+        clearError(this);
+        document.querySelector('.username-error').textContent = '';
+    }
+});
+
+document.getElementById('change-username-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    try {
+        const newUsername = document.getElementById('new_username').value.trim();
+        if (newUsername.length === 0 || !usernameRegex.test(newUsername)) {
+            showError(document.getElementById('new_username'), false);
+            const newUsernameError = document.querySelector('.username-error');
+            newUsernameError.textContent = newUsername.length > 0 ? '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )' : '* Cannot be empty';
+            return;
+        }
+        const response = await fetch('/change_username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newUsername: newUsername })
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('username').textContent = newUsername;
+            showAlert('success', 'Username changed successfully!');
+            var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changeUsernameModal'));
+            myModal.hide();
+        } else {
+            showAlert('danger', 'The username you entered is already taken.');
+        }
+    } catch (error) {
+        console.error('Error changing username:', error);
+        showAlert('danger', 'An error occurred while changing the username.');
+    }
+});
+
+document.getElementById('current_password').addEventListener('input', function () {
+    clearError(this);
+    document.querySelector('.current-password-error').textContent = '';
+});
+
+const passwordCheckTerms = document.querySelectorAll('.password-check span');
+document.getElementById('new_password').addEventListener('input', function () {
+    if (this.value.length > 0) {
+        document.querySelector('.password-check').style.display = 'flex';
+
+        if (this.value.length >= 8) {
+            passwordCheckTerms[0].classList.add('active');
+        } else {
+            passwordCheckTerms[0].classList.remove('active');
+        }
+        if (/[A-Z]/.test(this.value)) {
+            passwordCheckTerms[1].classList.add('active');
+        } else {
+            passwordCheckTerms[1].classList.remove('active');
+        }
+        if (/[a-z]/.test(this.value)) {
+            passwordCheckTerms[2].classList.add('active');
+        } else {
+            passwordCheckTerms[2].classList.remove('active');
+        }
+        if (/\d/.test(this.value)) {
+            passwordCheckTerms[3].classList.add('active');
+        } else {
+            passwordCheckTerms[3].classList.remove('active');
+        }
+        if (/[@$!%*?&]/.test(this.value)) {
+            passwordCheckTerms[4].classList.add('active');
+        } else {
+            passwordCheckTerms[4].classList.remove('active');
+        }
+
+        if (!passwordRegex.test(this.value)) {
+            showError(this, false);
+            document.querySelector('.password-error').textContent = '* Enter a valid password';
+        } else {
+            showError(this, true);
+            document.querySelector('.password-check').style.display = 'none';
+            document.querySelector('.password-error').textContent = '';
+        }
+
+    } else {
+        clearError(this);
+        document.querySelector('.password-check').style.display = 'none';
+        document.querySelector('.password-error').textContent = '';
+    }
+});
+
+document.getElementById('confirm_password').addEventListener('input', function () {
+    const newPasswordInput = document.getElementById('new_password');
+    if (this.value.length > 0) {
+        if (this.value !== newPasswordInput.value) {
+            showError(this, false);
+            document.querySelector('.conf-password-error').textContent = '* Passwords do not match';
+        } else {
+            showError(this, true);
+            document.querySelector('.conf-password-error').textContent = '';
+        }
+    } else {
+        clearError(this);
+        document.querySelector('.conf-password-error').textContent = '';
+    }
+});
+
+document.getElementById('change-password-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    try {
+        const currentPassword = document.getElementById('current_password').value.trim();
+        const newPassword = document.getElementById('new_password').value.trim();
+        const confirmPassword = document.getElementById('confirm_password').value.trim();
+        if (currentPassword.length === 0) {
+            document.getElementById('current_password').style.setProperty('border-color', 'red', 'important');
+            document.querySelector('.current-password-error').textContent = '* Cannot be empty';
+        }
+        if (newPassword.length === 0 || !passwordRegex.test(newPassword)) {
+            document.getElementById('new_password').style.setProperty('border-color', 'red', 'important');
+            document.querySelector('.password-error').textContent = newPassword.length > 0 ? '* Enter a valid password' : '* Cannot be empty';
+        }
+        if (confirmPassword.length === 0) {
+            document.getElementById('confirm_password').style.setProperty('border-color', 'red', 'important');
+            document.querySelector('.conf-password-error').textContent = '* Cannot be empty';
+        }
+        if (currentPassword.length === 0 || newPassword.length === 0 || confirmPassword.length === 0 || !passwordRegex.test(newPassword)) {
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showAlert('danger', 'New password and confirm password do not match.');
+            return;
+        }
+        const response = await fetch('/change_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword, confirmPassword: confirmPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            showAlert('success', 'Password changed successfully!');
+            var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changePasswordModal'));
+            myModal.hide();
+            this.reset();
+        } else {
+            showAlert('danger', 'An error occurred while changing the password.');
+        }
+    } catch (error) {
+        console.error('Error changing password:', error);
+        showAlert('danger', 'An error occurred while changing the password.');
+    }
+});
+
+document.getElementById('new_email').addEventListener('input', function () {
+    if (this.value.length > 0) {
+        if (!emailRegex.test(this.value)) {
+            showError(this, false);
+            document.querySelector('.email-error').textContent = '* Enter a valid email';
+        } else {
+            showError(this, true);
+            document.querySelector('.email-error').textContent = '';
+        }
+    } else {
+        clearError(this);
+        document.querySelector('.email-error').textContent = '';
+    }
+});
+
+document.getElementById('change-email-form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    try {
+        const newEmail = document.getElementById('new_email').value.trim();
+        if (newEmail.length === 0 || !emailRegex.test(newEmail)) {
+            showError(document.getElementById('new_email'), false);
+            const newEmailError = document.querySelector('.email-error');
+            newEmailError.textContent = newEmail.length > 0 ? '* Enter a valid email' : '* Cannot be empty';
+            return;
+        }
+        const response = await fetch('/change_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newEmail: newEmail })
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('user-email').textContent = newEmail;
+            showAlert('success', 'Email changed successfully!');
+            var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changeEmailModal'));
+            myModal.hide();
+        } else {
+            showAlert('danger', 'The email you entered is already used.');
+        }
+    } catch (error) {
+        console.error('Error changing email:', error);
+        showAlert('danger', 'An error occurred while changing the email.');
+    }
+});
 
 function showModal(modalId, subjectId = null) {
     var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId));
