@@ -22,18 +22,18 @@
 </div>
 {% elif new_user == 'false' %}
 <section class="to-do-tasks">
-    <h2><strong style="color: #efeded;">Today's Agenda</strong></h2>
+    <h2><strong style="color: var(--c-text);">Today's Agenda</strong></h2>
     <div class="agenda-card-body" id="agenda-section">
-        <div class="spinner-border" role="status">
+        <div class="spinner-border" style="color: var(--c-text);" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
         <div id="today-tasks">
-            <h3>Today</h3>
+            <h3 style="color: var(--c-text);">Today</h3>
             <hr class="agenda-separator">
             <div class="accordion" id="accordionToday">
                 <div class="accordion-item today-pending-tasks">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        <button class="accordion-button in-progress-btn" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTodayPending" aria-expanded="true"
                             aria-controls="collapseTodayPending">
                             In Progress
@@ -46,7 +46,7 @@
                 </div>
                 <div class="accordion-item today-completed-tasks">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        <button class="accordion-button accordion-completed-btn" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTodayCompleted" aria-expanded="true"
                             aria-controls="collapseTodayCompleted">
                             Completed
@@ -61,12 +61,12 @@
         </div>
 
         <div id="tomorrow-tasks">
-            <h3>Tomorrow</h3>
+            <h3 style="color: var(--c-text);">Tomorrow</h3>
             <hr class="agenda-separator">
             <div class="accordion" id="accordionTomorrow">
                 <div class="accordion-item tomorrow-pending-tasks">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        <button class="accordion-button in-progress-btn" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTomorrowPending" aria-expanded="true"
                             aria-controls="collapseTomorrowPending">
                             In Progress
@@ -79,7 +79,7 @@
                 </div>
                 <div class="accordion-item tomorrow-completed-tasks">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        <button class="accordion-button accordion-completed-btn" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTomorrowCompleted" aria-expanded="true"
                             aria-controls="collapseTomorrowCompleted">
                             Completed
@@ -100,11 +100,11 @@
 </section>
 
 <section class="quick-stats">
-    <h2><strong style="color: #efeded;">Quick Statistics</strong></h2>
+    <h2><strong style="color: var(--c-text);">Quick Statistics</strong></h2>
     <div class="quick-stats-cards">
         <div class="card">
             <div class="card-body quick-stat-card">
-                <i class="fas fa-book" style="font-size: 2.5rem; color: #aeccbe;"></i>
+                <i class="fas fa-book" style="font-size: 2.5rem; color: var(--c-accent);"></i>
                 <h4 class="card-title fw-bold">Active Subjects</h4>
                 <h3 id="total-subjects">
                     <div class="spinner-border" role="status">
@@ -122,7 +122,7 @@
         </div>
         <div class="card">
             <div class="card-body quick-stat-card">
-                <i class="fas fa-tasks" style="font-size: 2.5rem; color: #29c43b;"></i>
+                <i class="fas fa-tasks" style="font-size: 2.5rem; color: #f19c25c6;"></i>
                 <h4 class="card-title fw-bold">Pending Tasks</h4>
                 <h3 id="pending-tasks">
                     <div class="spinner-border" role="status">
@@ -148,7 +148,7 @@
         </div>
         <div class="card">
             <div class="card-body quick-stat-card">
-                <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #ffc107"></i>
+                <i class="fas fa-hourglass-end" style="font-size: 2.5rem; color: #ffc107d0"></i>
                 <h4 class="card-title fw-bold">Total Study Time</h4>
                 <h3 id="study-time">
                     <div class="spinner-border" role="status">

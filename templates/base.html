@@ -136,9 +136,9 @@
                         <input type="file" id="profile-picture-input" style="display: none;"
                             onchange="uploadProfilePicture(this)">
                         {% endif %}
-                        <strong id="username">{{ user_info[0] }}</strong>
-                        <small id="user-email">{{ user_info[1] }}</small>
-                        <small>Last Updated: {{ user_info[2] }}</small>
+                        <strong id="username" style="color: var(--c-text);">{{ user_info[0] }}</strong>
+                        <small id="user-email" style="color: var(--c-text);">{{ user_info[1] }}</small>
+                        <small style="color: var(--c-text);">Last Updated: {{ user_info[2] }}</small>
                     </div>
                     <ul class="editing-info">
                         <li>
@@ -246,7 +246,7 @@
                     <div class="modal-body">
                         <input type="text" name="subject_name" class="form-control form-input"
                             placeholder="Subject Title" autocomplete="off">
-                        <p>You can change the name of the subject later.</p>
+                        <p style="color: var(--c-text);">You can change the name of the subject later.</p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
@@ -298,7 +298,8 @@
                 <form id="renameForm" action="#" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
-                            <label for="rename-input" class="text-nowrap">Current Name:</label>
+                            <label for="rename-input" class="text-nowrap" style="color: var(--c-text);">Current
+                                Name:</label>
                             <input type="text" name="new_subject_name" class="form-control form-input"
                                 autocomplete="off" id="rename-input">
                         </div>
@@ -384,7 +385,8 @@
                 <form id="changeDeadlineForm" action="#" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
-                            <label for="new_deadline_input" class="text-nowrap">Current Deadline:</label>
+                            <label for="new_deadline_input" class="text-nowrap" style="color: var(--c-text);">Current
+                                Deadline:</label>
                             <input type="text" name="new_deadline" class="form-control form-input"
                                 id="new_deadline_input" autocomplete="off" required>
                         </div>
@@ -407,7 +409,8 @@
                 <form id="changePriorityForm" action="#" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
-                            <label for="new_priority_input" class="text-nowrap">Current Priority:</label>
+                            <label for="new_priority_input" class="text-nowrap" style="color: var(--c-text);">Current
+                                Priority:</label>
                             <select id="new_priority_input" name="new_priority" class="form-control form-select"
                                 required>
                                 <option id="high-option" value="High">High</option>
@@ -434,7 +437,8 @@
                 <form id="changeTaskSubjectForm" action="#" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%;">
-                            <label for="new_subject_input" class="text-nowrap">Current Subject:</label>
+                            <label for="new_subject_input" class="text-nowrap" style="color: var(--c-text);">Current
+                                Subject:</label>
                             <select id="new_subject_input" name="new_subject_id" class="form-control form-select"
                                 required>
                                 {% for subject in allSubjects %}
@@ -462,7 +466,8 @@
                 <form action="/change_username" id="change-username-form" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%; position: relative;">
-                            <label for="new_username" class="text-nowrap">Current Username:</label>
+                            <label for="new_username" class="text-nowrap" style="color: var(--c-text);">Current
+                                Username:</label>
                             <input type="text" class="form-control form-input" id="new_username" name="new_username"
                                 autofocus autocomplete="off" value="{{ user_info[0] }}">
                             <svg width="20px" height="20px" class="unchecked" viewBox="0 0 24 24" fill="none"
@@ -500,7 +505,8 @@
                 <form action="/change_email" id="change-email-form" method="POST">
                     <div class="modal-body">
                         <div class="d-flex flex-row align-items-center gap-2" style="width: 100%; position: relative;">
-                            <label for="new_email" class="text-nowrap">Current Email:</label>
+                            <label for="new_email" class="text-nowrap" style="color: var(--c-text);">Current
+                                Email:</label>
                             <input type="email" class="form-control form-input" id="new_email" name="new_email" required
                                 autofocus autocomplete="off" value="{{ user_info[1] }}">
                             <svg width="20px" height="20px" class="unchecked" viewBox="0 0 24 24" fill="none"
@@ -537,11 +543,12 @@
                 </div>
                 <form action="/change_password" id="change-password-form" method="POST">
                     <div class="modal-body" style="position: relative;">
-                        <label for="current_password" class="form-label">Current Password:</label>
+                        <label for="current_password" class="form-label" style="margin-bottom: -5px;">Current
+                            Password:</label>
                         <input type="password" class="form-control form-input" id="current_password"
                             name="current_password" autocomplete="off">
                         <span class="current-password-error" style="margin-right: auto; margin-bottom: 5px;"></span>
-                        <label for="new_password" class="form-label">New Password:</label>
+                        <label for="new_password" class="form-label" style="margin-bottom: -5px;">New Password:</label>
                         <input type="password" class="form-control form-input" id="new_password" name="new_password"
                             autocomplete="off">
                         <svg width="20px" height="20px" class="unchecked" viewBox="0 0 24 24" fill="none"
@@ -609,7 +616,8 @@
                                 <small>Contains special character</small>
                             </span>
                         </div>
-                        <label for="confirm_password" class="form-label">Confirm New Password:</label>
+                        <label for="confirm_password" class="form-label" style="margin-bottom: -5px;">Confirm New
+                            Password:</label>
                         <input type="password" class="form-control form-input" id="confirm_password"
                             name="confirm_password" autocomplete="off">
                         <span class="conf-password-error" style="margin-right: auto; margin-bottom: 5px;"></span>
@@ -692,17 +700,27 @@
                     <h4 class="modal-title" id="sessionEndedModalLabel">Session Finished!</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Great work! Your study session has been recorded.</p>
+                    <p style="margin-bottom: 5px !important; font-weight: bold;">Great work! Your study session has
+                        been
+                        recorded.</p>
                     <div class="session-summary">
-                        <p><strong>Session Title:</strong> <span id="session-title"></span></p>
-                        <p><strong>Session Subject:</strong> <span id="session-subject"></span></p>
-                        <p><strong>Session Duration:</strong> <span id="session-duration"></span> minutes</p>
+                        <svg width="65px" height="65px" class="done-text" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M14.5 19L16.5 21L21 16.5M21.9851 12.5499C21.995 12.3678 22 12.1845 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.4354 6.33651 21.858 11.7385 21.9966M12 6V12L15.7384 13.8692"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div>
+                            <p><strong>Session Title:</strong> <span id="session-title"></span></p>
+                            <p><strong>Session Subject:</strong> <span id="session-subject"></span></p>
+                            <p><strong>Session Duration:</strong> <span id="session-duration"></span> minutes</p>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="cancel-btn" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="save-btn" data-bs-dismiss="modal"
-                        onclick="showModal('sessionModal')">Start New Session</button>
+                        onclick="showModal('sessionModal')">Start a New Session</button>
                 </div>
             </div>
         </div>

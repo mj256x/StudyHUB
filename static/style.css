@@ -15,8 +15,8 @@
     --c-bg-panel: var(--c-deep);
     --c-bg-surface: var(--c-plum);
     --c-bg-surface-bright: var(--c-mauve);
-    --c-bg-hover: color-mix(in srgb, var(--c-plum), var(--c-mauve) 55%);
-    --c-bg-active: color-mix(in srgb, var(--c-plum), var(--c-mauve) 78%);
+    --c-bg-hover: color-mix(in srgb, var(--c-plum), var(--c-mauve) 20%);
+    --c-bg-active: color-mix(in srgb, var(--c-plum), var(--c-mauve) 85%);
     --c-track-bg: color-mix(in srgb, var(--c-bg-panel), var(--c-mauve) 22%);
 
     /* ===== Accents ===== */
@@ -39,11 +39,11 @@
     --c-border-faint: color-mix(in srgb, var(--c-mauve), var(--c-bg-panel) 50%);
 
     /* ===== Semantic status colors ===== */
-    --c-success: #1ab142;
+    --c-success: #1ab1429f;
     --c-success-strong: #58D68D;
-    --c-success-soft: color-mix(in srgb, var(--c-success), var(--c-cream) 55%);
-    --c-danger: #ce1818;
-    --c-danger-strong: #FF6B87;
+    --c-success-soft: color-mix(in srgb, var(--c-success), var(--c-cream) 45%);
+    --c-danger: #c92d2d;
+    --c-danger-strong: #f97373;
     --c-danger-deep: color-mix(in srgb, var(--c-danger), black 25%);
     --c-warning: #D9A441;
     --c-warning-strong: #F2C572;
@@ -153,13 +153,15 @@ body {
 
 .alert {
     position: fixed !important;
-    top: 25% !important;
-    right: 50% !important;
+    top: 17% !important;
+    right: 13% !important;
     transform: translate(50%, -50%) !important;
     z-index: 10000 !important;
     display: flex;
     align-items: center;
     opacity: 0;
+    width: fit-content;
+    height: 2rem;
     pointer-events: none;
 }
 
@@ -215,6 +217,7 @@ a {
 
 p {
     margin: 0 !important;
+    color: var(--c-text) !important;
 }
 
 
@@ -307,7 +310,7 @@ ul {
     border: 2px transparent solid !important;
     border-radius: 10px !important;
     color: var(--c-text) !important;
-    transition: all 0.2s linear !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
 .dropdown-item:hover {
@@ -354,7 +357,6 @@ ul {
     font-weight: 600;
 }
 
-
 .nav-btn {
     background-color: transparent !important;
     border: 2px solid var(--c-border) !important;
@@ -396,6 +398,7 @@ ul {
 }
 
 .search-input.active {
+    color: var(--c-text);
     width: 300px !important;
     opacity: 1 !important;
     pointer-events: auto !important;
@@ -406,18 +409,29 @@ ul {
     box-shadow: 0 0 10px 2px color-mix(in srgb, var(--c-accent) 50%, transparent) !important;
 }
 
+.search-input.active::-webkit-search-cancel-button {
+    display: none !important;
+}
+
+.search-input.active::placeholder {
+    color: var(--c-text-muted) !important;
+}
+
 #search-button {
     position: relative !important;
     z-index: 1001 !important;
+    color: var(--c-text);
 }
 
 .user-info {
+    background-color: var(--c-bg-panel) !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
+    gap: 5px !important;
     padding: 10px !important;
-    border-bottom: 1px solid var(--c-border-faint) !important;
+    border-radius: 10px !important;
 }
 
 .dropdown-divider {
@@ -505,6 +519,11 @@ ul {
     gap: 20px !important;
 }
 
+.no-activities-img {
+    width: 250px !important;
+    height: 250px !important;
+}
+
 .no-activities-title,
 .hero-title {
     font-family: var(--font-display);
@@ -513,6 +532,8 @@ ul {
     background: linear-gradient(135deg, var(--c-text) 0%, var(--c-accent-bright) 100%);
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    margin-top: -2rem;
+    margin-bottom: 0;
 }
 
 .no-activities-subtitle,
@@ -567,6 +588,7 @@ ul {
 }
 
 .agenda-card-body {
+    background-color: var(--c-bg-surface) !important;
     width: 100% !important;
     display: flex !important;
     flex-direction: row !important;
@@ -574,6 +596,7 @@ ul {
     align-items: center !important;
     gap: 20px !important;
     padding: 20px !important;
+    border-radius: 10px !important;
 }
 
 .done-all-card {
@@ -589,7 +612,7 @@ ul {
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    background-color: var(--c-bg-surface) !important;
+    background-color: var(--c-deep) !important;
     border: 2px transparent solid !important;
     border-radius: 10px !important;
     transition: all 0.3s linear !important;
@@ -619,11 +642,12 @@ ul {
 }
 
 .mark-done-svg {
+    color: var(--c-text) !important;
     transition: all 0.2s linear !important;
 }
 
 .mark-done-svg:hover {
-    fill: var(--c-bg-hover) !important;
+    fill: var(--c-accent) !important;
 }
 
 .mark-done-svg-1 {
@@ -639,11 +663,12 @@ ul {
     border: 2px solid transparent;
     border-radius: 10px !important;
     font-weight: bold !important;
-    width: 70px !important;
+    width: fit-content !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
+    padding: 0 10px !important;
 }
 
 .deadline-icon {
@@ -687,13 +712,13 @@ ul {
 }
 
 .custom-delete-btn:hover {
-    background-color: color-mix(in srgb, var(--c-danger) 10%, transparent) !important;
-    border-color: color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
+    background-color: color-mix(in srgb, var(--c-danger) 20%, transparent) !important;
+    border-color: color-mix(in srgb, var(--c-danger) 50%, transparent) !important;
     border-radius: 15px !important;
 }
 
 .custom-delete-icon {
-    color: color-mix(in srgb, var(--c-danger) 50%, transparent) !important;
+    color: color-mix(in srgb, var(--c-danger) 70%, transparent) !important;
     transition: all 0.2s linear !important;
 }
 
@@ -703,6 +728,7 @@ ul {
 .sort-btn,
 .rename-btn {
     background-color: transparent !important;
+    color: var(--c-text);
     border: 2px solid transparent !important;
     border-radius: 10px !important;
     display: flex !important;
@@ -781,6 +807,8 @@ ul {
     border: 2px solid transparent !important;
     border-radius: 10px !important;
     cursor: pointer !important;
+    color: var(--c-text) !important;
+    padding: 4px;
     transition: all 0.2s linear !important;
 }
 
@@ -843,9 +871,34 @@ ul {
 .progress {
     width: 100% !important;
     height: 20px !important;
-    background-color: var(--c-track-bg) !important;
+    background-color: var(--c-track-bg);
     border: 1.5px var(--c-border-faint) solid !important;
     border-radius: 8px !important;
+}
+
+.progress-animation {
+    background-color: #dee2e6;
+    animation: pr-animation 2s ease-in-out infinite forwards;
+}
+
+.placeholder-img {
+    height: 150px !important;
+    background-color: #dee2e6;
+    animation: pr-animation 2s ease-in-out infinite forwards;
+}
+
+@keyframes pr-animation {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
 }
 
 .progress-danger {
@@ -862,7 +915,7 @@ ul {
 
 .progress-nearly-success {
     background-color: var(--c-success-strong) !important;
-    border: 2px solid var(--c-success-strong) !important;
+    border: 2px solid #7ff55b !important;
     border-radius: 8px !important;
 }
 
@@ -915,33 +968,12 @@ ul {
     gap: 20px !important;
 }
 
-.delete-acc-btn {
-    background-color: color-mix(in srgb, var(--c-danger) 6%, transparent) !important;
-    height: 45px !important;
-    width: 100% !important;
-    color: var(--c-danger) !important;
-    border: 2px solid color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
-    border-radius: 10px !important;
-    cursor: pointer !important;
-    transition: all 0.2s linear !important;
-}
-
-.delete-all-btn {
-    width: fit-content !important;
-    background-color: color-mix(in srgb, var(--c-danger) 6%, transparent) !important;
-    color: var(--c-danger-strong) !important;
-    border: 2px solid color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
-    border-radius: 10px !important;
-    cursor: pointer !important;
-    padding: 10px 15px !important;
-    transition: all 0.2s linear !important;
-}
-
 .delete-subject-main-task-btn {
     background-color: color-mix(in srgb, var(--c-danger) 6%, transparent) !important;
     color: var(--c-danger-strong) !important;
     border: 2px solid color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
-    transition: all 0.2s linear !important;
+    font-weight: bold !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
 .delete-subject-main-task-btn:hover {
@@ -950,23 +982,26 @@ ul {
     border-color: var(--c-danger-strong) !important;
 }
 
+.delete-all-btn,
+.delete-acc-btn {
+    width: fit-content !important;
+    background-color: color-mix(in srgb, var(--c-danger) 10%, transparent) !important;
+    color: var(--c-danger-strong) !important;
+    border: 2px solid color-mix(in srgb, var(--c-danger) 50%, transparent) !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    height: auto !important;
+    padding: 10px !important;
+    font-weight: bold !important;
+    transition: all 0.2s linear !important;
+}
+
 .delete-all-btn:hover,
 .delete-acc-btn:hover {
     background-color: var(--c-danger-deep) !important;
-    color: var(--c-text) !important;
+    color: var(--c-danger-strong) !important;
     border-color: var(--c-danger-strong) !important;
     transform: translateY(-1px) !important;
-}
-
-.delete-all-btn:active,
-.delete-all-btn:focus,
-.delete-subject-main-task-btn:active,
-.delete-subject-main-task-btn:focus,
-.delete-acc-btn:active,
-.delete-acc-btn:focus {
-    background-color: var(--c-danger-deep) !important;
-    color: var(--c-text) !important;
-    border-color: var(--c-danger-strong) !important;
 }
 
 .warning-container {
@@ -1052,39 +1087,33 @@ ul {
     color: var(--c-text-muted) !important;
 }
 
-.add-subject-file-task-btn {
-    background-color: var(--c-bg-surface) !important;
-    border: 2px solid var(--c-border) !important;
-    width: 175px !important;
-    height: 50px !important;
-    border-radius: 10px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 5px !important;
-    transition: all 0.2s linear !important;
-}
-
 .show-btn {
     background-color: var(--c-bg-surface) !important;
     border: 2px solid var(--c-border) !important;
-    width: 50px !important;
-    height: 50px !important;
+    color: var(--c-text) !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: auto !important;
+    padding: 10px !important;
     border-radius: 10px !important;
 }
 
+.add-subject-file-task-btn,
 .show-completed-btn {
     background-color: var(--c-bg-surface) !important;
     border: 2px solid var(--c-border) !important;
-    width: 150px !important;
-    height: 50px !important;
+    width: fit-content !important;
+    height: auto !important;
+    padding: 10px !important;
     border-radius: 10px !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 5px !important;
+    color: var(--c-text) !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
 .add-subject-file-task-btn:hover,
@@ -1101,8 +1130,6 @@ ul {
 .show-completed-btn:focus {
     background-color: var(--c-bg-active) !important;
 }
-
-
 
 .modal-content {
     background-color: var(--c-bg-surface) !important;
@@ -1139,6 +1166,195 @@ ul {
     margin-top: 10px !important;
 }
 
+/* ==========================================================================
+   Flatpickr Complete Custom Theme (Powered by Your CSS Variables)
+   ========================================================================== */
+
+/* 1. The Input Field */
+input[type="text"].flatpickr-input,
+.flatpickr-input {
+    background-color: var(--c-bg-panel) !important;
+    color: var(--c-text) !important;
+    border: 1px solid var(--c-border) !important;
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+
+input[type="text"].flatpickr-input:focus,
+.flatpickr-input:focus {
+    border-color: var(--c-border-strong) !important;
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-accent) 30%, transparent);
+}
+
+input[type="text"].flatpickr-input::placeholder {
+    color: var(--c-text-muted) !important;
+    opacity: 0.7;
+}
+
+/* 2. Calendar Container */
+.flatpickr-calendar {
+    background: var(--c-bg-panel) !important;
+    color: var(--c-text) !important;
+    border: 1px solid var(--c-border) !important;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    width: 320px;
+}
+
+/* Tooltip/Dropdown arrows */
+.flatpickr-calendar.arrowTop:before,
+.flatpickr-calendar.arrowTop:after {
+    border-bottom-color: var(--c-bg-panel) !important;
+}
+
+.flatpickr-calendar.arrowBottom:before,
+.flatpickr-calendar.arrowBottom:after {
+    border-top-color: var(--c-bg-panel) !important;
+}
+
+/* 3. Header & Navigation (Month / Year) */
+.flatpickr-months {
+    background: var(--c-bg-surface) !important;
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+    padding: 8px;
+}
+
+.flatpickr-current-month {
+    color: var(--c-text) !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    color: var(--c-text) !important;
+    font-weight: 600;
+    background: transparent !important;
+}
+
+.flatpickr-monthDropdown-months {
+    background: var(--c-bg-surface) !important;
+    color: var(--c-text) !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    fill: var(--c-text) !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: var(--c-bg-hover) !important;
+    border-radius: 50%;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    transition: fill 0.2s;
+}
+
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg {
+    fill: var(--c-highlight) !important;
+}
+
+/* 4. Weekdays Header */
+.flatpickr-weekdays {
+    background: var(--c-bg-surface) !important;
+}
+
+span.flatpickr-weekday {
+    color: var(--c-text-muted) !important;
+    font-weight: 600;
+}
+
+/* 5. Days Grid */
+.flatpickr-days {
+    background: var(--c-bg-panel) !important;
+}
+
+.flatpickr-day {
+    color: var(--c-text) !important;
+    border-radius: 6px !important;
+    border: 1px solid transparent !important;
+}
+
+.flatpickr-day:hover {
+    background: var(--c-bg-hover) !important;
+    border-color: var(--c-border-faint) !important;
+    color: var(--c-highlight) !important;
+}
+
+.flatpickr-day.today {
+    border-color: var(--c-border-strong) !important;
+    background: transparent;
+    color: var(--c-highlight) !important;
+}
+
+.flatpickr-day.today:hover {
+    background: var(--c-bg-hover) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: var(--c-accent) !important;
+    border-color: var(--c-accent-bright) !important;
+    color: var(--c-text-on-light) !important;
+    font-weight: bold;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--c-text-faint) !important;
+}
+
+/* 6. Time Picker (for Y-m-d H:i format) */
+.flatpickr-time {
+    background: var(--c-bg-panel) !important;
+    border-top: 1px solid var(--c-border-faint) !important;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    color: var(--c-text) !important;
+}
+
+.flatpickr-time input {
+    color: var(--c-text) !important;
+    background: var(--c-bg-surface) !important;
+    font-weight: 600;
+}
+
+.flatpickr-time input:hover,
+.flatpickr-time input:focus {
+    background: var(--c-bg-hover) !important;
+}
+
+.flatpickr-time .flatpickr-am-pm {
+    color: var(--c-text) !important;
+    background: var(--c-bg-surface) !important;
+    font-weight: 600;
+}
+
+.flatpickr-time .flatpickr-am-pm:hover {
+    background: var(--c-bg-hover) !important;
+    color: var(--c-highlight) !important;
+}
+
+.flatpickr-time .flatpickr-time-separator {
+    color: var(--c-text-muted) !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowUp:after {
+    border-bottom-color: var(--c-text) !important;
+}
+
+.flatpickr-time .numInputWrapper span.arrowDown:after {
+    border-top-color: var(--c-text) !important;
+}
+
+.flatpickr-time .numInputWrapper span:hover {
+    background: var(--c-bg-hover) !important;
+}
+
 .form-input,
 .form-select {
     background-color: var(--c-bg-surface-bright) !important;
@@ -1160,11 +1376,27 @@ ul {
     align-items: center !important;
     width: 100% !important;
     margin-top: 10px !important;
-    margin-bottom: -5px !important;
+    color: var(--c-text) !important;
+}
+
+input,
+select {
+    color: var(--c-text) !important;
 }
 
 .modal.show .modal-dialog {
     animation: zoomIn 0.3s ease-out;
+    overflow: visible !important;
+}
+
+.modal-body input::placeholder {
+    color: var(--c-text-muted) !important;
+}
+
+.modal-title {
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    color: var(--c-text) !important;
 }
 
 .modal-footer {
@@ -1195,10 +1427,11 @@ ul {
 
 .done-text {
     color: var(--c-success-strong) !important;
+    font-weight: bold !important;
 }
 
 .done-btn-active {
-    background-color: color-mix(in srgb, var(--c-success) 75%, transparent) !important;
+    background-color: color-mix(in srgb, var(--c-success) 50%, transparent) !important;
     border-color: var(--c-success-strong) !important;
     transition: all 0.2s linear !important;
 }
@@ -1219,7 +1452,7 @@ ul {
 }
 
 .done-dots-btn:hover {
-    background-color: var(--c-success-strong) !important;
+    background-color: var(--c-success) !important;
     border-color: var(--c-success-strong) !important;
 }
 
@@ -1253,10 +1486,9 @@ ul {
 }
 
 .quick-stat-card {
-    background-color: var(--c-bg-panel);
+    background-color: var(--c-bg-surface);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .view-btn {
@@ -1269,7 +1501,7 @@ ul {
 }
 
 .view-btn:hover {
-    background-color: var(--c-accent-hover) !important;
+    background-color: color-mix(in srgb, var(--c-accent) 40%, transparent) !important;
     border-color: var(--c-border) !important;
 }
 
@@ -1295,9 +1527,22 @@ ul {
 }
 
 .accordion-button {
-    background-color: var(--c-bg-panel) !important;
+    background-color: var(--c-bg-surface) !important;
     color: var(--c-text) !important;
+    border: 2px solid var(--c-border);
     transition: all 0.2s linear !important;
+}
+
+.accordion-button:not(.collapsed) {
+    box-shadow: none !important;
+}
+
+.in-progress-btn {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.accordion-completed-btn {
+    border-radius: 0 0 10px 10px !important;
 }
 
 .accordion-button:hover {
@@ -1310,7 +1555,24 @@ ul {
     box-shadow: none !important;
 }
 
+.accordion-body {
+    background-color: var(--c-bg-surface) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    border-left: 2px solid var(--c-border) !important;
+    border-right: 2px solid var(--c-border) !important;
+}
+
+.today-completed-tasks-body,
+.tomorrow-completed-tasks-body {
+    border-bottom: 2px solid var(--c-border) !important;
+}
+
 .msg {
+    color: var(--c-text-muted) !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
@@ -1321,7 +1583,7 @@ ul {
 }
 
 .task-card {
-    background-color: var(--c-bg-surface) !important;
+    background-color: var(--c-bg-panel) !important;
     border: 2px transparent solid !important;
     border-radius: 10px !important;
     display: flex !important;
@@ -1336,22 +1598,15 @@ ul {
 }
 
 .task-card:hover {
-    background-color: var(--c-bg-hover) !important;
+    background-color: color-mix(in srgb, var(--c-bg-hover) 60%, transparent) !important;
     border-color: var(--c-border) !important;
+    transform: translateY(-2px) !important;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .task-card.done-card {
     background-color: color-mix(in srgb, var(--c-success) 60%, transparent) !important;
     border-color: var(--c-success-strong) !important;
-}
-
-.accordion-body {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 10px !important;
 }
 
 .create-btn {
@@ -1546,9 +1801,14 @@ ul {
 .session-summary {
     width: 100% !important;
     padding: 10px !important;
-    background-color: var(--c-success-soft) !important;
+    background-color: color-mix(in srgb, var(--c-success) 60%, transparent) !important;
     border-left: 4px solid var(--c-success-strong) !important;
     border-radius: 4px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 20px !important;
 }
 
 .sessions-summary-cards-container {
@@ -1575,6 +1835,10 @@ ul {
     user-select: none !important;
 }
 
+.session-summary-card svg {
+    color: var(--c-text);
+}
+
 .session-summary-card:hover {
     background-color: var(--c-bg-hover) !important;
     border-color: var(--c-border) !important;
@@ -1589,10 +1853,15 @@ ul {
     align-items: flex-start !important;
 }
 
-.summary-title,
-.pomodoro-title {
+.summary-title {
     font-size: 1rem !important;
     color: var(--c-text-muted) !important;
+}
+
+.pomodoro-title {
+    color: var(--c-text) !important;
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
 }
 
 .summary-value,
@@ -1604,24 +1873,57 @@ ul {
     user-select: none !important;
 }
 
-.summary-value {
+.summary-value,
+.file-link,
+.subject-link {
     display: block !important;
     min-width: 250px !important;
 }
 
-.summary-value .placeholder-glow {
+.card-header-content.main-task-header {
+    display: flex !important;
+    min-width: 200px !important;
+}
+
+.summary-value .placeholder-glow,
+.file-link .placeholder-glow,
+.subject-link .placeholder-glow,
+.subject-name .placeholder-glow,
+.session-title .placeholder-glow,
+.session-date .placeholder-glow,
+.sub-task-container .placeholder-wave,
+.card-header .placeholder-glow {
     display: block !important;
     width: 100% !important;
     min-height: 1rem !important;
 }
 
-.summary-value .placeholder {
+.summary-value .placeholder,
+.file-link .placeholder,
+.subject-link .placeholder,
+.subject-name .placeholder,
+.session-title .placeholder,
+.session-date .placeholder {
     margin-top: 10px;
     margin-bottom: -5px;
     display: block !important;
     width: 100% !important;
     height: 1rem !important;
     border-radius: 10px;
+}
+
+.card-header .placeholder {
+    display: block !important;
+    width: 100% !important;
+    height: 2rem !important;
+    border-radius: 10px;
+}
+
+.sub-task-container .placeholder,
+.sub-task-container .placeholder-wave {
+    display: block !important;
+    border-radius: 10px !important;
+    height: 4rem !important;
 }
 
 .sessions-details {
@@ -1705,9 +2007,9 @@ th {
     border-bottom-right-radius: 15px !important;
 }
 
-.custom-table tfoot tr td.pagination-controls {
+.custom-table tfoot tr td .pagination-controls {
     width: 100% !important;
-    padding-left: 50% !important;
+    margin: auto 32% !important;
 }
 
 .session-search,
@@ -1741,7 +2043,8 @@ th {
 }
 
 .active-badge {
-    width: 80px !important;
+    width: fit-content !important;
+    padding: 0px 4px;
     height: 20px !important;
     display: flex !important;
     flex-direction: row !important;

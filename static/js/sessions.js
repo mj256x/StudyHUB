@@ -415,6 +415,10 @@ function renderSubjectsMenu() {
     }
 }
 
+document.querySelector('.filterbytopSubject')?.addEventListener('click', function () {
+    filterBySubject(document.getElementById('top-subject').textContent, document.querySelector(`.dropdown-item[data-active="false"][onclick*="${document.getElementById('top-subject').textContent}"]`));
+});
+
 function resetFilter() {
     const sessionRows = document.querySelectorAll('.session-row');
     if (sessionRows.length > 0) {
@@ -531,12 +535,14 @@ function sortInputs() {
         enableTime: true,
         dateFormat: "Y-m-d H:i",
         allowInput: true,
+        position: "above",
     });
 
     flatpickr("#end_date", {
         enableTime: true,
         dateFormat: "Y-m-d H:i",
         allowInput: true,
+        position: "above",
     });
 }
 
@@ -680,6 +686,39 @@ document.getElementById('sessionForm').addEventListener('submit', async function
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(() => {
+        const placeholderElements = document.querySelectorAll('.placeholder-glow');
+        if (placeholderElements.length > 0) {
+            placeholderElements.forEach(element => {
+                element.style.setProperty('display', 'none', 'important');
+            });
+        }
+        const subjectNameElements = document.querySelectorAll('.subject-name-text');
+        if (subjectNameElements.length > 0) {
+            subjectNameElements.forEach(element => {
+                element.style.setProperty('display', 'block', 'important');
+            });
+        }
+        const sessionTitleElements = document.querySelectorAll('.session-title-text');
+        if (sessionTitleElements.length > 0) {
+            sessionTitleElements.forEach(element => {
+                element.style.setProperty('display', 'block', 'important');
+            });
+        }
+        const progressElements = document.querySelectorAll('.progress');
+        if (progressElements.length > 0) {
+            progressElements.forEach(element => {
+                element.classList.remove('progress-animation');
+            });
+        }
+        const sessionDateElements = document.querySelectorAll('.session-date-text');
+        if (sessionDateElements.length > 0) {
+            sessionDateElements.forEach(element => {
+                element.style.setProperty('display', 'block', 'important');
+            });
+        }
+    }, 700);
+
     getSessionsSummary();
     resetFilter();
     updateSessionTable(1);
@@ -687,16 +726,18 @@ document.addEventListener('DOMContentLoaded', function () {
     getSubjects();
     renderSubjectsMenu();
 
-    const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
-    if (progressBars.length > 0) {
-        progressBars.forEach(bar => {
-            let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
-            let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;
-            let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
-            bar.style.setProperty('width', `${progressPercentage}%`);
-            bar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
-        });
-    }
+    setTimeout(() => {
+        const progressBars = document.querySelectorAll('.progress-bar.progress-bar-striped.progress-bar-animated');
+        if (progressBars.length > 0) {
+            progressBars.forEach(bar => {
+                let totalDurationMinutes = parseInt(bar.parentElement.getAttribute('data-session-full-period')) || 0;
+                let elapsedMinutes = parseInt(bar.parentElement.getAttribute('data-session-duration')) || 0;
+                let progressPercentage = (elapsedMinutes / totalDurationMinutes) * 100;
+                bar.style.setProperty('width', `${progressPercentage}%`);
+                bar.parentElement.querySelector('.progress-text').textContent = `${elapsedMinutes} / ${totalDurationMinutes}`;
+            });
+        }
+    }, 1000);
 
     const activeSessionCard = document.querySelector('.active-session');
     const inactiveSessionCard = document.querySelector('.inactive-session');

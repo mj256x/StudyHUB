@@ -2,7 +2,7 @@ from io import BytesIO
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 from database import get_db, supabase
 from math import floor
-
+import pymupdf
 subjects_bp = Blueprint('subjects', __name__)
 
 
@@ -22,12 +22,14 @@ def subjects():
         for subject in subjects_data:
             subject_id = subject[0]
             cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-            files_num = cursor.fetchone()[0]
+            files_num = cursor.fetchone()[0] or 0
             cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ? AND is_completed = 1", (subject_id, session['user_id']))
-            completed_files = cursor.fetchone()[0]
+            completed_files = cursor.fetchone()[0] or 0
             progress = 0
             if files_num > 0:
                 progress = floor(int((completed_files / files_num) * 100))
+            else:
+                progress = 0
             subjects.append((subject[0], subject[1], subject[2], subject[3], progress, files_num))
         cursor.close()
     except Exception as e:
@@ -151,6 +153,8 @@ def delete_subject(subject_id):
         files = cursor.fetchall()
         for file in files:
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
+            if file[0].rsplit('.', 1)[-1].lower() == 'pdf':
+                supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file[0]}.jpg"])
 
         cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         cursor.execute("DELETE FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
@@ -206,6 +210,8 @@ def delete_all_subjects():
             subject_id = file[0]
             file_name = file[1]
             supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
+            if file_name.rsplit('.', 1)[-1].lower() == 'pdf':
+                supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file_name}.jpg"])
         cursor.execute("DELETE FROM files WHERE user_id = ?", (session['user_id'],))
         cursor.execute("DELETE FROM subjects WHERE user_id = ?", (session['user_id'],))
         conn.commit()
@@ -225,7 +231,7 @@ def subject_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, file_url, id, is_completed, subject_id FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name, file_url, id, is_completed, subject_id, thumbnail_url FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
         subject_name = cursor.fetchone()
@@ -251,6 +257,13 @@ def upload_file(subject_id):
     if len(file.filename) > 30:
         flash('File name is too long.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=subject_id))
+    
+    file_ext = file.filename.rsplit('.', 1)[-1].lower() if '.' in file.filename else ''
+
+    if file_ext not in ['pdf', 'docx'] or file_ext == '':
+        flash('Invalid file type. Only PDF and DOCX files are allowed.', 'danger')
+        return redirect(url_for('subjects.subject_files', subject_id=subject_id))
+        
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -260,23 +273,50 @@ def upload_file(subject_id):
             flash('File already exists.', 'warning')
             return redirect(url_for('subjects.subject_files', subject_id=subject_id))
         
+        # 1. Read the file bytes ONCE into memory
+        file_bytes = file.read()
+        
+        # 2. Upload original file to Supabase using the bytes variable
         filename = f"{subject_id}/{file.filename}"
         supabase.storage.from_("files").upload(
             path=filename,
-            file=file.read(),
+            file=file_bytes,
             file_options={"content-type": file.content_type}
         )
         
         file_url = supabase.storage.from_("files").get_public_url(filename)
-        
-        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
-                (subject_id, file.filename, file_url, session['user_id']))
+
+        # Default fallback thumbnail URL for non-PDFs (like DOCX)
+        thumbnail_url = url_for('static', filename='images/word.jpg')
+
+        # 3. Handle PDF thumbnail generation using the exact same file_bytes
+        if file_ext == 'pdf':
+            thumbnail_path = f"{subject_id}/thumb_{file.filename}.jpg"
+            try:
+                doc = pymupdf.open(stream=file_bytes, filetype="pdf")
+                page = doc.load_page(0)
+                pix = page.get_pixmap(dpi=150)
+                img_bytes = pix.tobytes("jpg")
+                
+                supabase.storage.from_("files").upload(
+                    path=thumbnail_path,
+                    file=img_bytes,
+                    file_options={"content-type": "image/jpeg"}
+                )
+                thumbnail_url = supabase.storage.from_("files").get_public_url(thumbnail_path)
+            except Exception as e:
+                print(f"Error generating PDF thumbnail: {e}")
+                thumbnail_url = url_for('static', filename='images/word.jpg')
+
+        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id, thumbnail_url) VALUES (?, ?, ?, ?, ?)",
+                (subject_id, file.filename, file_url, session['user_id'], thumbnail_url))
         conn.commit()
         cursor.close()
         flash('File uploaded successfully.', 'success')
     except Exception as e:
         print(f'Error occurred while uploading file: {e}')
         flash('An error occurred while uploading the file.', 'danger')
+        
     return redirect(url_for('subjects.subject_files', subject_id=subject_id))
 
 @subjects_bp.route('/toggle_done/<int:file_id>', methods=['POST'])
@@ -337,15 +377,25 @@ def move_file(file_id):
         new_path = f"{new_subject_id}/{file_name}"
         supabase.storage.from_("files").move(old_path, new_path)
         new_file_url = supabase.storage.from_("files").get_public_url(new_path)
-        cursor.execute("UPDATE files SET subject_id = ?, file_url = ? WHERE id = ? AND user_id = ?",
-                        (new_subject_id, new_file_url, file_id, session['user_id']))
+        file_ext = file_name.rsplit('.', 1)[-1].lower() if '.' in file_name else ''
+        if file_ext == 'pdf':
+            thumb_old_path = f"{old_subject_id}/thumb_{file_name}.jpg"
+            thumb_new_path = f"{new_subject_id}/thumb_{file_name}.jpg"
+            supabase.storage.from_("files").move(thumb_old_path, thumb_new_path)
+            new_thumbnail_url = supabase.storage.from_("files").get_public_url(thumb_new_path)
+            cursor.execute("UPDATE files SET subject_id = ?, file_url = ?, thumbnail_url = ? WHERE id = ? AND user_id = ?",
+                        (new_subject_id, new_file_url, new_thumbnail_url, file_id, session['user_id']))
+        else:
+            thumbnail_url = url_for('static', filename='images/word.jpg')
+            cursor.execute("UPDATE files SET subject_id = ?, file_url = ?, thumbnail_url = ? WHERE id = ? AND user_id = ?",
+                        (new_subject_id, new_file_url, thumbnail_url, file_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('File moved successfully!', 'success')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     except Exception as e:
         print(f"Error moving file: {e}")
-        flash('An error occurred while moving the file.', 'danger')
+        flash('This file already exists in the destination subject.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
 
 @subjects_bp.route('/copy_file/<int:file_id>', methods=['POST'])
@@ -365,15 +415,25 @@ def copy_file(file_id):
         new_path = f"{new_subject_id}/{file_name}"
         supabase.storage.from_("files").copy(old_path, new_path)
         new_file_url = supabase.storage.from_("files").get_public_url(new_path)
-        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id) VALUES (?, ?, ?, ?)",
-                    (new_subject_id, file_name, new_file_url, session['user_id']))
+        file_ext = file_name.rsplit('.', 1)[-1].lower() if '.' in file_name else ''
+        if file_ext == 'pdf':
+            thumb_old_path = f"{old_subject_id}/thumb_{file_name}.jpg"
+            thumb_new_path = f"{new_subject_id}/thumb_{file_name}.jpg"
+            supabase.storage.from_("files").copy(thumb_old_path, thumb_new_path)
+            new_thumbnail_url = supabase.storage.from_("files").get_public_url(thumb_new_path)
+            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (?, ?, ?, ?, ?)",
+                    (new_subject_id, file_name, new_file_url, new_thumbnail_url, session['user_id']))
+        else:
+            thumbnail_url = url_for('static', filename='images/word.jpg')
+            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (?, ?, ?, ?, ?)",
+                    (new_subject_id, file_name, new_file_url, thumbnail_url, session['user_id']))
         conn.commit()
         cursor.close()
         flash('File copied successfully!', 'success')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     except Exception as e:
         print(f"Error copying file: {e}")
-        flash('An error occurred while copying the file.', 'danger')
+        flash('The file is already in the destination subject.', 'danger')
         return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
     
 @subjects_bp.route('/delete_file/<int:file_id>', methods=['POST'])
@@ -387,6 +447,8 @@ def delete_file(file_id):
         file_record = cursor.fetchone()
         file_name = file_record[0]
         subject_id = file_record[1]
+        if file_name.rsplit('.', 1)[-1].lower() == 'pdf':
+            supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file_name}.jpg"])
         supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
         cursor.execute("DELETE FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
         conn.commit()
@@ -407,6 +469,8 @@ def delete_all_files(subject_id):
         cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         files = cursor.fetchall()
         for file in files:
+            if file[0].rsplit('.', 1)[-1].lower() == 'pdf':
+                supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file[0]}.jpg"])
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
         cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
         conn.commit()

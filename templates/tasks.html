@@ -12,8 +12,10 @@
             class="card {% if main_task[5] %}done-border done-all-card{% endif %}">
             <div id="main-task-header-{{ main_task[0] }}"
                 class="card-header {% if main_task[5] %}done-border-bottom{% endif %}">
-                <div class="card-header-content">
-                    <h4 class="card-title">{{ main_task[1] }}</h4>
+                <div class="card-header-content main-task-header" style="display: none !important;">
+                    <h4 class="card-title main-task-title {% if main_task[5] %}done-text{% endif %}" {%if main_task[5]
+                        %}style="text-decoration: line-through;" {% endif %}>{{
+                        main_task[1] }}</h4>
                     <div class="d-flex align-items-center gap-2">
                         <small class="deadline-icon main-task-deadline" title="Deadline: {{ main_task[2] }}">
                             <svg width="14px" height="14px" viewBox="0 0 24 24" fill="none"
@@ -28,6 +30,9 @@
                         <small class="priority-icon">{{ main_task[4] }}</small>
                     </div>
                 </div>
+                <p class="placeholder-glow">
+                    <span class="placeholder col-12"></span>
+                </p>
                 <div class="dropdown">
                     <button id="dots-btn-{{ main_task[0] }}" onclick="doneButtonDisabled('{{ main_task[0] }}')"
                         class="dots-btn dropdown-toggle dropdown-link {% if main_task[5] %}done-dots-btn{% endif %}"
@@ -150,13 +155,15 @@
                     </ul>
                 </div>
             </div>
-            <div class="card-body" id="sub-tasks-container-{{ main_task[0] }}">
+            <div class="card-body sub-task-container" id="sub-tasks-container-{{ main_task[0] }}">
                 {% for sub_task in sub_tasks if sub_task[3] == main_task[0] %}
-                <div id="sub-task-card-{{ sub_task[0] }}" class="sub-task-card {% if sub_task[5] %}done-card{% endif %}"
+                <div id="sub-task-card-{{ sub_task[0] }}" style="display: none !important;"
+                    class="sub-task-card {% if sub_task[5] %}done-card{% endif %}"
                     data-sub-task-priority="{{ sub_task[4] }}" data-sub-task-main-task-id="{{ sub_task[3] }}"
                     data-sub-task-deadline="{{ sub_task[2] }}" data-sub-task-id="{{ sub_task[0] }}">
-                    <span id="sub-task-text-{{ sub_task[0] }}" class="{% if sub_task[5] %}done-text{% endif %}" {% if
-                        sub_task[5] %} style="text-decoration: line-through;" {% endif %}>
+                    <span id="sub-task-text-{{ sub_task[0] }}"
+                        class="sub-task-title {% if sub_task[5] %}done-text{% endif %}" {% if sub_task[5] %}
+                        style="text-decoration: line-through;" {% endif %}>
                         {{ sub_task[1] }}
                     </span>
                     <div class="d-flex align-items-center gap-2">
@@ -250,14 +257,21 @@
                         </button>
                     </div>
                 </div>
+                <p class="placeholder-wave">
+                    <span class="placeholder col-12"></span>
+                </p>
                 {% else %}
-                <div class="d-flex flex-column align-items-center justify-content-center">
+                <div class="d-flex flex-column align-items-center justify-content-center no-sub-tasks-msg"
+                    style="display: none !important;">
                     <p>No sub-tasks yet. Add a new sub-task.</p>
                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 4V20M12 20L18 14M12 20L6 14" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </div>
+                <p class="placeholder-wave">
+                    <span class="placeholder col-12"></span>
+                </p>
                 {% endfor %}
             </div>
             <div id="main-task-footer-{{ main_task[0] }}"
@@ -707,6 +721,7 @@
 </div>
 {% else %}
 <div class="no-activities-container">
+    <img class="no-activities-img" src="{{ url_for('static', filename='images/noTasks.png') }}" alt="No Tasks Found">
     <h1 class="no-activities-title">No Tasks Found</h1>
     <p class="no-activities-subtitle">You haven't added any tasks yet. Click the button below to add your first
         task.</p>

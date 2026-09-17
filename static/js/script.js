@@ -350,14 +350,37 @@ function showAlert(type, message) {
     }
 }
 
-function noResultsMsg(message, buttonFunction, buttonText) {
+function noResultsMsg(message, buttonFunction, buttonText, NoMatchIcon = false) {
+    let svgElement = ``;
+    if (NoMatchIcon) {
+        svgElement = `<svg width="250px" height="250px" viewBox="0 0 764 576" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="368.367" cy="264.859" r="264.859" fill="#E8F5FF"/>
+                            <circle cx="368.367" cy="264.859" r="207.016" fill="#BFE3FF"/>
+                            <path d="M369.744 525.971C345.427 550.825 311.511 566.25 273.992 566.25C229.209 566.25 189.559 544.274 165.238 510.518C153.232 543.052 121.946 566.25 85.2419 566.25C38.1642 566.25 0 528.086 0 481.008C0 433.93 38.1642 395.766 85.2419 395.766C106.544 395.766 126.02 403.58 140.963 416.497C148.781 349.965 205.358 298.347 273.992 298.347C320.235 298.347 361.005 321.779 385.076 357.418C405.118 341.407 430.529 331.835 458.175 331.835C509.188 331.835 552.589 364.424 568.694 409.918C580.972 402.852 595.211 398.811 610.393 398.811C654.965 398.811 691.401 433.641 693.968 477.569C698.77 475.854 703.943 474.919 709.335 474.919C734.555 474.919 755 495.364 755 520.585C755 545.805 734.555 566.25 709.335 566.25C691.939 566.25 676.815 556.523 669.105 542.212C653.995 557.078 633.265 566.25 610.393 566.25C582.178 566.25 557.224 552.293 542.056 530.906C520.772 552.712 491.055 566.25 458.175 566.25C422.882 566.25 391.232 550.651 369.744 525.971Z" fill="#F8FDFF"/>
+                            <path d="M755 520.585C755 495.364 734.555 474.919 709.335 474.919C703.943 474.919 698.77 475.854 693.968 477.569C691.401 433.641 654.965 398.811 610.393 398.811C595.211 398.811 580.972 402.852 568.694 409.918C552.588 364.424 509.188 331.835 458.175 331.835C430.529 331.835 405.117 341.407 385.075 357.418C361.005 321.779 320.235 298.347 273.992 298.347C205.358 298.347 148.781 349.965 140.963 416.497C126.02 403.58 106.544 395.766 85.2419 395.766C56.9698 395.766 31.9124 409.53 16.4049 430.723" stroke="#006DBE" stroke-width="16.8548" stroke-linecap="round"/>
+                            <circle cx="477.133" cy="137.133" r="9.13307" stroke="#005EA3" stroke-width="12.6411"/>
+                            <circle cx="639.089" cy="312.089" r="6.08871" stroke="#005EA3" stroke-width="12.6411"/>
+                            <circle cx="103.7" cy="290.7" r="13.6996" stroke="#005EA3" stroke-width="12.6411"/>
+                            <path d="M240.399 228.327H210.06M261.814 202.062V176.573" stroke="#006DBE" stroke-width="12.6411" stroke-linecap="round"/>
+                            <path d="M242.184 207.46L222.004 187.28" stroke="#006DBE" stroke-width="12.6411" stroke-linecap="round"/>
+                            <circle cx="360.756" cy="318.135" r="86.7641" fill="#E8F5FF"/>
+                            <rect x="438.412" y="355.606" width="169.696" height="60.7331" rx="30.3666" transform="rotate(45 438.412 355.606)" fill="#004476"/>
+                            <circle cx="361.363" cy="321.503" r="86.0248" transform="rotate(45 361.363 321.503)" stroke="#004476" stroke-width="49.4477"/>
+                            <rect width="73.1686" height="12.6153" rx="6.30764" transform="matrix(-0.707107 -0.707107 -0.707107 0.707107 391.691 342.965)" fill="#006DBE"/>
+                            <rect width="73.1686" height="12.6153" rx="6.30763" transform="matrix(-0.707107 0.707107 0.707107 0.707107 382.771 291.227)" fill="#006DBE"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M370.528 177C366.792 176.765 363.573 179.602 363.337 183.337C363.102 187.073 365.939 190.292 369.675 190.528C400.445 192.468 430.646 205.19 454.16 228.704C471.008 245.553 482.309 265.825 488.08 287.275C489.053 290.889 492.771 293.031 496.385 292.058C500 291.086 502.141 287.367 501.169 283.753C494.797 260.072 482.316 237.692 463.744 219.12C437.808 193.184 404.465 179.14 370.528 177ZM345.79 189.188C349.533 189.188 352.567 186.154 352.567 182.411C352.567 178.668 349.533 175.634 345.79 175.634C342.047 175.634 339.013 178.668 339.013 182.411C339.013 186.154 342.047 189.188 345.79 189.188Z" fill="#006DBE"/>
+                            <path d="M456.851 400.726L525.978 469.853" stroke="white" stroke-width="18.7606" stroke-linecap="round"/>
+                    </svg>`;
+    } else {
+        svgElement = `<svg width="100px" height="100px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 10.5V7M12 14H12.01M7 18V20.3355C7 20.8684 7 21.1348 7.10923 21.2716C7.20422 21.3906 7.34827 21.4599 7.50054 21.4597C7.67563 21.4595 7.88367 21.2931 8.29976 20.9602L10.6852 19.0518C11.1725 18.662 11.4162 18.4671 11.6875 18.3285C11.9282 18.2055 12.1844 18.1156 12.4492 18.0613C12.7477 18 13.0597 18 13.6837 18H16.2C17.8802 18 18.7202 18 19.362 17.673C19.9265 17.3854 20.3854 16.9265 20.673 16.362C21 15.7202 21 14.8802 21 13.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V14C3 14.93 3 15.395 3.10222 15.7765C3.37962 16.8117 4.18827 17.6204 5.22354 17.8978C5.60504 18 6.07003 18 7 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>`;
+    }
     const main = document.querySelector('main');
     if (main) {
         const noResultsMessage = `
                     <div class="no-results-message">
-                        <svg width="100px" height="100px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 10.5V7M12 14H12.01M7 18V20.3355C7 20.8684 7 21.1348 7.10923 21.2716C7.20422 21.3906 7.34827 21.4599 7.50054 21.4597C7.67563 21.4595 7.88367 21.2931 8.29976 20.9602L10.6852 19.0518C11.1725 18.662 11.4162 18.4671 11.6875 18.3285C11.9282 18.2055 12.1844 18.1156 12.4492 18.0613C12.7477 18 13.0597 18 13.6837 18H16.2C17.8802 18 18.7202 18 19.362 17.673C19.9265 17.3854 20.3854 16.9265 20.673 16.362C21 15.7202 21 14.8802 21 13.2V7.8C21 6.11984 21 5.27976 20.673 4.63803C20.3854 4.07354 19.9265 3.6146 19.362 3.32698C18.7202 3 17.8802 3 16.2 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V14C3 14.93 3 15.395 3.10222 15.7765C3.37962 16.8117 4.18827 17.6204 5.22354 17.8978C5.60504 18 6.07003 18 7 18Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        ${svgElement}
                         <p>${message}</p>
                         <button class="create-btn" onclick="${buttonFunction}">${buttonText}</button>
                     </div>
@@ -373,31 +396,62 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
 });
 
+function clearNoResultsMsg() {
+    document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
+    document.querySelectorAll('.hidden-card').forEach(card => {
+        card.classList.remove('hidden-card');
+    });
+    document.querySelectorAll('.Nomatch-card').forEach(card => {
+        card.classList.remove('Nomatch-card');
+    });
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('search-input');
+    searchInput.value = '';
+    document.querySelectorAll('[data-searchable-item]').forEach(card => {
+        card.style.display = '';
+    });
+    clearNoResultsMsg();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+
+    if (window.location.pathname === '/sessions_history' || window.location.pathname === '/index') {
+        document.querySelector('.search-container').style.setProperty('display', 'none', 'important');
+    }
 
     flatpickr("#deadline", {
         dateFormat: "Y-m-d",
-        locale: "en"
+        locale: "en",
+        static: false
     });
 
     const searchInput = document.getElementById('search-input');
     searchInput.addEventListener('input', () => {
-        document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
-        document.querySelectorAll('.hidden-card').forEach(card => {
-            card.classList.remove('hidden-card');
-        });
+        clearNoResultsMsg();
         const term = searchInput.value.toLowerCase().trim();
         const cards = document.querySelectorAll('[data-searchable-item]');
 
         cards.forEach(card => {
-            const cardText = card.textContent.toLowerCase();
-            console.log(card.style.display);
+            const mainTaskTitle = card.querySelector('.main-task-title')?.textContent.toLowerCase() || '';
+            const subTaskTitle = card.querySelector('.sub-task-title')?.textContent.toLowerCase() || '';
+            const subjectTitle = card.querySelector('.subject-title')?.textContent.toLowerCase() || '';
+            const fileTitle = card.querySelector('.file-name')?.textContent.toLowerCase() || '';
+            const cardText = `${mainTaskTitle} ${subTaskTitle} ${subjectTitle} ${fileTitle}`;
             if (cardText.includes(term)) {
                 card.style.display = '';
             } else {
                 card.style.display = 'none';
+                card.classList.add('Nomatch-card');
             }
         });
+        if (term.length > 0 && document.querySelectorAll('.Nomatch-card').length === cards.length) {
+            showAlert('info', 'No results found for your search.');
+            noResultsMsg('No results found for your search.', 'clearSearch()', 'Clear Search', true);
+        } else {
+            clearNoResultsMsg();
+        }
     });
 
     const searchButton = document.getElementById('search-button');

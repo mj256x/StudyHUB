@@ -1,6 +1,7 @@
 function MainTaskCard(isDone, mainTaskId) {
     const mainTaskCard = document.getElementById('main-task-card-' + mainTaskId);
     const mainTaskHeader = document.getElementById('main-task-header-' + mainTaskId);
+    const mainTaskTitle = mainTaskHeader.querySelector('.card-title');
     const mainTaskFooter = document.getElementById('main-task-footer-' + mainTaskId);
     const mainTaskDoneBtn = document.getElementById('mark-as-done-btn-' + mainTaskId);
     const mainTaskDoneSvg = document.getElementById('main-done-svg-' + mainTaskId);
@@ -12,6 +13,8 @@ function MainTaskCard(isDone, mainTaskId) {
         mainTaskCard.classList.add('done-border');
         mainTaskCard.classList.add('done-all-card');
         mainTaskHeader.classList.add('done-border-bottom');
+        mainTaskTitle.classList.add('done-text');
+        mainTaskTitle.style.textDecoration = 'line-through';
         mainTaskFooter.classList.add('done-border-top');
         mainTaskDoneBtn.classList.add('done-btn-active');
         mainTaskDoneSvg.classList.add('done-text');
@@ -23,6 +26,8 @@ function MainTaskCard(isDone, mainTaskId) {
     } else {
         mainTaskCard.classList.remove('done-border');
         mainTaskCard.classList.remove('done-all-card');
+        mainTaskTitle.classList.remove('done-text');
+        mainTaskTitle.style.textDecoration = 'none';
         mainTaskHeader.classList.remove('done-border-bottom');
         mainTaskFooter.classList.remove('done-border-top');
         mainTaskDoneBtn.classList.remove('done-btn-active');
@@ -670,6 +675,27 @@ function filterByDeadline(type, filterType, btn, mainTaskId = null) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(() => {
+        const subTaskCards = document.querySelectorAll('.sub-task-card');
+        subTaskCards.forEach(card => {
+            card.style.setProperty('display', 'flex', 'important');
+        });
+        const placeholderCards = document.querySelectorAll('.placeholder-wave');
+        placeholderCards.forEach(card => {
+            card.style.setProperty('display', 'none', 'important');
+        });
+        document.querySelectorAll('.card-header-content').forEach(header => {
+            header.style.setProperty('display', 'flex', 'important');
+        });
+        document.querySelectorAll('.placeholder-glow').forEach(placeholder => {
+            placeholder.style.setProperty('display', 'none', 'important');
+        });
+        document.querySelectorAll('.no-sub-tasks-msg').forEach(msg => {
+            msg.style.setProperty('display', 'flex', 'important');
+        });
+    }, 700);
+
+
     const priorityCards = document.querySelectorAll('.priority-icon');
     priorityCards.forEach(card => {
         const priority = card.textContent.trim().toLowerCase();

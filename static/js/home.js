@@ -136,15 +136,27 @@ function checkTasksCards() {
     const tomorrowCompletedTasks = document.querySelector('.accordion-body.tomorrow-completed-tasks-body');
     if (todayPendingTasks.querySelectorAll('.task-card').length === 0) {
         todayPendingTasks.innerHTML = noTasksMessage();
+        todayPendingTasks.parentElement.classList.remove('show');
+    } else {
+        todayPendingTasks.parentElement.classList.add('show');
     }
     if (todayCompletedTasks.querySelectorAll('.task-card').length === 0) {
         todayCompletedTasks.innerHTML = noTasksMessage();
+        todayCompletedTasks.parentElement.classList.remove('show');
+    } else {
+        todayCompletedTasks.parentElement.classList.add('show');
     }
     if (tomorrowPendingTasks.querySelectorAll('.task-card').length === 0) {
         tomorrowPendingTasks.innerHTML = noTasksMessage();
+        tomorrowPendingTasks.parentElement.classList.remove('show');
+    } else {
+        tomorrowPendingTasks.parentElement.classList.add('show');
     }
     if (tomorrowCompletedTasks.querySelectorAll('.task-card').length === 0) {
         tomorrowCompletedTasks.innerHTML = noTasksMessage();
+        tomorrowCompletedTasks.parentElement.classList.remove('show');
+    } else {
+        tomorrowCompletedTasks.parentElement.classList.add('show');
     }
 }
 
@@ -186,11 +198,13 @@ function createTaskCard(task, isCompleted) {
 
     const isDone = isCompleted ? 'done-card' : '';
     const doneSvg = isCompleted ? 'done-text mark-done-svg-1' : '';
+    const doneText = isCompleted ? 'done-text' : '';
+    const lineThrough = isCompleted ? 'line-through' : '';
 
     return `
                     <div class="task-card ${isDone}" id="task-card-${task.id}">
-                        <div class="d-flex align-items-center justify-content-center gap-3" style="width: 100%;">
-                            <span>${task.title}</span>
+                        <div class="d-flex align-items-center justify-content-center gap-4" style="width: 100%;">
+                            <span class="${doneText}" style="color: var(--c-text); font-weight: bold; text-decoration: ${lineThrough};">${task.title}</span>
                             <span class="priority-icon" style="${colors ? `background-color: ${colors[0]}; color: ${colors[1]}; border-color: ${colors[2]};` : ''}">${task.priority}</span>
                         </div>
                         <div class="d-flex align-items-center justify-content-center gap-3" style="width: 100%;">
@@ -217,12 +231,29 @@ function createTaskCard(task, isCompleted) {
                     </div>`;
 }
 
+document.querySelectorAll('.accordion-completed-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        if (this.getAttribute('aria-expanded') === 'true') {
+            this.style.setProperty('border-radius', '0', 'important');
+        } else {
+            this.style.setProperty('border-radius', '0 0 10px 10px', 'important');
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const newUserMessage = document.getElementById('new-user-message');
     if (newUserMessage == null) {
         document.querySelector('.spinner-border').style.setProperty('display', 'none', 'important');
         loadDashboardStats();
         loadDashboardTasks();
+        document.querySelectorAll('.accordion-completed-btn').forEach(btn => {
+            if (btn.getAttribute('aria-expanded') === 'true') {
+                btn.style.setProperty('border-radius', '0', 'important');
+            } else {
+                btn.style.setProperty('border-radius', '0 0 10px 10px', 'important');
+            }
+        });
     }
 
 });

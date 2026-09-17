@@ -1,23 +1,46 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const progressBars = document.querySelectorAll('.progress-bar');
-    progressBars.forEach(bar => {
-        const progress = parseInt(bar.getAttribute('aria-valuenow')) || 0;
-        bar.style.setProperty('width', progress + '%', 'important');
-        const progressParent = bar.parentElement;
-        if (progress <= 25 && progress > 0) {
-            bar.classList.add('progress-danger');
-            progressParent.style.setProperty('border', 'transparent', 'important');
-        } else if (progress <= 50 && progress > 25) {
-            bar.classList.add('progress-warning');
-            progressParent.style.setProperty('border', 'transparent', 'important');
-        } else if (progress <= 75 && progress > 50) {
-            bar.classList.add('progress-nearly-success');
-            progressParent.style.setProperty('border', 'transparent', 'important');
-        } else if (progress <= 100 && progress > 75) {
-            bar.classList.add('progress-success');
-            progressParent.style.setProperty('border', 'transparent', 'important');
-        }
-    });
+    setTimeout(() => {
+        document.querySelectorAll('.placeholder-img')?.forEach(img => {
+            img.style.display = 'none';
+        });
+        document.querySelectorAll('.placeholder-glow').forEach(glow => {
+            glow.style.setProperty('display', 'none', 'important');
+        });
+        document.querySelectorAll('.image-card')?.forEach(img => {
+            img.style.display = 'block';
+        });
+        document.querySelectorAll('.file-name')?.forEach(span => {
+            span.style.display = 'block';
+        });
+        document.querySelectorAll('.subject-title')?.forEach(title => {
+            title.style.display = 'block';
+        });
+        document.querySelectorAll('.progress')?.forEach(progress => {
+            progress.classList.remove('progress-animation');
+        });
+    }, 500);
+    setTimeout(() => {
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+            bar.querySelector('strong').style.setProperty('display', 'block', 'important');
+            const progress = parseInt(bar.getAttribute('aria-valuenow')) || 0;
+            bar.style.setProperty('width', progress + '%', 'important');
+            const progressParent = bar.parentElement;
+            if (progress <= 25 && progress > 0) {
+                bar.classList.add('progress-danger');
+                progressParent.style.setProperty('border', 'transparent', 'important');
+            } else if (progress <= 50 && progress > 25) {
+                bar.classList.add('progress-warning');
+                progressParent.style.setProperty('border', 'transparent', 'important');
+            } else if (progress <= 75 && progress > 50) {
+                bar.classList.add('progress-nearly-success');
+                progressParent.style.setProperty('border', 'transparent', 'important');
+            } else if (progress <= 100 && progress > 75) {
+                bar.classList.add('progress-success');
+                progressParent.style.setProperty('border', 'transparent', 'important');
+            }
+        });
+    }, 1000);
 });
 
 function renameSubject(subjectId, currentName) {
@@ -59,11 +82,6 @@ async function toggleFavorite(subjectId, btnElement) {
     }
 }
 
-function afterResetOrClicked(svg, textSpan) {
-    svg.classList.remove('completed-icon');
-    textSpan.innerText = 'Mark as Completed';
-}
-
 async function toggleCompleted(subjectId, btnElement) {
     try {
         const response = await fetch('/toggle_completed/' + subjectId, {
@@ -71,14 +89,15 @@ async function toggleCompleted(subjectId, btnElement) {
         });
         const data = await response.json();
         if (data.success) {
-            const svg = btnElement.querySelector('.completed-svg');
-            const textSpan = btnElement.querySelector('.completed-span');
             if (data.new_status) {
-                svg.classList.add('completed-icon');
-                textSpan.innerText = 'Mark as Incomplete';
+                btnElement.classList.add('done-btn-active');
+                btnElement.classList.add('done-text');
+                btnElement.querySelector('.completed-span').innerText = 'Mark as Incomplete';
                 showAlert('success', 'Subject marked as completed!');
             } else {
-                afterResetOrClicked(svg, textSpan);
+                btnElement.classList.remove('done-btn-active');
+                btnElement.classList.remove('done-text');
+                btnElement.querySelector('.completed-span').innerText = 'Mark as Completed';
                 showAlert('info', 'Subject marked as incomplete!');
             }
             setTimeout(() => {
@@ -94,7 +113,6 @@ async function toggleCompleted(subjectId, btnElement) {
 async function showCompleted(btn) {
     let currentActive = btn.getAttribute('data-active') === 'true';
     let newActive = !currentActive;
-    const svg = btn.querySelector('.completed-svg');
     const btnText = btn.querySelector('.completed-span');
     if (newActive) {
         try {
@@ -116,7 +134,7 @@ async function showCompleted(btn) {
                 });
                 btn.setAttribute('data-active', 'true');
                 btn.classList.add('done-btn-active');
-                svg.classList.add('completed-icon');
+                btn.classList.add('done-text');
                 btnText.innerText = "Show All";
             }
             if (data.success && !Object.values(data.subjects).some(Boolean)) {
@@ -132,9 +150,9 @@ async function showCompleted(btn) {
         subjectCards.forEach(card => {
             card.style.display = 'block';
         });
-        svg.classList.remove('completed-icon');
         btnText.innerText = "Show Completed";
         btn.classList.remove('done-btn-active');
+        btn.classList.remove('done-text');
         btn.setAttribute('data-active', 'false');
     }
 }
