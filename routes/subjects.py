@@ -15,22 +15,22 @@ def subjects():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, name, favorite, is_completed FROM subjects WHERE user_id = ?", (session['user_id'],))
-        subjects_data = cursor.fetchall()
-            
+        cursor.execute("""
+            SELECT
+                s.id, s.name, s.favorite, s.is_completed,
+                COUNT(f.id) AS files_num,
+                COUNT(f.id) FILTER (WHERE f.is_completed = TRUE) AS completed_files
+            FROM subjects s
+            LEFT JOIN files f ON f.subject_id = s.id AND f.user_id = s.user_id
+            WHERE s.user_id = %s
+            GROUP BY s.id, s.name, s.favorite, s.is_completed
+        """, (session['user_id'],))
+        rows = cursor.fetchall()
+
         subjects = []
-        for subject in subjects_data:
-            subject_id = subject[0]
-            cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-            files_num = cursor.fetchone()[0] or 0
-            cursor.execute("SELECT COUNT(*) FROM files WHERE subject_id = ? AND user_id = ? AND is_completed = 1", (subject_id, session['user_id']))
-            completed_files = cursor.fetchone()[0] or 0
-            progress = 0
-            if files_num > 0:
-                progress = floor(int((completed_files / files_num) * 100))
-            else:
-                progress = 0
-            subjects.append((subject[0], subject[1], subject[2], subject[3], progress, files_num))
+        for subject_id, name, favorite, is_completed, files_num, completed_files in rows:
+            progress = floor((completed_files / files_num) * 100) if files_num > 0 else 0
+            subjects.append((subject_id, name, favorite, is_completed, progress, files_num))
         cursor.close()
     except Exception as e:
         print(f"Database error: {e}")
@@ -49,7 +49,7 @@ def add_subject():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO subjects (name, user_id) VALUES (?, ?)", (subject_name, session['user_id']))
+        cursor.execute("INSERT INTO subjects (name, user_id) VALUES (%s, %s)", (subject_name, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Subject added successfully!', 'success')
@@ -65,8 +65,8 @@ def reset_progress(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE files SET is_completed = 0 WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-        cursor.execute("UPDATE subjects SET is_completed = 0 WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("UPDATE files SET is_completed = FALSE WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
+        cursor.execute("UPDATE subjects SET is_completed = FALSE WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Progress reset successfully!', 'success')
@@ -86,7 +86,7 @@ def rename_subject(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?", (new_name, subject_id, session['user_id']))
+        cursor.execute("UPDATE subjects SET name = %s WHERE id = %s AND user_id = %s", (new_name, subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Subject renamed successfully!', 'success')
@@ -102,14 +102,14 @@ def toggle_completed(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT is_completed FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM subjects WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         current_status = cursor.fetchone()
         new_status = not current_status[0]
-        cursor.execute("UPDATE subjects SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, subject_id, session['user_id']))
+        cursor.execute("UPDATE subjects SET is_completed = %s WHERE id = %s AND user_id = %s", (new_status, subject_id, session['user_id']))
         if new_status:
-            cursor.execute("UPDATE files SET is_completed = 1 WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+            cursor.execute("UPDATE files SET is_completed = TRUE WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         else:
-            cursor.execute("UPDATE files SET is_completed = 0 WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+            cursor.execute("UPDATE files SET is_completed = FALSE WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'new_status': new_status})
@@ -124,10 +124,10 @@ def add_to_favorite(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT favorite FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT favorite FROM subjects WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         subject_favorite = cursor.fetchone()
         new_favorite_status = not subject_favorite[0]
-        cursor.execute("UPDATE subjects SET favorite = ? WHERE id = ? AND user_id = ?", (new_favorite_status, subject_id, session['user_id']))
+        cursor.execute("UPDATE subjects SET favorite = %s WHERE id = %s AND user_id = %s", (new_favorite_status, subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'new_status': new_favorite_status})
@@ -142,22 +142,22 @@ def delete_subject(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM main_tasks WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT id FROM main_tasks WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         main_tasks = cursor.fetchall()
         for task in main_tasks:
-            cursor.execute("DELETE FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (task[0], session['user_id']))
+            cursor.execute("DELETE FROM sub_tasks WHERE main_task_id = %s AND user_id = %s", (task[0], session['user_id']))
 
-        cursor.execute("DELETE FROM main_tasks WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-        cursor.execute("DELETE FROM study_sessions WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-        cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM main_tasks WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM study_sessions WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         files = cursor.fetchall()
         for file in files:
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
             if file[0].rsplit('.', 1)[-1].lower() == 'pdf':
                 supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file[0]}.jpg"])
 
-        cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
-        cursor.execute("DELETE FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM subjects WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Subject and all associated data have been deleted successfully.', 'success')
@@ -174,7 +174,7 @@ def get_completed_subjects():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, is_completed FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, is_completed FROM subjects WHERE user_id = %s", (session['user_id'],))
         subjects_status = cursor.fetchall()
         cursor.close()
         return jsonify({'success': True, 'subjects': {row[0]: row[1] for row in subjects_status}})
@@ -189,7 +189,7 @@ def get_favorite_subjects():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, favorite FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, favorite FROM subjects WHERE user_id = %s", (session['user_id'],))
         subjects_status = cursor.fetchall()
         cursor.close()
         return jsonify({'success': True, 'subjects': {row[0]: row[1] for row in subjects_status}})
@@ -204,7 +204,10 @@ def delete_all_subjects():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT subject_id, file_name FROM files WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM sub_tasks WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM main_tasks WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM study_sessions WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("SELECT subject_id, file_name FROM files WHERE user_id = %s", (session['user_id'],))
         files = cursor.fetchall()
         for file in files:
             subject_id = file[0]
@@ -212,8 +215,8 @@ def delete_all_subjects():
             supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
             if file_name.rsplit('.', 1)[-1].lower() == 'pdf':
                 supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file_name}.jpg"])
-        cursor.execute("DELETE FROM files WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM files WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM subjects WHERE user_id = %s", (session['user_id'],))
         conn.commit()
         cursor.close()
         flash('All subjects and their associated files, tasks and sessions have been deleted.', 'success')
@@ -231,11 +234,11 @@ def subject_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, file_url, id, is_completed, subject_id, thumbnail_url FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name, file_url, id, is_completed, subject_id, thumbnail_url FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         files = cursor.fetchall()
-        cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT name FROM subjects WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         subject_name = cursor.fetchone()
-        cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT name, id FROM subjects WHERE user_id = %s", (session['user_id'],))
         all_subjects = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -267,7 +270,7 @@ def upload_file(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM files WHERE subject_id = ? AND file_name = ? AND user_id = ?", (subject_id, file.filename, session['user_id']))
+        cursor.execute("SELECT id FROM files WHERE subject_id = %s AND file_name = %s AND user_id = %s", (subject_id, file.filename, session['user_id']))
         existing_file = cursor.fetchone()
         if existing_file:
             flash('File already exists.', 'warning')
@@ -308,7 +311,7 @@ def upload_file(subject_id):
                 print(f"Error generating PDF thumbnail: {e}")
                 thumbnail_url = url_for('static', filename='images/word.jpg')
 
-        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id, thumbnail_url) VALUES (?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id, thumbnail_url) VALUES (%s, %s, %s, %s, %s)",
                 (subject_id, file.filename, file_url, session['user_id'], thumbnail_url))
         conn.commit()
         cursor.close()
@@ -326,10 +329,10 @@ def toggle_done(file_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT is_completed FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
         file_status = cursor.fetchone()
         new_status = not file_status[0]
-        cursor.execute("UPDATE files SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, file_id, session['user_id']))
+        cursor.execute("UPDATE files SET is_completed = %s WHERE id = %s AND user_id = %s", (new_status, file_id, session['user_id']))
         conn.commit()
         cursor.close()
     except Exception as e:
@@ -344,7 +347,7 @@ def download_file(file_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
         file_record = cursor.fetchone()
         cursor.close()
         if not file_record:
@@ -365,12 +368,16 @@ def move_file(file_id):
         return redirect(url_for('auth.login'))
     
     new_subject_id = request.form.get('new_subject_id')
-        
+    old_subject_id = None
+
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
-        file_record = cursor.fetchone()            
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects.subjects'))
         file_name = file_record[0]
         old_subject_id = file_record[1]
         old_path = f"{old_subject_id}/{file_name}"
@@ -383,11 +390,11 @@ def move_file(file_id):
             thumb_new_path = f"{new_subject_id}/thumb_{file_name}.jpg"
             supabase.storage.from_("files").move(thumb_old_path, thumb_new_path)
             new_thumbnail_url = supabase.storage.from_("files").get_public_url(thumb_new_path)
-            cursor.execute("UPDATE files SET subject_id = ?, file_url = ?, thumbnail_url = ? WHERE id = ? AND user_id = ?",
+            cursor.execute("UPDATE files SET subject_id = %s, file_url = %s, thumbnail_url = %s WHERE id = %s AND user_id = %s",
                         (new_subject_id, new_file_url, new_thumbnail_url, file_id, session['user_id']))
         else:
             thumbnail_url = url_for('static', filename='images/word.jpg')
-            cursor.execute("UPDATE files SET subject_id = ?, file_url = ?, thumbnail_url = ? WHERE id = ? AND user_id = ?",
+            cursor.execute("UPDATE files SET subject_id = %s, file_url = %s, thumbnail_url = %s WHERE id = %s AND user_id = %s",
                         (new_subject_id, new_file_url, thumbnail_url, file_id, session['user_id']))
         conn.commit()
         cursor.close()
@@ -396,19 +403,24 @@ def move_file(file_id):
     except Exception as e:
         print(f"Error moving file: {e}")
         flash('This file already exists in the destination subject.', 'danger')
-        return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
+        return redirect(url_for('subjects.subject_files', subject_id=old_subject_id) if old_subject_id else url_for('subjects.subjects'))
 
 @subjects_bp.route('/copy_file/<int:file_id>', methods=['POST'])
 def copy_file(file_id):
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
-        
-    new_subject_id = request.form.get('new_subject_id')    
+
+    new_subject_id = request.form.get('new_subject_id')
+    old_subject_id = None
+
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
         file_record = cursor.fetchone()
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects.subjects'))
         file_name = file_record[0]
         old_subject_id = file_record[1]
         old_path = f"{old_subject_id}/{file_name}"
@@ -421,11 +433,11 @@ def copy_file(file_id):
             thumb_new_path = f"{new_subject_id}/thumb_{file_name}.jpg"
             supabase.storage.from_("files").copy(thumb_old_path, thumb_new_path)
             new_thumbnail_url = supabase.storage.from_("files").get_public_url(thumb_new_path)
-            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (%s, %s, %s, %s, %s)",
                     (new_subject_id, file_name, new_file_url, new_thumbnail_url, session['user_id']))
         else:
             thumbnail_url = url_for('static', filename='images/word.jpg')
-            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (%s, %s, %s, %s, %s)",
                     (new_subject_id, file_name, new_file_url, thumbnail_url, session['user_id']))
         conn.commit()
         cursor.close()
@@ -434,30 +446,34 @@ def copy_file(file_id):
     except Exception as e:
         print(f"Error copying file: {e}")
         flash('The file is already in the destination subject.', 'danger')
-        return redirect(url_for('subjects.subject_files', subject_id=old_subject_id))
+        return redirect(url_for('subjects.subject_files', subject_id=old_subject_id) if old_subject_id else url_for('subjects.subjects'))
     
 @subjects_bp.route('/delete_file/<int:file_id>', methods=['POST'])
 def delete_file(file_id):
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
+    subject_id = None
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        cursor.execute("SELECT file_name, subject_id FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
         file_record = cursor.fetchone()
+        if not file_record:
+            flash('File not found.', 'danger')
+            return redirect(url_for('subjects.subjects'))
         file_name = file_record[0]
         subject_id = file_record[1]
         if file_name.rsplit('.', 1)[-1].lower() == 'pdf':
             supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file_name}.jpg"])
         supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
-        cursor.execute("DELETE FROM files WHERE id = ? AND user_id = ?", (file_id, session['user_id']))
+        cursor.execute("DELETE FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('File deleted successfully!', 'success')
     except Exception as e:
         print(f"Error deleting file: {e}")
         flash('An error occurred while deleting the file.', 'danger')
-    return redirect(url_for('subjects.subject_files', subject_id=subject_id))
+    return redirect(url_for('subjects.subject_files', subject_id=subject_id) if subject_id else url_for('subjects.subjects'))
 
 @subjects_bp.route('/delete_all_files/<int:subject_id>', methods=['POST'])
 def delete_all_files(subject_id):
@@ -466,13 +482,13 @@ def delete_all_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT file_name FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         files = cursor.fetchall()
         for file in files:
             if file[0].rsplit('.', 1)[-1].lower() == 'pdf':
                 supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file[0]}.jpg"])
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
-        cursor.execute("DELETE FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("DELETE FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('All files deleted successfully!', 'success')
@@ -488,7 +504,7 @@ def get_completed_files(subject_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, is_completed FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT id, is_completed FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
         files = cursor.fetchall()
         cursor.close()
         return jsonify({'success': True, 'files': {row[0]: row[1] for row in files}})

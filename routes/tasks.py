@@ -11,11 +11,11 @@ def tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT name, id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT name, id FROM subjects WHERE user_id = %s", (session['user_id'],))
         subjects = cursor.fetchall()
-        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM main_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, title, deadline, subject_id, priority, is_completed FROM main_tasks WHERE user_id = %s", (session['user_id'],))
         main_tasks = cursor.fetchall()
-        cursor.execute("SELECT id, title, FORMAT(deadline, 'yyyy-MM-dd'), main_task_id, priority, is_completed FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, title, TO_CHAR(deadline, 'YYYY-MM-DD') AS deadline, main_task_id, priority, is_completed FROM sub_tasks WHERE user_id = %s", (session['user_id'],))
         sub_tasks = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -32,7 +32,7 @@ def main_task_sub_tasks_num(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        cursor.execute("SELECT COUNT(*) FROM sub_tasks WHERE main_task_id = %s AND user_id = %s", (main_task_id, session['user_id']))
         sub_tasks_num = cursor.fetchone()[0]
         cursor.close()
         return jsonify({'success': True, 'sub_tasks_num': sub_tasks_num})
@@ -54,7 +54,7 @@ def add_main_tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO main_tasks (title, deadline, user_id, subject_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], subject_id, priority))
+        cursor.execute("INSERT INTO main_tasks (title, deadline, user_id, subject_id, priority) VALUES (%s, %s, %s, %s, %s)", (task_title, deadline, session['user_id'], subject_id, priority))
         conn.commit()
         cursor.close()
     except Exception as e:
@@ -73,8 +73,8 @@ def add_sub_tasks(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO sub_tasks (title, deadline, user_id, main_task_id, priority) VALUES (?, ?, ?, ?, ?)", (task_title, deadline, session['user_id'], main_task_id, priority))
-        cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        cursor.execute("INSERT INTO sub_tasks (title, deadline, user_id, main_task_id, priority) VALUES (%s, %s, %s, %s, %s)", (task_title, deadline, session['user_id'], main_task_id, priority))
+        cursor.execute("UPDATE main_tasks SET is_completed = FALSE WHERE id = %s AND user_id = %s", (main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Sub-task added successfully!', 'success')
@@ -95,7 +95,7 @@ def rename_sub_task(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE sub_tasks SET title = ? WHERE id = ? AND user_id = ?", (new_title, sub_task_id, session['user_id']))
+        cursor.execute("UPDATE sub_tasks SET title = %s WHERE id = %s AND user_id = %s", (new_title, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Sub-task renamed successfully!', 'success')
@@ -116,7 +116,7 @@ def rename_main_task(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE main_tasks SET title = ? WHERE id = ? AND user_id = ?", (new_title, main_task_id, session['user_id']))
+        cursor.execute("UPDATE main_tasks SET title = %s WHERE id = %s AND user_id = %s", (new_title, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Main task renamed successfully!', 'success')
@@ -137,7 +137,7 @@ def change_sub_task_deadline(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE sub_tasks SET deadline = ? WHERE id = ? AND user_id = ?", (new_deadline, sub_task_id, session['user_id']))
+        cursor.execute("UPDATE sub_tasks SET deadline = %s WHERE id = %s AND user_id = %s", (new_deadline, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Sub-task deadline updated successfully!', 'success')
@@ -158,7 +158,7 @@ def change_main_task_deadline(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE main_tasks SET deadline = ? WHERE id = ? AND user_id = ?", (new_deadline, main_task_id, session['user_id']))
+        cursor.execute("UPDATE main_tasks SET deadline = %s WHERE id = %s AND user_id = %s", (new_deadline, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Main task deadline updated successfully!', 'success')
@@ -179,7 +179,7 @@ def change_sub_task_priority(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE sub_tasks SET priority = ? WHERE id = ? AND user_id = ?", (new_priority, sub_task_id, session['user_id']))
+        cursor.execute("UPDATE sub_tasks SET priority = %s WHERE id = %s AND user_id = %s", (new_priority, sub_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Sub-task priority updated successfully!', 'success')
@@ -200,7 +200,7 @@ def change_main_task_priority(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE main_tasks SET priority = ? WHERE id = ? AND user_id = ?", (new_priority, main_task_id, session['user_id']))
+        cursor.execute("UPDATE main_tasks SET priority = %s WHERE id = %s AND user_id = %s", (new_priority, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Main task priority updated successfully!', 'success')
@@ -221,7 +221,7 @@ def change_main_task_subject(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE main_tasks SET subject_id = ? WHERE id = ? AND user_id = ?", (new_subject_id, main_task_id, session['user_id']))
+        cursor.execute("UPDATE main_tasks SET subject_id = %s WHERE id = %s AND user_id = %s", (new_subject_id, main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('Main task subject updated successfully!', 'success')
@@ -237,8 +237,8 @@ def delete_main_task(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
-        cursor.execute("DELETE FROM main_tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        cursor.execute("DELETE FROM sub_tasks WHERE main_task_id = %s AND user_id = %s", (main_task_id, session['user_id']))
+        cursor.execute("DELETE FROM main_tasks WHERE id = %s AND user_id = %s", (main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'message': 'Main task deleted successfully.'}), 200
@@ -253,16 +253,16 @@ def delete_sub_task(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT main_task_id FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
+        cursor.execute("SELECT main_task_id FROM sub_tasks WHERE id = %s AND user_id = %s", (sub_task_id, session['user_id']))
         main_task_id = cursor.fetchone()
         if main_task_id is None:
             return jsonify({'success': False, 'message': 'Sub-task not found'}), 404
-        cursor.execute("DELETE FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
-        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+        cursor.execute("DELETE FROM sub_tasks WHERE id = %s AND user_id = %s", (sub_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id = %s AND user_id = %s", (main_task_id[0], session['user_id']))
         sub_tasks_status = cursor.fetchall()
         main_task_status = False
         if not sub_tasks_status:
-            cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+            cursor.execute("UPDATE main_tasks SET is_completed = FALSE WHERE id = %s AND user_id = %s", (main_task_id[0], session['user_id']))
             conn.commit()
             cursor.close()
             return jsonify({'success': True, 'message': 'Sub-task deleted successfully.', 'main_task_status': False})
@@ -273,10 +273,10 @@ def delete_sub_task(sub_task_id):
                     all_completed = False
                     break
             if all_completed == True:
-                cursor.execute("UPDATE main_tasks SET is_completed = 1 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+                cursor.execute("UPDATE main_tasks SET is_completed = TRUE WHERE id = %s AND user_id = %s", (main_task_id[0], session['user_id']))
                 main_task_status = True
             else:
-                cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id = ? AND user_id = ?", (main_task_id[0], session['user_id']))
+                cursor.execute("UPDATE main_tasks SET is_completed = FALSE WHERE id = %s AND user_id = %s", (main_task_id[0], session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'message': 'Sub-task deleted successfully.', 'main_task_status': main_task_status})
@@ -291,23 +291,23 @@ def toggle_sub_task_done(sub_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT is_completed FROM sub_tasks WHERE id = ? AND user_id = ?", (sub_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM sub_tasks WHERE id = %s AND user_id = %s", (sub_task_id, session['user_id']))
         card_status = cursor.fetchone()
         if card_status is None:
             return jsonify({'success': False, 'message': 'Sub-task not found'}), 404
         new_status = not card_status[0]
-        cursor.execute("UPDATE sub_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, sub_task_id, session['user_id']))
-        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
+        cursor.execute("UPDATE sub_tasks SET is_completed = %s WHERE id = %s AND user_id = %s", (new_status, sub_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM sub_tasks WHERE main_task_id in (SELECT main_task_id FROM sub_tasks WHERE id = %s) AND user_id = %s", (sub_task_id, session['user_id']))
         sub_tasks_status = cursor.fetchall()
         all_completed = True
         for status in sub_tasks_status:
             if not status[0]:
                 all_completed = False
         if all_completed == True:
-            cursor.execute("UPDATE main_tasks SET is_completed = 1 WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
+            cursor.execute("UPDATE main_tasks SET is_completed = TRUE WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = %s) AND user_id = %s", (sub_task_id, session['user_id']))
             main_task_status = True
         else:
-            cursor.execute("UPDATE main_tasks SET is_completed = 0 WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = ?) AND user_id = ?", (sub_task_id, session['user_id']))
+            cursor.execute("UPDATE main_tasks SET is_completed = FALSE WHERE id in (SELECT main_task_id FROM sub_tasks WHERE id = %s) AND user_id = %s", (sub_task_id, session['user_id']))
             main_task_status = False
         conn.commit()
         cursor.close()
@@ -323,16 +323,16 @@ def mark_task_as_done(main_task_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT is_completed FROM main_tasks WHERE id = ? AND user_id = ?", (main_task_id, session['user_id']))
+        cursor.execute("SELECT is_completed FROM main_tasks WHERE id = %s AND user_id = %s", (main_task_id, session['user_id']))
         task_status = cursor.fetchone()
         if task_status is None:
             return jsonify({'success': False, 'message': 'Main task not found'}), 404
         new_status = not task_status[0]
-        cursor.execute("UPDATE main_tasks SET is_completed = ? WHERE id = ? AND user_id = ?", (new_status, main_task_id, session['user_id']))
+        cursor.execute("UPDATE main_tasks SET is_completed = %s WHERE id = %s AND user_id = %s", (new_status, main_task_id, session['user_id']))
         if new_status == True:
-            cursor.execute("UPDATE sub_tasks SET is_completed = 1 WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
+            cursor.execute("UPDATE sub_tasks SET is_completed = TRUE WHERE main_task_id = %s AND user_id = %s", (main_task_id, session['user_id']))
         else:
-            cursor.execute("UPDATE sub_tasks SET is_completed = 0 WHERE main_task_id = ? AND user_id = ?", (main_task_id, session['user_id']))
+            cursor.execute("UPDATE sub_tasks SET is_completed = FALSE WHERE main_task_id = %s AND user_id = %s", (main_task_id, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'new_status': new_status})
@@ -347,8 +347,8 @@ def delete_all_tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM main_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM sub_tasks WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM main_tasks WHERE user_id = %s", (session['user_id'],))
         conn.commit()
         cursor.close()
         flash('All tasks deleted successfully!', 'success')
@@ -364,7 +364,7 @@ def get_done_tasks():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id, is_completed FROM main_tasks WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id, is_completed FROM main_tasks WHERE user_id = %s", (session['user_id'],))
         tasks = cursor.fetchall()
         cursor.close()
         return jsonify({'success': True, 'tasks': {task[0]: task[1] for task in tasks}})

@@ -20,10 +20,10 @@ def start_session():
         session_date = data.get('session_date')
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id, session_full_period, session_date) OUTPUT INSERTED.id VALUES (?, ?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO study_sessions (session_name, duration_minutes, subject_id, user_id, session_full_period, session_date) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
                             (session_title, period, subject_id, session['user_id'], period, session_date))
         session_id = cursor.fetchone()[0]
-        cursor.execute("SELECT name FROM subjects WHERE id = ? AND user_id = ?", (subject_id, session['user_id']))
+        cursor.execute("SELECT name FROM subjects WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         subject_name = cursor.fetchone()[0]
         session['study_session'] = {'id': session_id, 'title': session_title, 'initial_duration': int(period), 'start_timestamp': time.time()}
         conn.commit()
@@ -45,7 +45,7 @@ def update_session_duration():
             return jsonify({'success': False, 'message': 'Invalid data'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + ?, session_full_period = session_full_period + ? WHERE id = ? AND user_id = ?",
+        cursor.execute("UPDATE study_sessions SET duration_minutes = duration_minutes + %s, session_full_period = session_full_period + %s WHERE id = %s AND user_id = %s",
                     (added_time, added_time, session['study_session']['id'], session['user_id']))
         conn.commit()
         session['study_session']['initial_duration'] += added_time
@@ -70,16 +70,16 @@ def session_ended():
         study_session = session.get('study_session')
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT name FROM subjects WHERE id in (SELECT subject_id FROM study_sessions WHERE id = ? AND user_id = ?)", (study_session['id'], session['user_id']))
+        cursor.execute("SELECT name FROM subjects WHERE id in (SELECT subject_id FROM study_sessions WHERE id = %s AND user_id = %s)", (study_session['id'], session['user_id']))
         subject_name = cursor.fetchone()[0]
         if subject_name is None:
             return jsonify({'success': False, 'message': 'Subject not found'}), 404
-        cursor.execute("SELECT session_name FROM study_sessions WHERE id = ? AND user_id = ?", (study_session['id'], session['user_id']))
+        cursor.execute("SELECT session_name FROM study_sessions WHERE id = %s AND user_id = %s", (study_session['id'], session['user_id']))
         session_name = cursor.fetchone()[0]
         if session_name is None:
             return jsonify({'success': False, 'message': 'Session not found'}), 404
         cursor.execute(
-            "UPDATE study_sessions SET duration_minutes = ? WHERE id = ? AND user_id = ?",
+            "UPDATE study_sessions SET duration_minutes = %s WHERE id = %s AND user_id = %s",
             (elapsed_minutes, study_session['id'], session['user_id'])
         )
         conn.commit()
@@ -104,8 +104,8 @@ def sessions_history():
         cursor = conn.cursor()
         cursor.execute("SELECT subjects.id, subjects.name," \
         " study_sessions.id, study_sessions.session_name, study_sessions.duration_minutes," \
-        " FORMAT(study_sessions.session_date, 'dd MMM yyyy HH:mm') AS session_date, study_sessions.session_full_period FROM study_sessions JOIN subjects" \
-        " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = ? ORDER BY study_sessions.session_date DESC", (session['user_id'],))
+        " TO_CHAR(study_sessions.session_date, 'DD Mon YYYY HH24:MI') AS session_date, study_sessions.session_full_period FROM study_sessions JOIN subjects" \
+        " ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = %s ORDER BY study_sessions.session_date DESC", (session['user_id'],))
         sessions = cursor.fetchall()
         cursor.close()
     except Exception as e:
@@ -121,18 +121,19 @@ def get_sessions_summary():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT SUM(duration_minutes) FROM study_sessions WHERE user_id = %s", (session['user_id'],))
         total_duration = cursor.fetchone()[0] or 0
-        cursor.execute("SELECT COUNT(*) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) FROM study_sessions WHERE user_id = %s", (session['user_id'],))
         total_sessions = cursor.fetchone()[0] or 0
         average_duration = floor(total_duration / total_sessions) if total_sessions > 0 else 0
-        cursor.execute("SELECT TOP 1 s.name AS subject_name, "
+        cursor.execute("SELECT s.name AS subject_name, "
         "SUM(ss.duration_minutes) AS total_duration_minutes, COUNT(ss.id) AS session_count "
         "FROM subjects AS s "
         "JOIN study_sessions AS ss ON ss.subject_id = s.id "
-        "WHERE ss.user_id = ? "
+        "WHERE ss.user_id = %s "
         "GROUP BY s.id, s.name "
-        "ORDER BY SUM(ss.duration_minutes) DESC",
+        "ORDER BY SUM(ss.duration_minutes) DESC "
+        "LIMIT 1",
         (session['user_id'],))
         top_subject = cursor.fetchone()
         top_subject_name = top_subject[0] if top_subject else None
@@ -167,7 +168,7 @@ def rename_session(session_id):
             return redirect(url_for('sessions.sessions_history'))
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE study_sessions SET session_name = ? WHERE id = ? AND user_id = ?", (new_title, session_id, session['user_id']))
+        cursor.execute("UPDATE study_sessions SET session_name = %s WHERE id = %s AND user_id = %s", (new_title, session_id, session['user_id']))
         conn.commit()
         cursor.close()
         if 'study_session' in session and session['study_session']['id'] == session_id:
@@ -188,7 +189,7 @@ def delete_session(session_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM study_sessions WHERE id = ? AND user_id = ?", (session_id, session['user_id']))
+        cursor.execute("DELETE FROM study_sessions WHERE id = %s AND user_id = %s", (session_id, session['user_id']))
         if cursor.rowcount == 0:
             return jsonify({'success': False, 'message': 'Session not found or not authorized'}), 404
         conn.commit()
@@ -205,7 +206,7 @@ def clear_sessions_history():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM study_sessions WHERE user_id = %s", (session['user_id'],))
         conn.commit()
         cursor.close()
         flash('All sessions history cleared successfully!', 'success')

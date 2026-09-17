@@ -16,11 +16,11 @@ def change_username():
             return jsonify({'success': False, 'message': 'Username cannot be empty.'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE username = ?", (newUsername,))
+        cursor.execute("SELECT id FROM users WHERE username = %s", (newUsername,))
         existing_user = cursor.fetchone()
         if existing_user:
             return jsonify({'success': False, 'message': 'Username already exists.'}), 400
-        cursor.execute("UPDATE users SET username = ? WHERE id = ?", (newUsername, session['user_id']))
+        cursor.execute("UPDATE users SET username = %s WHERE id = %s", (newUsername, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'message': 'Username changed successfully!'})
@@ -48,14 +48,14 @@ def change_password():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT password_hash FROM users WHERE id = ?", (session['user_id'],))
+        cursor.execute("SELECT password_hash FROM users WHERE id = %s", (session['user_id'],))
         stored_password_hash = cursor.fetchone()[0]
 
         if not check_password_hash(stored_password_hash, current_password):
             return jsonify({'success': False, 'message': 'Current password is incorrect.'}), 400
 
         new_hashed_password = generate_password_hash(new_password)
-        cursor.execute("UPDATE users SET password_hash = ? WHERE id = ?", (new_hashed_password, session['user_id']))
+        cursor.execute("UPDATE users SET password_hash = %s WHERE id = %s", (new_hashed_password, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'message': 'Password changed successfully!'})
@@ -75,10 +75,10 @@ def change_email():
             return jsonify({'success': False, 'message': 'Email cannot be empty.'}), 400
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM users WHERE email = ?", (newEmail,))
+        cursor.execute("SELECT id FROM users WHERE email = %s", (newEmail,))
         if cursor.fetchone():
             return jsonify({'success': False, 'message': 'Email already exists.'}), 400
-        cursor.execute("UPDATE users SET email = ? WHERE id = ?", (newEmail, session['user_id']))
+        cursor.execute("UPDATE users SET email = %s WHERE id = %s", (newEmail, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'message': 'Email changed successfully!'})
@@ -94,24 +94,23 @@ def delete_account():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT id FROM subjects WHERE user_id = %s", (session['user_id'],))
         subjects = cursor.fetchall()
         for subject in subjects:
             subject_id = subject[0]
-            cursor.execute("SELECT file_name FROM files WHERE subject_id = ? AND user_id = ?", (subject_id, session['user_id']))
+            cursor.execute("SELECT file_name FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
             files = cursor.fetchall()
             for file in files:
                 supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
 
-        cursor.execute("DELETE FROM sub_tasks WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM main_tasks WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM study_sessions WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM files WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM subjects WHERE user_id = ?", (session['user_id'],))
-        cursor.execute("DELETE FROM users WHERE id = ?", (session['user_id'],))
+        cursor.execute("DELETE FROM sub_tasks WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM main_tasks WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM study_sessions WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM files WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM subjects WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("DELETE FROM users WHERE id = %s", (session['user_id'],))
         conn.commit()
         cursor.close()
-        session.clear()
         return redirect(url_for('auth.logout'))
     except Exception as e:
         print(f"Database error: {e}")
@@ -140,7 +139,7 @@ def upload_profile_picture():
         pfp_url = upload_result['secure_url']
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("UPDATE users SET profile_picture = ? WHERE id = ?", (pfp_url, session['user_id']))
+        cursor.execute("UPDATE users SET profile_picture = %s WHERE id = %s", (pfp_url, session['user_id']))
         conn.commit()
         cursor.close()
         return jsonify({'success': True, 'pfp': pfp_url}), 200

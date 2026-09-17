@@ -1,11 +1,11 @@
 import os
-import pyodbc
+from psycopg2 import pool
 from flask import g
 from supabase import create_client, Client
 import cloudinary
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 cloudinary.config (
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
@@ -19,18 +19,34 @@ supabase: Client = create_client(
     os.environ.get("SUPABASE_KEY")
 )
 
-def db_connection():
-    driver = "ODBC Driver 18 for SQL Server"
-    server = os.getenv('DB_SERVER')
-    database = os.getenv('DB_DATABASE')
-    username = os.getenv('DB_USERNAME')
-    password = os.getenv('DB_PASSWORD')
-    
-    conn_str = f"DRIVER={{{driver}}};SERVER={server},1433;DATABASE={database};UID={username};PWD={password};Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;"
-    
-    return pyodbc.connect(conn_str)
+connection_pool = pool.ThreadedConnectionPool(
+    minconn=1,
+    maxconn=10,
+    dsn=os.getenv('DATABASE_URL'),
+    keepalives=1,
+    keepalives_idle=30,
+    keepalives_interval=10,
+    keepalives_count=5
+)
 
 def get_db():
     if 'db' not in g:
-        g.db = db_connection()
+        g.db = connection_pool.getconn()
+    
+    # Detect stale connections and swap them out before use
+    conn = g.db
+    try:
+        conn.cursor().execute("SELECT 1")
+    except Exception:
+        connection_pool.putconn(conn, close=True)
+        g.db = connection_pool.getconn()
+
     return g.db
+
+def close_db(e=None):
+    db = g.pop('db', None)
+    if db is not None:
+        connection_pool.putconn(db)
+
+def init_app(app):
+    app.teardown_appcontext(close_db)

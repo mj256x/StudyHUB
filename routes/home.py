@@ -18,7 +18,7 @@ def index():
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = %s", (session['user_id'],))
         subjects = cursor.fetchone()[0]
         cursor.close()
     except Exception as e:
@@ -40,13 +40,13 @@ def dashboard_stats():
         conn = get_db()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = %s", (session['user_id'],))
         total_subjects = cursor.fetchone()[0]
         
-        cursor.execute("SELECT COUNT(*) FROM main_tasks WHERE user_id = ? AND is_completed = 0", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) FROM main_tasks WHERE user_id = %s AND is_completed = FALSE", (session['user_id'],))
         pending_tasks = cursor.fetchone()[0]
         
-        cursor.execute("SELECT ISNULL(SUM(duration_minutes), 0) FROM study_sessions WHERE user_id = ?", (session['user_id'],))
+        cursor.execute("SELECT COALESCE(SUM(duration_minutes), 0) FROM study_sessions WHERE user_id = %s", (session['user_id'],))
         total_minutes = cursor.fetchone()[0]
         
         cursor.close()
@@ -70,9 +70,12 @@ def dashboard_tasks():
         conn = get_db()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT id, title, deadline, is_completed, priority FROM main_tasks" \
-            " WHERE user_id = ? " \
-            " AND CAST(deadline AS DATE) IN (CAST(GETDATE() AS DATE), CAST(DATEADD(DAY, 1, GETDATE()) AS DATE))", (session['user_id'],))
+        cursor.execute(
+            "SELECT id, title, deadline, is_completed, priority FROM main_tasks "
+            "WHERE user_id = %s "
+            "AND deadline IN (CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day')", 
+            (session['user_id'],)
+        )
         tasks = cursor.fetchall()
         
         tasks_data = []

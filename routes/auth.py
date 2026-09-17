@@ -19,15 +19,15 @@ def login():
             
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT id, password_hash FROM users WHERE username = ? OR email = ?", (username_email, username_email))
+            cursor.execute("SELECT id, password_hash FROM users WHERE username = %s OR email = %s", (username_email, username_email))
             user = cursor.fetchone()
             cursor.close()
         except Exception as e:
             print(f"Database error: {e}")
             return redirect(url_for('auth.login'))
         
-        if user and check_password_hash(user.password_hash, password):
-            session['user_id'] = user.id
+        if user and check_password_hash(user[1], password):
+            session['user_id'] = user[0]
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home.index'))
         else:
@@ -55,11 +55,11 @@ def register():
             password_hash = generate_password_hash(password)
             conn = get_db()
             cursor = conn.cursor()
-            cursor.execute("SELECT id FROM users WHERE username = ? OR email = ?", (username, email))
+            cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
             if cursor.fetchone():
                 flash('Username or email already exists.', 'danger')
                 return redirect(url_for('auth.register'))
-            cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)", (username, password_hash, email))
+            cursor.execute("INSERT INTO users (username, password_hash, email) VALUES (%s, %s, %s)", (username, password_hash, email))
             conn.commit()
             cursor.close()
         except Exception as e:
