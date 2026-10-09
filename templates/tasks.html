@@ -6,16 +6,15 @@
 {% if main_tasks %}
 <div class="subjects-tasks-container">
     {% for main_task in main_tasks %}
-    <div data-searchable-item data-task-id="{{ main_task[0] }}" data-task-subject-id="{{ main_task[3] }}"
+    <div id="main-task-card-{{ main_task[0] }}" class="card {% if main_task[5] %}done-border done-all-card{% endif %}"
+        data-searchable-item data-task-id="{{ main_task[0] }}" data-task-subject-id="{{ main_task[3] }}"
         data-task-priority="{{ main_task[4] }}" data-task-deadline="{{ main_task[2] }}">
-        <div id="main-task-card-{{ main_task[0] }}"
-            class="card {% if main_task[5] %}done-border done-all-card{% endif %}">
-            <div id="main-task-header-{{ main_task[0] }}"
-                class="card-header {% if main_task[5] %}done-border-bottom{% endif %}">
-                <div class="card-header-content main-task-header" style="display: none !important;">
-                    <h4 class="card-title main-task-title {% if main_task[5] %}done-text{% endif %}" {%if main_task[5]
-                        %}style="text-decoration: line-through;" {% endif %}>{{
-                        main_task[1] }}</h4>
+        <div id="main-task-header-{{ main_task[0] }}"
+            class="card-header {% if main_task[5] %}done-border-bottom{% endif %}">
+            <div class="card-header-content main-task-header" style="display: none !important;">
+                <h 4 class="card-title main-task-title {% if main_task[5] %}done-text{% endif %}" {%if main_task[5]
+                    %}style="text-decoration: line-through;" {% endif %}>{{
+                    main_task[1] }}</h4>
                     <div class="d-flex align-items-center gap-2">
                         <small class="deadline-icon main-task-deadline" title="Deadline: {{ main_task[2] }}">
                             <svg width="14px" height="14px" viewBox="0 0 24 24" fill="none"
@@ -29,174 +28,64 @@
                         </small>
                         <small class="priority-icon">{{ main_task[4] }}</small>
                     </div>
-                </div>
-                <p class="placeholder-glow">
-                    <span class="placeholder col-12"></span>
-                </p>
-                <div class="dropdown">
-                    <button id="dots-btn-{{ main_task[0] }}" onclick="doneButtonDisabled('{{ main_task[0] }}')"
-                        class="dots-btn dropdown-toggle dropdown-link {% if main_task[5] %}done-dots-btn{% endif %}"
-                        type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
-                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path
-                                d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            <path
-                                d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <button id="mark-as-done-btn-{{ main_task[0] }}"
-                                class="dropdown-item {% if main_task[5] %}done-btn-active{% endif %}" type="button"
-                                onclick="toggleMainTaskDone('{{ main_task[0] }}')">
-                                <svg id="main-done-svg-{{ main_task[0] }}" width="22px" height="22px"
-                                    viewBox="0 0 24 24" class="{% if main_task[5] %}done-text{% endif %}" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                <span id="btn-text-{{ main_task[0] }}"
-                                    class="{% if main_task[5] %}done-text{% endif %}">
-                                    {% if main_task[5] %}Mark as Undone{% else %}Mark as Done{% endif %}
-                                </span>
-                            </button>
-                        </li>
-                        <li>
-                            <div class="dropend">
-                                <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
-                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Edit Task Info</span>
-                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <button class="dropdown-item" type="button"
-                                            onclick="renameTask('main', '{{ main_task[0] }}', '{{ main_task[1] }}')">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M12 20H21M3.00003 20H4.67457C5.16376 20 5.40835 20 5.63852 19.9447C5.84259 19.8957 6.03768 19.8149 6.21663 19.7053C6.41846 19.5816 6.59141 19.4086 6.93732 19.0627L19.5001 6.49998C20.3285 5.67156 20.3285 4.32841 19.5001 3.49998C18.6716 2.67156 17.3285 2.67156 16.5001 3.49998L3.93729 16.0627C3.59139 16.4086 3.41843 16.5816 3.29475 16.7834C3.18509 16.9624 3.10428 17.1574 3.05529 17.3615C3.00003 17.5917 3.00003 17.8363 3.00003 18.3255V20Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Rename Task</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" type="button"
-                                            onclick="changeDeadline('main', '{{ main_task[0] }}', '{{ main_task[2] }}')">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M21 10H3M16 2V6M8 2V6M10.5 14L12 13V18M10.75 18H13.25M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8
-                                                    Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Change Deadline</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" type="button"
-                                            onclick="changePriority('main', '{{ main_task[0] }}', '{{ main_task[4] }}')">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M17 4V20M17 20L13 16M17 20L21 16M7 20V4M7 4L3 8M7 4L11 8"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Change Priority</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" type="button"
-                                            onclick="changeTaskSubject('{{ main_task[0] }}', '{{ main_task[3] }}')">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M12 20H5.2C4.07989 20 3.51984 20 3.09202 19.782C2.71569 19.5903 2.40973 19.2843 2.21799 18.908C2 18.4802 2 17.9201 2 16.8V7.2C2 6.07989 2 5.51984 2.21799 5.09202C2.40973 4.71569 2.71569 4.40973 3.09202 4.21799C3.51984 4 4.07989 4 5.2 4H5.6C7.84021 4 8.96031 4 9.81596 4.43597C10.5686 4.81947 11.1805 5.43139 11.564 6.18404C12 7.03968 12 8.15979 12 10.4M12 20V10.4M12 20H18.8C19.9201 20 20.4802 20 20.908 19.782C21.2843 19.5903 21.5903 19.2843 21.782 18.908C22 18.4802 22 17.9201 22 16.8V7.2C22 6.07989 22 5.51984 21.782 5.09202C21.5903 4.71569 21.2843 4.40973 20.908 4.21799C20.4802 4 19.9201 4 18.8 4H18.4C16.1598 4 15.0397 4 14.184 4.43597C13.4314 4.81947 12.8195 5.43139 12.436 6.18404C12 7.03968 12 8.15979 12 10.4"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Change Task's Subject</span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <button class="dropdown-item delete-subject-main-task-btn" type="submit"
-                                onclick="deleteMainTask('{{ main_task[0] }}')">
-                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                                Delete Main Task
-                            </button>
-                        </li>
-                    </ul>
-                </div>
             </div>
-            <div class="card-body sub-task-container" id="sub-tasks-container-{{ main_task[0] }}">
-                {% for sub_task in sub_tasks if sub_task[3] == main_task[0] %}
-                <div id="sub-task-card-{{ sub_task[0] }}" style="display: none !important;"
-                    class="sub-task-card {% if sub_task[5] %}done-card{% endif %}"
-                    data-sub-task-priority="{{ sub_task[4] }}" data-sub-task-main-task-id="{{ sub_task[3] }}"
-                    data-sub-task-deadline="{{ sub_task[2] }}" data-sub-task-id="{{ sub_task[0] }}">
-                    <span id="sub-task-text-{{ sub_task[0] }}"
-                        class="sub-task-title {% if sub_task[5] %}done-text{% endif %}" {% if sub_task[5] %}
-                        style="text-decoration: line-through;" {% endif %}>
-                        {{ sub_task[1] }}
-                    </span>
-                    <div class="d-flex align-items-center gap-2">
-                        <small class="deadline-icon sub-task-deadline" id="sub-task-deadline-{{ sub_task[0] }}"
-                            title="Deadline: {{ sub_task[2] }}">
-                            <svg width="14px" height="14px" viewBox="0 0 24 24" fill="none"
+            <p class="placeholder-glow">
+                <span class="placeholder col-12"></span>
+            </p>
+            <div class="dropdown">
+                <button id="dots-btn-{{ main_task[0] }}" onclick="doneButtonDisabled('{{ main_task[0] }}')"
+                    class="dots-btn dropdown-toggle dropdown-link {% if main_task[5] %}done-dots-btn{% endif %}"
+                    type="button" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <button id="mark-as-done-btn-{{ main_task[0] }}"
+                            class="dropdown-item {% if main_task[5] %}done-btn-active{% endif %}" type="button"
+                            onclick="toggleMainTaskDone('{{ main_task[0] }}')">
+                            <svg id="main-done-svg-{{ main_task[0] }}" width="22px" height="22px" viewBox="0 0 24 24"
+                                class="{% if main_task[5] %}done-text{% endif %}" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
-                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                    d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" />
                             </svg>
-                            <span>{{ sub_task[2] }}</span>
-                        </small>
-                        <small class="priority-icon">{{ sub_task[4] }}</small>
-                    </div>
-                    <div class="sub-task-card-btns">
-                        <div class="dropdown">
-                            <button id="sub-task-dots-btn-{{ sub_task[0] }}"
-                                class="dots-btn dropdown-toggle dropdown-link d-flex justify-content-center align-items-center {% if sub_task[5] %}done-dots-btn{% endif %}"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span id="btn-text-{{ main_task[0] }}" class="{% if main_task[5] %}done-text{% endif %}">
+                                {% if main_task[5] %}Mark as Undone{% else %}Mark as Done{% endif %}
+                            </span>
+                        </button>
+                    </li>
+                    <li>
+                        <div class="dropend">
+                            <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                                 <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M11 3.99998H6.8C5.11984 3.99998 4.27976 3.99998 3.63803 4.32696C3.07354 4.61458 2.6146 5.07353 2.32698 5.63801C2 6.27975 2 7.11983 2 8.79998V17.2C2 18.8801 2 19.7202 2.32698 20.362C2.6146 20.9264 3.07354 21.3854 3.63803 21.673C4.27976 22 5.11984 22 6.8 22H15.2C16.8802 22 17.7202 22 18.362 21.673C18.9265 21.3854 19.3854 20.9264 19.673 20.362C20 19.7202 20 18.8801 20 17.2V13M7.99997 16H9.67452C10.1637 16 10.4083 16 10.6385 15.9447C10.8425 15.8957 11.0376 15.8149 11.2166 15.7053C11.4184 15.5816 11.5914 15.4086 11.9373 15.0627L21.5 5.49998C22.3284 4.67156 22.3284 3.32841 21.5 2.49998C20.6716 1.67156 19.3284 1.67155 18.5 2.49998L8.93723 12.0627C8.59133 12.4086 8.41838 12.5816 8.29469 12.7834C8.18504 12.9624 8.10423 13.1574 8.05523 13.3615C7.99997 13.5917 7.99997 13.8363 7.99997 14.3255V16Z"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
+                                    <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span>Edit Task Info</span>
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </button>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <button class="dropdown-item" type="button"
-                                        onclick="renameTask('sub', '{{ sub_task[0] }}', '{{ sub_task[1] }}')">
+                                        onclick="renameTask('main', '{{ main_task[0] }}', '{{ main_task[1] }}')">
                                         <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -209,12 +98,11 @@
                                 </li>
                                 <li>
                                     <button class="dropdown-item" type="button"
-                                        onclick="changeDeadline('sub', '{{ sub_task[0] }}', '{{ sub_task[2] }}')">
+                                        onclick="changeDeadline('main', '{{ main_task[0] }}', '{{ main_task[2] }}')">
                                         <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
-                                            <path
-                                                d="M21 10H3M16 2V6M8 2V6M10.5 14L12 13V18M10.75 18H13.25M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            <path d="M21 10H3M16 2V6M8 2V6M10.5 14L12 13V18M10.75 18H13.25M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8
+                                                    Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                                 stroke-linejoin="round" />
                                         </svg>
                                         <span>Change Deadline</span>
@@ -222,7 +110,7 @@
                                 </li>
                                 <li>
                                     <button class="dropdown-item" type="button"
-                                        onclick="changePriority('sub', '{{ sub_task[0] }}', '{{ sub_task[4] }}')">
+                                        onclick="changePriority('main', '{{ main_task[0] }}', '{{ main_task[4] }}')">
                                         <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path d="M17 4V20M17 20L13 16M17 20L21 16M7 20V4M7 4L3 8M7 4L11 8"
@@ -232,247 +120,351 @@
                                         <span>Change Priority</span>
                                     </button>
                                 </li>
+                                <li>
+                                    <button class="dropdown-item" type="button"
+                                        onclick="changeTaskSubject('{{ main_task[0] }}', '{{ main_task[3] }}')">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 20H5.2C4.07989 20 3.51984 20 3.09202 19.782C2.71569 19.5903 2.40973 19.2843 2.21799 18.908C2 18.4802 2 17.9201 2 16.8V7.2C2 6.07989 2 5.51984 2.21799 5.09202C2.40973 4.71569 2.71569 4.40973 3.09202 4.21799C3.51984 4 4.07989 4 5.2 4H5.6C7.84021 4 8.96031 4 9.81596 4.43597C10.5686 4.81947 11.1805 5.43139 11.564 6.18404C12 7.03968 12 8.15979 12 10.4M12 20V10.4M12 20H18.8C19.9201 20 20.4802 20 20.908 19.782C21.2843 19.5903 21.5903 19.2843 21.782 18.908C22 18.4802 22 17.9201 22 16.8V7.2C22 6.07989 22 5.51984 21.782 5.09202C21.5903 4.71569 21.2843 4.40973 20.908 4.21799C20.4802 4 19.9201 4 18.8 4H18.4C16.1598 4 15.0397 4 14.184 4.43597C13.4314 4.81947 12.8195 5.43139 12.436 6.18404C12 7.03968 12 8.15979 12 10.4"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Change Task's Subject</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
-                        <button type="button" id="sub-task-done-btn-{{ sub_task[0] }}" class="custom-btn"
-                            onclick="toggleSubTaskDone('{{ sub_task[0] }}', '{{ main_task[0] }}')">
-                            <svg id="sub-done-svg-{{ sub_task[0] }}" width="22px" height="22px"
-                                class="mark-done-svg {% if sub_task[5] %}done-text mark-done-svg-1{% endif %}"
-                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                        <button type="button" onclick="deleteSubTask('{{ sub_task[0] }}', '{{ main_task[0] }}')"
-                            class="custom-delete-btn">
-                            <svg class="custom-delete-icon" width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                    </li>
+                    <li>
+                        <button class="dropdown-item delete-subject-main-task-btn" type="submit"
+                            onclick="deleteMainTask('{{ main_task[0] }}')">
+                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round" />
                             </svg>
+                            Delete Main Task
                         </button>
-                    </div>
-                </div>
-                <p class="placeholder-wave">
-                    <span class="placeholder col-12"></span>
-                </p>
-                {% else %}
-                <div class="d-flex flex-column align-items-center justify-content-center no-sub-tasks-msg"
-                    style="display: none !important;">
-                    <p>No sub-tasks yet. Add a new sub-task.</p>
-                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 4V20M12 20L18 14M12 20L6 14" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <p class="placeholder-wave">
-                    <span class="placeholder col-12"></span>
-                </p>
-                {% endfor %}
+                    </li>
+                </ul>
             </div>
-            <div id="main-task-footer-{{ main_task[0] }}"
-                class="card-footer {% if main_task[5] %}done-border-top{% endif %}">
-                <button id="add-sub-task-btn-{{ main_task[0] }}" type="button"
-                    class="add-sub-task-btn {% if main_task[5] %}done-btn-active{% endif %}"
-                    onclick="openTaskCardModal('sub', '{{ main_task[0] }}')">
-                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true" focusable="false">
-                        <path
-                            d="M21 8H3M16 2V5M8 2V5M12 18V12M9 15H15M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    <span>Add a new sub-task</span>
-                </button>
-                <div class="dropdown">
-                    <button id="show-sub-tasks-btn-{{ main_task[0] }}"
-                        class="show-sub-tasks-btn dropdown-toggle dropdown-link {% if main_task[5] %}done-btn-active{% endif %}"
-                        type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+        </div>
+        <div class="card-body sub-task-container" id="sub-tasks-container-{{ main_task[0] }}">
+            {% for sub_task in sub_tasks if sub_task[3] == main_task[0] %}
+            <div id="sub-task-card-{{ sub_task[0] }}" style="display: none !important;"
+                class="sub-task-card {% if sub_task[5] %}done-card{% endif %}"
+                data-sub-task-priority="{{ sub_task[4] }}" data-sub-task-main-task-id="{{ sub_task[3] }}"
+                data-sub-task-deadline="{{ sub_task[2] }}" data-sub-task-id="{{ sub_task[0] }}">
+                <span id="sub-task-text-{{ sub_task[0] }}"
+                    class="sub-task-title {% if sub_task[5] %}done-text{% endif %}" {% if sub_task[5] %}
+                    style="text-decoration: line-through;" {% endif %}>
+                    {{ sub_task[1] }}
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <small class="deadline-icon sub-task-deadline" id="sub-task-deadline-{{ sub_task[0] }}"
+                        title="Deadline: {{ sub_task[2] }}">
+                        <svg width="14px" height="14px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 12H18M3 6H21M9 18H15" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path
+                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <div class="dropend">
-                                <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
-                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Show By Priority</span>
-                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button type="button" class="dropdown-item priority-filter-btn"
-                                            id="high-priority-btn-{{ main_task[0] }}"
-                                            onclick="filterByPriority('sub','high', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5L5 2M5 2L8 5M5 2L5 8"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>High Priority</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item priority-filter-btn"
-                                            id="medium-priority-btn-{{ main_task[0] }}"
-                                            onclick="filterByPriority('sub','medium', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5H8"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Medium Priority</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item priority-filter-btn"
-                                            id="low-priority-btn-{{ main_task[0] }}"
-                                            onclick="filterByPriority('sub','low', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5L5 8M5 8L8 5M5 8L5 2"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Low Priority</span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="dropend">
-                                <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
-                                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                        <span>{{ sub_task[2] }}</span>
+                    </small>
+                    <small class="priority-icon">{{ sub_task[4] }}</small>
+                </div>
+                <div class="sub-task-card-btns">
+                    <div class="dropdown">
+                        <button id="sub-task-dots-btn-{{ sub_task[0] }}"
+                            class="dots-btn dropdown-toggle dropdown-link d-flex justify-content-center align-items-center {% if sub_task[5] %}done-dots-btn{% endif %}"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11 3.99998H6.8C5.11984 3.99998 4.27976 3.99998 3.63803 4.32696C3.07354 4.61458 2.6146 5.07353 2.32698 5.63801C2 6.27975 2 7.11983 2 8.79998V17.2C2 18.8801 2 19.7202 2.32698 20.362C2.6146 20.9264 3.07354 21.3854 3.63803 21.673C4.27976 22 5.11984 22 6.8 22H15.2C16.8802 22 17.7202 22 18.362 21.673C18.9265 21.3854 19.3854 20.9264 19.673 20.362C20 19.7202 20 18.8801 20 17.2V13M7.99997 16H9.67452C10.1637 16 10.4083 16 10.6385 15.9447C10.8425 15.8957 11.0376 15.8149 11.2166 15.7053C11.4184 15.5816 11.5914 15.4086 11.9373 15.0627L21.5 5.49998C22.3284 4.67156 22.3284 3.32841 21.5 2.49998C20.6716 1.67156 19.3284 1.67155 18.5 2.49998L8.93723 12.0627C8.59133 12.4086 8.41838 12.5816 8.29469 12.7834C8.18504 12.9624 8.10423 13.1574 8.05523 13.3615C7.99997 13.5917 7.99997 13.8363 7.99997 14.3255V16Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button class="dropdown-item" type="button"
+                                    onclick="renameTask('sub', '{{ sub_task[0] }}', '{{ sub_task[1] }}')">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
-                                            d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                            d="M12 20H21M3.00003 20H4.67457C5.16376 20 5.40835 20 5.63852 19.9447C5.84259 19.8957 6.03768 19.8149 6.21663 19.7053C6.41846 19.5816 6.59141 19.4086 6.93732 19.0627L19.5001 6.49998C20.3285 5.67156 20.3285 4.32841 19.5001 3.49998C18.6716 2.67156 17.3285 2.67156 16.5001 3.49998L3.93729 16.0627C3.59139 16.4086 3.41843 16.5816 3.29475 16.7834C3.18509 16.9624 3.10428 17.1574 3.05529 17.3615C3.00003 17.5917 3.00003 17.8363 3.00003 18.3255V20Z"
                                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" />
                                     </svg>
-                                    <span>Show By Deadline</span>
+                                    <span>Rename Task</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button"
+                                    onclick="changeDeadline('sub', '{{ sub_task[0] }}', '{{ sub_task[2] }}')">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M21 10H3M16 2V6M8 2V6M10.5 14L12 13V18M10.75 18H13.25M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
                                     </svg>
+                                    <span>Change Deadline</span>
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <button type="button" class="dropdown-item deadline-filter-btn"
-                                            id="filter-today-btn-{{ main_task[0] }}"
-                                            onclick="filterByDeadline('sub', 'today', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                                <circle cx="12" cy="15" r="1.5" fill="currentColor" />
-                                            </svg>
-                                            <span>Today</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item deadline-filter-btn"
-                                            id="filter-tomorrow-btn-{{ main_task[0] }}"
-                                            onclick="filterByDeadline('sub', 'tomorrow', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                                <path d="M10 16L14 16M14 16L12 14M14 16L12 18" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Tomorrow</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item deadline-filter-btn"
-                                            id="filter-this-week-btn-{{ main_task[0] }}"
-                                            onclick="filterByDeadline('sub', 'this-week', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                                <path
-                                                    d="M8 14H8.01M12 14H12.01M16 14H16.01M8 17H8.01M12 17H12.01M16 17H16.01"
-                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <span>This Week</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item deadline-filter-btn"
-                                            id="filter-overdue-btn-{{ main_task[0] }}"
-                                            onclick="filterByDeadline('sub', 'overdue', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                                <path d="M12 13V15.5M12 18H12.01" stroke="currentColor" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Overdue</span>
-                                        </button>
-                                    </li>
-                                    <li>
-                                        <button type="button" class="dropdown-item deadline-filter-btn"
-                                            id="filter-upcoming-btn-{{ main_task[0] }}"
-                                            onclick="filterByDeadline('sub', 'upcoming', this, '{{ main_task[0] }}')"
-                                            data-active="false">
-                                            <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                                <path d="M12 18V13M12 13L9.5 15.5M12 13L14.5 15.5" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <span>Upcoming</span>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
+                            </li>
+                            <li>
+                                <button class="dropdown-item" type="button"
+                                    onclick="changePriority('sub', '{{ sub_task[0] }}', '{{ sub_task[4] }}')">
+                                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 4V20M17 20L13 16M17 20L21 16M7 20V4M7 4L3 8M7 4L11 8"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Change Priority</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="button" id="sub-task-done-btn-{{ sub_task[0] }}" class="custom-btn"
+                        onclick="toggleSubTaskDone('{{ sub_task[0] }}', '{{ main_task[0] }}')">
+                        <svg id="sub-done-svg-{{ sub_task[0] }}" width="22px" height="22px"
+                            class="mark-done-svg {% if sub_task[5] %}done-text mark-done-svg-1{% endif %}"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M7.5 12L10.5 15L16.5 9M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <button type="button" onclick="deleteSubTask('{{ sub_task[0] }}', '{{ main_task[0] }}')"
+                        class="custom-delete-btn">
+                        <svg class="custom-delete-icon" width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
                 </div>
+            </div>
+            <p class="placeholder-wave">
+                <span class="placeholder col-12"></span>
+            </p>
+            {% else %}
+            <div class="d-flex flex-column align-items-center justify-content-center no-sub-tasks-msg"
+                style="display: none !important;">
+                <p>No sub-tasks yet. Add a new sub-task.</p>
+                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4V20M12 20L18 14M12 20L6 14" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <p class="placeholder-wave">
+                <span class="placeholder col-12"></span>
+            </p>
+            {% endfor %}
+        </div>
+        <div id="main-task-footer-{{ main_task[0] }}"
+            class="card-footer {% if main_task[5] %}done-border-top{% endif %}">
+            <button id="add-sub-task-btn-{{ main_task[0] }}" type="button"
+                class="add-sub-task-btn {% if main_task[5] %}done-btn-active{% endif %}"
+                onclick="openTaskCardModal('sub', '{{ main_task[0] }}')">
+                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true" focusable="false">
+                    <path
+                        d="M21 8H3M16 2V5M8 2V5M12 18V12M9 15H15M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Add a new sub-task</span>
+            </button>
+            <div class="dropdown">
+                <button id="show-sub-tasks-btn-{{ main_task[0] }}"
+                    class="show-sub-tasks-btn dropdown-toggle dropdown-link {% if main_task[5] %}done-btn-active{% endif %}"
+                    type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 12H18M3 6H21M9 18H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <div class="dropend">
+                            <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span>Show By Priority</span>
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button type="button" class="dropdown-item priority-filter-btn"
+                                        id="high-priority-btn-{{ main_task[0] }}"
+                                        onclick="filterByPriority('sub','high', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5L5 2M5 2L8 5M5 2L5 8"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        <span>High Priority</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item priority-filter-btn"
+                                        id="medium-priority-btn-{{ main_task[0] }}"
+                                        onclick="filterByPriority('sub','medium', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5H8"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Medium Priority</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item priority-filter-btn"
+                                        id="low-priority-btn-{{ main_task[0] }}"
+                                        onclick="filterByPriority('sub','low', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M12 3H16.2C17.8802 3 18.7202 3 19.362 3.32698C19.9265 3.6146 20.3854 4.07354 20.673 4.63803C21 5.27976 21 6.11984 21 7.8V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V12M8 13V17M16 11V17M12 7V17M2 5L5 8M5 8L8 5M5 8L5 2"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Low Priority</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dropend">
+                            <button class="dropdown-item dropdown-toggle dropdown-link" type="button"
+                                data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <span>Show By Deadline</span>
+                                <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 17L11 12L6 7M13 17L18 12L13 7" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <button type="button" class="dropdown-item deadline-filter-btn"
+                                        id="filter-today-btn-{{ main_task[0] }}"
+                                        onclick="filterByDeadline('sub', 'today', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <circle cx="12" cy="15" r="1.5" fill="currentColor" />
+                                        </svg>
+                                        <span>Today</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item deadline-filter-btn"
+                                        id="filter-tomorrow-btn-{{ main_task[0] }}"
+                                        onclick="filterByDeadline('sub', 'tomorrow', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M10 16L14 16M14 16L12 14M14 16L12 18" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Tomorrow</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item deadline-filter-btn"
+                                        id="filter-this-week-btn-{{ main_task[0] }}"
+                                        onclick="filterByDeadline('sub', 'this-week', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path
+                                                d="M8 14H8.01M12 14H12.01M16 14H16.01M8 17H8.01M12 17H12.01M16 17H16.01"
+                                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        <span>This Week</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item deadline-filter-btn"
+                                        id="filter-overdue-btn-{{ main_task[0] }}"
+                                        onclick="filterByDeadline('sub', 'overdue', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M12 13V15.5M12 18H12.01" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Overdue</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item deadline-filter-btn"
+                                        id="filter-upcoming-btn-{{ main_task[0] }}"
+                                        onclick="filterByDeadline('sub', 'upcoming', this, '{{ main_task[0] }}')"
+                                        data-active="false">
+                                        <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M21 10H3M16 2V6M8 2V6M7.8 22H16.2C17.8802 22 18.7202 22 19.362 21.673C19.9265 21.3854 20.3854 20.9265 20.673 20.362C21 19.7202 21 18.8802 21 17.2V8.8C21 7.11984 21 6.27976 20.673 5.63803C20.3854 5.07354 19.9265 4.6146 19.362 4.32698C18.7202 4 17.8802 4 16.2 4H7.8C6.11984 4 5.27976 4 4.63803 4.32698C4.07354 4.6146 3.6146 5.07354 3.32698 5.63803C3 6.27976 3 7.11984 3 8.8V17.2C3 18.8802 3 19.7202 3.32698 20.362C3.6146 20.9265 4.07354 21.3854 4.63803 21.673C5.27976 22 6.11984 22 7.8 22Z"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M12 18V13M12 13L9.5 15.5M12 13L14.5 15.5" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Upcoming</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

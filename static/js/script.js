@@ -390,11 +390,13 @@ function noResultsMsg(message, buttonFunction, buttonText, NoMatchIcon = false) 
     }
 }
 
-document.querySelectorAll('.nav-link').forEach(link => {
-    if (link.href === window.location.href) {
-        link.classList.add('active');
-    }
-});
+function toggleActiveLink() {
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.href === window.location.href) {
+            link.classList.add('active-link');
+        }
+    });
+}
 
 function clearNoResultsMsg() {
     document.querySelectorAll('.no-results-message').forEach(msg => msg.remove());
@@ -416,6 +418,8 @@ function clearSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    toggleActiveLink();
 
     if (window.location.pathname === '/sessions_history' || window.location.pathname === '/index') {
         document.querySelector('.search-container').style.setProperty('display', 'none', 'important');
@@ -457,8 +461,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchButton = document.getElementById('search-button');
     searchButton.addEventListener('click', (e) => {
         e.stopPropagation();
-        searchInput.classList.toggle('active');
-        if (searchInput.classList.contains('active')) {
+        searchInput.classList.toggle('active-search');
+        if (searchInput.classList.contains('active-search')) {
             searchInput.focus();
             searchButton.style.setProperty('border', 'none', 'important');
         } else {
@@ -469,8 +473,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.addEventListener('click', (e) => {
         if (!searchInput.contains(e.target) && !searchButton.contains(e.target)) {
-            searchInput.classList.remove('active');
+            searchInput.classList.remove('active-search');
             searchInput.blur();
+            searchButton.style.setProperty('border', '2px solid #6B8CAE', 'important');
         }
     });
 

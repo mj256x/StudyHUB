@@ -14,13 +14,15 @@
 </head>
 
 <body>
-
+    <!-- Start NavBar -->
     <nav class="navbar">
-        <div class="navbar-links">
-            <a href="{{ url_for('home.index') }}" class="navbar-brand">
-                <img id="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="StudyHUB">
-                <span class="fw-bold">StudyHUB</span>
+        <div class="navbar-brand">
+            <a href="{{ url_for('home.index') }}">
+                <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="StudyHUB">
+                <span class="brand-title">StudyHUB</span>
             </a>
+        </div>
+        <div class="navbar-links">
             <ul class="links-list">
                 <li class="nav-item">
                     <a class="nav-link" href="{{url_for('subjects.subjects')}}">Subjects</a>
@@ -29,7 +31,7 @@
                     <a class="nav-link" href="{{url_for('tasks.tasks')}}">Tasks</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link {% if request.endpoint and 'sessions' in request.endpoint %}active{% endif %}"
+                    <a class="nav-link {% if request.endpoint and 'sessions' in request.endpoint %}active-link{% endif %}"
                         href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Sessions
                     </a>
@@ -234,6 +236,7 @@
             </a>
         </div>
     </nav>
+    <!-- End NavBar -->
 
     <!-- Modals -->
     <div class="modal fade" id="addSubjectModal" tabindex="-1">
