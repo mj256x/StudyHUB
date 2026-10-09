@@ -103,7 +103,7 @@ h2 {
     justify-content: center;
     align-items: stretch;
     min-height: 75vh;
-    width: 80%;
+    width: 75%;
 }
 
 .get-started-card {
@@ -111,37 +111,50 @@ h2 {
     height: auto;
     background: linear-gradient(180deg, var(--c-mauve) 0%, var(--c-deep) 100%);
     color: var(--c-text);
-    padding: 3rem;
+    padding: 2rem;
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     gap: 1.5rem;
 }
 
+.encourage {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    background-color: var(--c-accent-dark);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .get-started-card h1,
-.get-started-card h2,
-.get-started-card h3 {
+.get-started-card h2 {
     font-family: var(--font-display);
 }
 
 .auth-btn {
     display: inline-block;
     padding: 0.5rem 1rem;
-    background-color: transparent;
-    color: var(--c-text);
-    border: 2px solid var(--c-text);
+    background-color: var(--c-text);
+    color: var(--c-mauve);
+    border: none;
     border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
+    text-align: center;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .auth-btn:hover {
-    background-color: var(--c-text);
-    color: var(--c-mauve);
+    background-color: var(--c-accent);
+    color: var(--c-accent-dark);
 }
 
 .bi.bi-person-fill {
@@ -167,14 +180,14 @@ h2 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
 }
 
 .input-form {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     padding: 0 2rem;
 }
 
@@ -186,6 +199,7 @@ h2 {
     padding-left: 2.5rem;
     color: var(--c-text-on-light);
     font-family: var(--font-body);
+    border-radius: 4px;
 }
 
 .custom-input:focus {
@@ -198,7 +212,7 @@ h2 {
     position: relative;
 }
 
-.input-group-custom i {
+.input-group-custom .input-icon {
     position: absolute;
     left: 5px;
     top: 50%;
@@ -216,25 +230,6 @@ h2 {
     transform: translateY(-50%);
     color: var(--c-text-muted-on-light);
     cursor: pointer;
-}
-
-.input-group-custom svg.checked,
-.input-group-custom svg.unchecked {
-    display: none;
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.input-group-custom svg.checked {
-    color: var(--c-success);
-    fill: color-mix(in srgb, var(--c-success), var(--c-highlight) 75%);
-}
-
-.input-group-custom svg.unchecked {
-    color: var(--c-danger);
-    fill: color-mix(in srgb, var(--c-danger), var(--c-highlight) 75%);
 }
 
 .submit-btn {
@@ -284,4 +279,12 @@ h2 {
 
 .password-check span.active {
     color: var(--c-success);
+}
+
+.is-valid {
+    box-shadow: 0 0 1rem .2rem rgba(var(--bs-success-rgb), .25) !important;
+}
+
+.is-invalid {
+    box-shadow: 0 0 1rem .2rem rgba(var(--bs-danger-rgb), .25) !important;
 }
