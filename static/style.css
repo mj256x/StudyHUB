@@ -703,7 +703,6 @@ ul {
 
 /* ========================= */
 
-
 /*============Satrt Main============*/
 main {
     padding: 45px 90px !important;
@@ -1715,7 +1714,7 @@ th {
 .form-input,
 .form-select {
     background-color: var(--c-bg-surface-bright) !important;
-    border: 2px solid var(--c-border) !important;
+    border: 1px solid var(--c-border) !important;
     border-radius: 10px !important;
 }
 
@@ -2143,3 +2142,11 @@ select.flatpickr-monthDropdown-months {
 }
 
 /*========================End Flatpickr================================*/
+
+.form-input.is-valid {
+    box-shadow: 0 0 1rem .2rem rgba(var(--bs-success-rgb), .25) !important;
+}
+
+.form-input.is-invalid {
+    box-shadow: 0 0 1rem .2rem rgba(var(--bs-danger-rgb), .25) !important;
+}

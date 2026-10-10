@@ -290,7 +290,7 @@ def upload_file(subject_id):
         file_url = supabase.storage.from_("files").get_public_url(filename)
 
         # Default fallback thumbnail URL for non-PDFs (like DOCX)
-        thumbnail_url = url_for('static', filename='images/word.jpg')
+        thumbnail_url = url_for('static', filename='images/word.svg')
 
         # 3. Handle PDF thumbnail generation using the exact same file_bytes
         if file_ext == 'pdf':
@@ -309,7 +309,7 @@ def upload_file(subject_id):
                 thumbnail_url = supabase.storage.from_("files").get_public_url(thumbnail_path)
             except Exception as e:
                 print(f"Error generating PDF thumbnail: {e}")
-                thumbnail_url = url_for('static', filename='images/word.jpg')
+                thumbnail_url = url_for('static', filename='images/word.svg')
 
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id, thumbnail_url) VALUES (%s, %s, %s, %s, %s)",
                 (subject_id, file.filename, file_url, session['user_id'], thumbnail_url))
@@ -393,7 +393,7 @@ def move_file(file_id):
             cursor.execute("UPDATE files SET subject_id = %s, file_url = %s, thumbnail_url = %s WHERE id = %s AND user_id = %s",
                         (new_subject_id, new_file_url, new_thumbnail_url, file_id, session['user_id']))
         else:
-            thumbnail_url = url_for('static', filename='images/word.jpg')
+            thumbnail_url = url_for('static', filename='images/word.svg')
             cursor.execute("UPDATE files SET subject_id = %s, file_url = %s, thumbnail_url = %s WHERE id = %s AND user_id = %s",
                         (new_subject_id, new_file_url, thumbnail_url, file_id, session['user_id']))
         conn.commit()
@@ -436,7 +436,7 @@ def copy_file(file_id):
             cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (%s, %s, %s, %s, %s)",
                     (new_subject_id, file_name, new_file_url, new_thumbnail_url, session['user_id']))
         else:
-            thumbnail_url = url_for('static', filename='images/word.jpg')
+            thumbnail_url = url_for('static', filename='images/word.svg')
             cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (%s, %s, %s, %s, %s)",
                     (new_subject_id, file_name, new_file_url, thumbnail_url, session['user_id']))
         conn.commit()

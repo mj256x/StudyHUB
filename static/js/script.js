@@ -26,57 +26,36 @@ async function uploadProfilePicture(input) {
 const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const usernameInput = document.querySelector('#new_username');
+const emailInput = document.querySelector('#new_email');
+const newPassword = document.querySelector('#new_password');
+const confirmPassword = document.querySelector('#confirm_password');
+const currentPassword = document.querySelector('#current_password');
+const newUsernameError = document.querySelector('.username-error');
+const newPasswordError = document.querySelector('.password-error');
+const confirmPasswordError = document.querySelector('.conf-password-error');
+const emailError = document.querySelector('.email-error');
 
 function showError(inputElement, valid) {
-    const uncheckedIcon = inputElement.parentElement?.querySelector('.unchecked');
-    const checkedIcon = inputElement.parentElement?.querySelector('.checked');
-
-
     if (valid) {
-        if (checkedIcon) checkedIcon.style.display = 'block';
-        if (uncheckedIcon) uncheckedIcon.style.display = 'none';
-        if (inputElement === document.getElementById('confirm_password')) {
-            if (document.querySelector('.password-check').style.display === 'flex') {
-                checkedIcon.style.right = '40px';
-                checkedIcon.style.top = '395px';
-            } else {
-                checkedIcon.style.right = '40px';
-                checkedIcon.style.top = '255px';
-            }
-        } else if (inputElement === document.getElementById('new_password')) {
-            checkedIcon.style.top = '165px';
-            checkedIcon.style.right = '40px';
-        }
-        inputElement.style.setProperty('border-color', 'green', 'important');
+        inputElement.classList.add('is-valid');
+        inputElement.classList.remove('is-invalid');
+        inputElement.style.setProperty('border-color', '#18b118d5', 'important');
     } else {
-        if (checkedIcon) checkedIcon.style.display = 'none';
-        if (uncheckedIcon) uncheckedIcon.style.display = 'block';
-        if (inputElement === document.getElementById('confirm_password')) {
-            if (document.querySelector('.password-check').style.display === 'flex') {
-                uncheckedIcon.style.top = '395px';
-                uncheckedIcon.style.right = '40px';
-            } else {
-                uncheckedIcon.style.top = '255px';
-                uncheckedIcon.style.right = '40px';
-            }
-        } else if (inputElement === document.getElementById('new_password')) {
-            uncheckedIcon.style.top = '165px';
-            uncheckedIcon.style.right = '40px';
-        }
-        inputElement.style.setProperty('border-color', 'red', 'important');
+        inputElement.classList.remove('is-valid');
+        inputElement.classList.add('is-invalid');
+        inputElement.style.setProperty('border-color', '#c31a1aeb', 'important');
     }
 }
 
 function clearError(inputElement) {
-    const icons = inputElement.parentElement?.querySelectorAll('.unchecked, .checked');
-    icons?.forEach((icon) => {
-        icon.style.display = 'none';
-    });
+    inputElement.classList.remove('is-valid');
+    inputElement.classList.remove('is-invalid');
     inputElement.style.removeProperty('border-color');
 }
 
 function togglePasswordVisibility(btn) {
-    const passwordFields = document.querySelectorAll('#current_password, #new_password, #confirm_password');
+    const passwordFields = [newPassword, confirmPassword, currentPassword];
     const showed = btn.getAttribute('data-showed') === 'true';
     btn.setAttribute('data-showed', !showed);
     passwordFields.forEach(field => {
@@ -87,30 +66,34 @@ function togglePasswordVisibility(btn) {
     btn.querySelector('.closed-eye').style.display = showed ? 'none' : 'block';
 }
 
-document.getElementById('new_username').addEventListener('input', function () {
-    const newUsername = this.value.trim();
-    if (newUsername.length > 0) {
-        if (usernameRegex.test(newUsername)) {
+function showFormError(inputElement, message) {
+    inputElement.classList.add('is-invalid');
+    inputElement.style.setProperty('border-color', '#c31a1aeb', 'important');
+    message.textContent = '* This field is required';
+}
+
+usernameInput.addEventListener('input', function () {
+    if (this.value.length > 0) {
+        if (usernameRegex.test(this.value)) {
             showError(this, true);
-            document.querySelector('.username-error').textContent = '';
+            newUsernameError.textContent = '';
         } else {
             showError(this, false);
-            document.querySelector('.username-error').textContent = '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )';
+            newUsernameError.textContent = '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )';
         }
     } else {
         clearError(this);
-        document.querySelector('.username-error').textContent = '';
+        newUsernameError.textContent = '';
     }
 });
 
 document.getElementById('change-username-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     try {
-        const newUsername = document.getElementById('new_username').value.trim();
+        const newUsername = usernameInput.value.trim();
         if (newUsername.length === 0 || !usernameRegex.test(newUsername)) {
-            showError(document.getElementById('new_username'), false);
-            const newUsernameError = document.querySelector('.username-error');
-            newUsernameError.textContent = newUsername.length > 0 ? '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )' : '* Cannot be empty';
+            showError(usernameInput, false);
+            newUsernameError.textContent = newUsername.length > 0 ? '* Enter a valid username (3-15 characters,a-Z, 0-9, _ )' : '* This field is required';
             return;
         }
         const response = await fetch('/change_username', {
@@ -123,11 +106,12 @@ document.getElementById('change-username-form').addEventListener('submit', async
         const data = await response.json();
         if (data.success) {
             document.getElementById('username').textContent = newUsername;
-            showAlert('success', 'Username changed successfully!');
+            showAlert('success', data.message);
             var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changeUsernameModal'));
             myModal.hide();
+            clearError(usernameInput);
         } else {
-            showAlert('danger', 'The username you entered is already taken.');
+            showAlert('danger', data.message);
         }
     } catch (error) {
         console.error('Error changing username:', error);
@@ -135,13 +119,8 @@ document.getElementById('change-username-form').addEventListener('submit', async
     }
 });
 
-document.getElementById('current_password').addEventListener('input', function () {
-    clearError(this);
-    document.querySelector('.current-password-error').textContent = '';
-});
-
 const passwordCheckTerms = document.querySelectorAll('.password-check span');
-document.getElementById('new_password').addEventListener('input', function () {
+newPassword.addEventListener('input', function () {
     if (this.value.length > 0) {
         document.querySelector('.password-check').style.display = 'flex';
 
@@ -173,58 +152,49 @@ document.getElementById('new_password').addEventListener('input', function () {
 
         if (!passwordRegex.test(this.value)) {
             showError(this, false);
-            document.querySelector('.password-error').textContent = '* Enter a valid password';
+            newPasswordError.textContent = '* Enter a valid password';
         } else {
             showError(this, true);
             document.querySelector('.password-check').style.display = 'none';
-            document.querySelector('.password-error').textContent = '';
+            newPasswordError.textContent = '';
         }
 
     } else {
         clearError(this);
         document.querySelector('.password-check').style.display = 'none';
-        document.querySelector('.password-error').textContent = '';
+        newPasswordError.textContent = '';
     }
 });
 
-document.getElementById('confirm_password').addEventListener('input', function () {
-    const newPasswordInput = document.getElementById('new_password');
+confirmPassword.addEventListener('input', function () {
     if (this.value.length > 0) {
-        if (this.value !== newPasswordInput.value) {
+        if (this.value !== newPassword.value) {
             showError(this, false);
-            document.querySelector('.conf-password-error').textContent = '* Passwords do not match';
+            confirmPasswordError.textContent = '* Passwords do not match';
         } else {
             showError(this, true);
-            document.querySelector('.conf-password-error').textContent = '';
+            confirmPasswordError.textContent = '';
         }
     } else {
         clearError(this);
-        document.querySelector('.conf-password-error').textContent = '';
+        confirmPasswordError.textContent = '';
     }
 });
 
 document.getElementById('change-password-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     try {
-        const currentPassword = document.getElementById('current_password').value.trim();
-        const newPassword = document.getElementById('new_password').value.trim();
-        const confirmPassword = document.getElementById('confirm_password').value.trim();
-        if (currentPassword.length === 0) {
-            document.getElementById('current_password').style.setProperty('border-color', 'red', 'important');
-            document.querySelector('.current-password-error').textContent = '* Cannot be empty';
+        if (currentPassword.value.length === 0) {
+            showFormError(currentPassword, document.querySelector('.current-password-error'))
         }
-        if (newPassword.length === 0 || !passwordRegex.test(newPassword)) {
-            document.getElementById('new_password').style.setProperty('border-color', 'red', 'important');
-            document.querySelector('.password-error').textContent = newPassword.length > 0 ? '* Enter a valid password' : '* Cannot be empty';
-        }
+        newPassword.value.length === 0 ? showFormError(newPassword, newPasswordError) : !passwordRegex.test(newPassword.value) ? newPasswordError.textContent = '* Enter a Valid Password' : '';
         if (confirmPassword.length === 0) {
-            document.getElementById('confirm_password').style.setProperty('border-color', 'red', 'important');
-            document.querySelector('.conf-password-error').textContent = '* Cannot be empty';
+            showFormError(confirmPassword, confirmPasswordError);
         }
-        if (currentPassword.length === 0 || newPassword.length === 0 || confirmPassword.length === 0 || !passwordRegex.test(newPassword)) {
+        if (currentPassword.value.length === 0 || newPassword.value.length === 0 || confirmPassword.value.length === 0 || !passwordRegex.test(newPassword.value)) {
             return;
         }
-        if (newPassword !== confirmPassword) {
+        if (newPassword.value !== confirmPassword.value) {
             showAlert('danger', 'New password and confirm password do not match.');
             return;
         }
@@ -233,16 +203,19 @@ document.getElementById('change-password-form').addEventListener('submit', async
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword, confirmPassword: confirmPassword })
+            body: JSON.stringify({ currentPassword: currentPassword.value, newPassword: newPassword.value, confirmPassword: confirmPassword.value })
         });
         const data = await response.json();
         if (data.success) {
-            showAlert('success', 'Password changed successfully!');
+            showAlert('success', data.message);
             var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changePasswordModal'));
             myModal.hide();
+            clearError(currentPassword);
+            clearError(newPassword);
+            clearError(confirmPassword);
             this.reset();
         } else {
-            showAlert('danger', 'An error occurred while changing the password.');
+            showAlert('danger', data.message);
         }
     } catch (error) {
         console.error('Error changing password:', error);
@@ -250,29 +223,28 @@ document.getElementById('change-password-form').addEventListener('submit', async
     }
 });
 
-document.getElementById('new_email').addEventListener('input', function () {
+emailInput.addEventListener('input', function () {
     if (this.value.length > 0) {
         if (!emailRegex.test(this.value)) {
             showError(this, false);
-            document.querySelector('.email-error').textContent = '* Enter a valid email';
+            emailError.textContent = '* Enter a valid email';
         } else {
             showError(this, true);
-            document.querySelector('.email-error').textContent = '';
+            emailError.textContent = '';
         }
     } else {
         clearError(this);
-        document.querySelector('.email-error').textContent = '';
+        emailError.textContent = '';
     }
 });
 
 document.getElementById('change-email-form').addEventListener('submit', async function (event) {
     event.preventDefault();
     try {
-        const newEmail = document.getElementById('new_email').value.trim();
+        const newEmail = emailInput.value.trim();
         if (newEmail.length === 0 || !emailRegex.test(newEmail)) {
-            showError(document.getElementById('new_email'), false);
-            const newEmailError = document.querySelector('.email-error');
-            newEmailError.textContent = newEmail.length > 0 ? '* Enter a valid email' : '* Cannot be empty';
+            showError(emailInput, false);
+            emailError.textContent = newEmail.length > 0 ? '* Enter a valid email' : '* This field is required';
             return;
         }
         const response = await fetch('/change_email', {
@@ -285,11 +257,12 @@ document.getElementById('change-email-form').addEventListener('submit', async fu
         const data = await response.json();
         if (data.success) {
             document.getElementById('user-email').textContent = newEmail;
-            showAlert('success', 'Email changed successfully!');
+            showAlert('success', data.message);
             var myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('changeEmailModal'));
             myModal.hide();
+            clearError(emailInput);
         } else {
-            showAlert('danger', 'The email you entered is already used.');
+            showAlert('danger', data.message);
         }
     } catch (error) {
         console.error('Error changing email:', error);
