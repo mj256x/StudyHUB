@@ -203,11 +203,11 @@ function createTaskCard(task, isCompleted) {
 
     return `
                     <div class="task-card ${isDone}" id="task-card-${task.id}">
-                        <div class="d-flex align-items-center justify-content-center gap-4" style="width: 100%;">
-                            <span class="${doneText}" style="color: var(--c-text); font-weight: bold; text-decoration: ${lineThrough};">${task.title}</span>
-                            <span class="priority-icon" style="${colors ? `background-color: ${colors[0]}; color: ${colors[1]}; border-color: ${colors[2]};` : ''}">${task.priority}</span>
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <span class="${doneText} text-nowrap" style="color: var(--c-text); font-weight: bold; text-decoration: ${lineThrough};">${task.title}</span>
+                            <span class="priority-icon text-nowrap" style="${colors ? `background-color: ${colors[0]}; color: ${colors[1]}; border-color: ${colors[2]};` : ''}">${task.priority}</span>
                         </div>
-                        <div class="d-flex align-items-center justify-content-center gap-3" style="width: 100%;">
+                        <div class="d-flex align-items-center justify-content-center gap-1">
                         <button class="custom-btn" onclick="markMainTaskDone(${task.id})">
                             <svg width="22px" height="22px"
                                 class="mark-done-svg ${doneSvg}"

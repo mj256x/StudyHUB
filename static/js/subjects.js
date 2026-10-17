@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.subject-title')?.forEach(title => {
             title.style.display = 'block';
         });
+        document.querySelectorAll('.subject-info')?.forEach(title => {
+            title.style.display = '';
+        });
         document.querySelectorAll('.progress')?.forEach(progress => {
             progress.classList.remove('progress-animation');
         });
@@ -41,6 +44,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }, 1000);
+    const activeBadge = document.querySelectorAll('.active-done');
+    activeBadge.forEach(badge => {
+        if (badge.textContent === 'Active') {
+            badge.classList.add('active-b');
+            badge.classList.remove('done-b');
+        } else if (badge.textContent === 'Done') {
+            badge.classList.add('done-b');
+            badge.classList.remove('active-b');
+        }
+    });
 });
 
 function renameSubject(subjectId, currentName) {

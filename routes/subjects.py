@@ -17,9 +17,22 @@ def subjects():
         cursor = conn.cursor()
         cursor.execute("""
             SELECT
-                s.id, s.name, s.favorite, s.is_completed,
+                s.id, 
+                s.name, 
+                s.favorite, 
+                s.is_completed,
                 COUNT(f.id) AS files_num,
-                COUNT(f.id) FILTER (WHERE f.is_completed = TRUE) AS completed_files
+                COUNT(f.id) FILTER (WHERE f.is_completed = TRUE) AS completed_files,
+                (
+                    SELECT COUNT(*) 
+                    FROM main_tasks t 
+                    WHERE t.subject_id = s.id AND t.is_completed = FALSE
+                ) AS uncompleted_tasks_num,
+                (
+                    SELECT COUNT(*) 
+                    FROM study_sessions ss 
+                    WHERE ss.subject_id = s.id
+                ) AS sessions_num
             FROM subjects s
             LEFT JOIN files f ON f.subject_id = s.id AND f.user_id = s.user_id
             WHERE s.user_id = %s
@@ -28,9 +41,24 @@ def subjects():
         rows = cursor.fetchall()
 
         subjects = []
-        for subject_id, name, favorite, is_completed, files_num, completed_files in rows:
+        for row in rows:
+            subject_id, name, favorite, is_completed = row[0], row[1], row[2], row[3]
+            files_num, completed_files = row[4], row[5]
+            uncompleted_tasks_num, sessions_num = row[6], row[7]
+            
             progress = floor((completed_files / files_num) * 100) if files_num > 0 else 0
-            subjects.append((subject_id, name, favorite, is_completed, progress, files_num))
+            
+            subjects.append((
+                subject_id, 
+                name, 
+                favorite, 
+                is_completed, 
+                progress, 
+                files_num, 
+                uncompleted_tasks_num, 
+                sessions_num
+            ))
+            
         cursor.close()
     except Exception as e:
         print(f"Database error: {e}")

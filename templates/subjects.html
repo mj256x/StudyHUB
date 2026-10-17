@@ -10,7 +10,17 @@
         <div class="card-header">
             <div class="subject-link">
                 <a href="{{ url_for('subjects.subject_files', subject_id=subject[0]) }}">
-                    <h5 class="card-title subject-title" style="display: none;">{{ subject[1] }}</h5>
+                    <h5 class="card-title subject-title" style="display: none;">
+                        {{ subject[1] }}
+                        <small class="active-done ms-2">{%if subject[4] != 100
+                            %}Active{%else%}Done{%endif%}</small>
+                    </h5>
+                    <small class="text-white-50 subject-info" style="display: none;">
+                        {% if subject[6] == 0 %}No Tasks due,{%else%}{{ subject[6] }} pending Tasks,{%endif%}
+                    </small>
+                    <small class="text-white-50 subject-info" style="display: none;">
+                        {% if subject[7] == 0 %}You didn't study yet{%else%}{{ subject[7] }} Finished Sessions{%endif%}
+                    </small>
                 </a>
                 <p class="placeholder-glow">
                     <span class="placeholder col-12"></span>

@@ -390,6 +390,20 @@ function clearSearch() {
     clearNoResultsMsg();
 }
 
+function toggleMobileMenu() {
+    document.getElementById('navbar-collapse').classList.toggle('open');
+    document.getElementById('hamburger-btn').classList.toggle('open');
+}
+
+document.querySelectorAll('.navbar-collapse .nav-link').forEach(function (link) {
+    link.addEventListener('click', function () {
+        if (window.innerWidth <= 768 && link.getAttribute('href') !== '#') {
+            document.getElementById('navbar-collapse').classList.remove('open');
+            document.getElementById('hamburger-btn').classList.remove('open');
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
 
     toggleActiveLink();

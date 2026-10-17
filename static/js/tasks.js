@@ -320,18 +320,25 @@ document.getElementById('changeTaskSubjectForm').addEventListener('submit', func
     });
 });
 
-async function doneButtonDisabled(mainTaskId) {
+async function disableBtns(mainTaskId) {
     try {
         const response = await fetch('/main_task_sub_tasks_num/' + mainTaskId, {
             method: 'GET',
         });
         const data = await response.json();
         const doneButton = document.getElementById('mark-as-done-btn-' + mainTaskId);
+        const filterBtns = document.querySelectorAll('.filter-btn');
         if (data.success) {
             if (data.sub_tasks_num == 0) {
                 doneButton.classList.add('disabled-btn');
+                filterBtns.forEach(btn => {
+                    btn.classList.add('disabled-btn');
+                })
             } else {
                 doneButton.classList.remove('disabled-btn');
+                filterBtns.forEach(btn => {
+                    btn.classList.remove('disabled-btn');
+                });
             }
         }
     } catch (error) {
@@ -691,7 +698,7 @@ document.addEventListener('DOMContentLoaded', function () {
             placeholder.style.setProperty('display', 'none', 'important');
         });
         document.querySelectorAll('.no-sub-tasks-msg').forEach(msg => {
-            msg.style.setProperty('display', 'flex', 'important');
+            msg.classList.remove('d-none');
         });
     }, 700);
 
@@ -728,3 +735,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+function updateNestedDropdownDirection() {
+    document.querySelectorAll('[data-responsive-dropend]').forEach(dropdown => {
+        dropdown.classList.toggle('dropend', window.innerWidth >= 1024);
+    });
+}
+
+updateNestedDropdownDirection();
+window.addEventListener('resize', updateNestedDropdownDirection);

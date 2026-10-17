@@ -40,7 +40,7 @@ def dashboard_stats():
         conn = get_db()
         cursor = conn.cursor()
         
-        cursor.execute("SELECT COUNT(*) FROM subjects WHERE user_id = %s", (session['user_id'],))
+        cursor.execute("SELECT COUNT(*) FROM subjects WHERE is_completed = FALSE AND user_id = %s", (session['user_id'],))
         total_subjects = cursor.fetchone()[0]
         
         cursor.execute("SELECT COUNT(*) FROM main_tasks WHERE user_id = %s AND is_completed = FALSE", (session['user_id'],))
