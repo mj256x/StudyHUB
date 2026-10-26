@@ -1419,15 +1419,6 @@ main {
     white-space: normal !important;
 }
 
-.sessions-details {
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 25px !important;
-}
-
 .sessions-history {
     background-color: var(--c-accent-dark);
     border-radius: 18px;
@@ -1443,6 +1434,17 @@ main {
     border: 2px solid var(--c-border) !important;
     font-size: 1.05rem !important;
     border-radius: 10px !important;
+}
+
+.search-container svg {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 12px;
+}
+
+.session-search {
+    padding: 6px 2.25rem !important;
 }
 
 .session-search::placeholder {
@@ -1556,10 +1558,6 @@ main {
     background-color: var(--c-danger-strong) !important;
     border-color: var(--c-danger) !important;
     color: var(--c-success-strong) !important;
-}
-
-.pomodoro-card {
-    width: 100% !important;
 }
 
 .pomodoro-card .inactive-session,
@@ -2436,18 +2434,6 @@ select.flatpickr-monthDropdown-months {
         font-size: 0.9rem !important;
         display: block !important;
         min-width: 50px !important;
-    }
-
-    .sessions-details {
-        flex-direction: column !important;
-    }
-
-    .sessions-details>div {
-        min-width: 100% !important;
-    }
-
-    .sessions-details {
-        flex-direction: column !important;
     }
 
     .s-header {

@@ -323,7 +323,7 @@ async function sessionEnded() {
     }
 }
 
-const perPage = 3;
+const perPage = window.innerWidth <= 1024 ? 3 : 9;
 
 function updateSessionTable(page) {
     if (page === 1) {
