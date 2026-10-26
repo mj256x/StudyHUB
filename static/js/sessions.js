@@ -1,7 +1,7 @@
 let timerInterval = null;
 let subjects_list = [];
 
-function createSessionRow(sessionData) {
+function createSessionCard(sessionData) {
     const now = new Date();
     const year = now.getFullYear();
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -9,23 +9,21 @@ function createSessionRow(sessionData) {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const nowDateTime = `${day} ${monthNames[now.getMonth()]} ${year} ${hours}:${minutes}`;
-    const tableBody = document.querySelector('.table-body');
+    const tableBody = document.querySelector('.s-body');
     const activeSession = document.querySelector('.active-session');
     const isDisabled = (activeSession && activeSession.dataset.active === 'true') ? 'disabled-btn' : '';
     const isActive = (activeSession && activeSession.dataset.active === 'true') ? 'active-progress' : '';
     const newRow = `
-                <tr class="session-row">
-                    <td class="subject-name">
-                        ${sessionData[0]}
-                    </td>
-                    <td class="session-title">
-                        <div class="d-flex flex-row justify-content-between align-items-center gap-2">
-                            <span>${sessionData[1]}</span>
-                            <span class="active-badge">
-                                <span class="dot active"></span>
-                                <span class="text">Active</span>
-                            </span>
-                            <div class="d-flex flex-row justify-content-between align-items-center gap-2">
+                <div class="session-col col-12 col-lg-4">
+                    <div class="session-h-card d-flex flex-column align-items-start gap-2 p-3">
+                        <div class="session-title d-flex flex-row justify-content-between align-items-center w-100">
+                            <div class="w-100 d-flex flex-row justify-content-start align-items-center gap-2">
+                                <span class="subject-name justify-content-center align-items-center">
+                                    ${sessionData[0]}
+                                </span>
+                                <span class="session-title-text">${sessionData[1]}</span>
+                            </div>
+                            <div class="d-flex flex-row justify-content-center align-items-center">
                                 <button type="button" class="rename-btn"
                                         onclick="renameSession('renameModal', '${sessionData[3]}', '${sessionData[1]}')">
                                     <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,16 +42,28 @@ function createSessionRow(sessionData) {
                                 </button>
                             </div>
                         </div>
-                    </td>
-                    <td>
                         <div class="progress position-relative" role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" data-session-full-period="${sessionData[4]}" data-session-duration="${sessionData[2]}">
                             <div class="progress-bar progress-bar-striped progress-bar-animated ${isActive}"></div>
                             <span class="progress-text"></span>
                         </div>
-                    </td>
-                    <td class="session-date">${nowDateTime}</td>
-                </tr>
-                `;
+                        <div class="session-date-container w-100">
+                            <div class="session-date d-flex justify-content-start align-items-center gap-2">
+                                <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12 6V12L16 14M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <span class="session-date-value">${nowDateTime}</span>
+                                <span class="active-badge ms-auto">
+                                    <span class="dot active"></span>
+                                    <span class="text">Active</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
     if (tableBody) {
         tableBody.insertAdjacentHTML('afterbegin', newRow);
     }
@@ -127,9 +137,9 @@ async function deleteSession(sessionId, btn) {
         });
         const data = await response.json();
         if (data.success) {
-            const row = btn.closest('tr');
-            if (row) {
-                row.remove();
+            const card = btn.closest('.session-col');
+            if (card) {
+                card.remove();
                 getSubjects();
                 renderSubjectsMenu();
                 updateSessionTable(1);
@@ -325,66 +335,62 @@ function updateSessionTable(page) {
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     const totalPages = document.getElementById('totalPages');
-    const filteredRows = document.querySelectorAll('.filtered-row');
-    const searchedRows = document.querySelectorAll('.searched-row');
-    const sessionRows = document.querySelectorAll('.session-row');
-    const sortedRows = document.querySelectorAll('.sorted-row');
-    const noMatchRows = document.querySelectorAll('.no-match-row');
-    if (filteredRows && filteredRows.length > 0) {
-        totalPages.textContent = Math.ceil(filteredRows.length / perPage);
-        filteredRows.forEach((row, index) => {
+    const filtersCards = document.querySelectorAll('.filtered-card');
+    const searchedCards = document.querySelectorAll('.searched-card');
+    const sessionCards = document.querySelectorAll('.session-h-card');
+    const sortedCards = document.querySelectorAll('.sorted-card');
+    const noMatchCards = document.querySelectorAll('.no-match-card');
+    if (filtersCards && filtersCards.length > 0) {
+        totalPages.textContent = Math.ceil(filtersCards.length / perPage);
+        filtersCards.forEach((card, index) => {
             if (index >= startIndex && index < endIndex) {
-                row.style.display = 'table-row';
+                card.parentElement.classList.remove('d-none');
             } else {
-                row.style.display = 'none';
+                card.parentElement.classList.add('d-none');
             }
         });
-    } else if (searchedRows.length > 0) {
-        totalPages.textContent = Math.ceil(searchedRows.length / perPage);
-        searchedRows.forEach((row, index) => {
+    } else if (searchedCards.length > 0) {
+        totalPages.textContent = Math.ceil(searchedCards.length / perPage);
+        searchedCards.forEach((card, index) => {
             if (index >= startIndex && index < endIndex) {
-                row.style.display = 'table-row';
+                card.parentElement.classList.remove('d-none');
             } else {
-                row.style.display = 'none';
+                card.parentElement.classList.add('d-none');
             }
         });
-    } else if (sortedRows.length > 0) {
-        totalPages.textContent = Math.ceil(sortedRows.length / perPage);
-        sortedRows.forEach((row, index) => {
+    } else if (sortedCards.length > 0) {
+        totalPages.textContent = Math.ceil(sortedCards.length / perPage);
+        sortedCards.forEach((card, index) => {
             if (index >= startIndex && index < endIndex) {
-                row.style.display = 'table-row';
+                card.parentElement.classList.remove('d-none');
             } else {
-                row.style.display = 'none';
+                card.parentElement.classList.add('d-none');
             }
         });
-    } else if (sessionRows.length > 0 && noMatchRows.length == sessionRows.length) {
+    } else if (sessionCards.length > 0 && noMatchCards.length == sessionCards.length) {
         totalPages.textContent = '1';
-        sessionRows.forEach(row => {
-            row.style.display = 'none';
+        sessionCards.forEach(card => {
+            card.parentElement.classList.add('d-none');
         });
-        const tableBody = document.querySelector('.table-body');
-        const existingNoMatchRow = document.querySelector('.no-match-msg');
-        if (existingNoMatchRow) {
-            existingNoMatchRow.remove();
+        const tableBody = document.querySelector('.s-body');
+        const existingNoMatchMsg = document.querySelector('.no-match-msg');
+        if (existingNoMatchMsg) {
+            existingNoMatchMsg.remove();
         }
-        const noMatchRow = `<tr class="no-match-msg">
-                                <td colspan="4">
-                                <div class="d-flex flex-column justify-content-center align-items-center gap-2">
+        const noMatchMsg = `<div class="no-match-msg d-flex flex-column justify-content-center align-items-center gap-2">
                                 <svg width="46px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M21 21L16.65 16.65M11 6C13.7614 6 16 8.23858 16 11M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                                 <span>No matching sessions found.</span>
-                                </div>
-                                </td>
-                            </tr>`;
-        tableBody.innerHTML += noMatchRow;
-    } else if (sessionRows.length > 0) {
-        totalPages.textContent = Math.ceil(sessionRows.length / perPage);
-        sessionRows.forEach((row, index) => {
+                            </div>`;
+        tableBody.innerHTML += noMatchMsg;
+    } else if (sessionCards.length > 0) {
+        totalPages.textContent = Math.ceil(sessionCards.length / perPage);
+        sessionCards.forEach((card, index) => {
             if (index >= startIndex && index < endIndex) {
-                row.style.display = 'table-row';
+                card.parentElement.classList.remove('d-none');
             } else {
-                row.style.display = 'none';
+                card.parentElement.classList.add('d-none');
             }
         });
     }
@@ -420,14 +426,14 @@ document.querySelector('.filterbytopSubject')?.addEventListener('click', functio
 });
 
 function resetFilter() {
-    const sessionRows = document.querySelectorAll('.session-row');
-    if (sessionRows.length > 0) {
-        sessionRows.forEach(row => {
-            row.style.display = 'table-row';
-            row.classList.remove('filtered-row');
-            row.classList.remove('searched-row');
-            row.classList.remove('no-match-row');
-            row.classList.remove('sorted-row');
+    const sessionCards = document.querySelectorAll('.session-h-card');
+    if (sessionCards.length > 0) {
+        sessionCards.forEach(card => {
+            card.parentElement.classList.remove('d-none');
+            card.classList.remove('filtered-card');
+            card.classList.remove('searched-card');
+            card.classList.remove('no-match-card');
+            card.classList.remove('sorted-card');
         });
     }
     const dropdownMenu = document.querySelector('.dropdown-menu.subjects-menu');
@@ -445,7 +451,7 @@ function resetFilter() {
 }
 
 function filterBySubject(subject, button) {
-    const sessionRows = document.querySelectorAll('.session-row');
+    const sessionCards = document.querySelectorAll('.session-h-card');
     let currentActiveButton = button.getAttribute('data-active') === 'true';
     let newActiveState = !currentActiveButton;
     resetFilter();
@@ -453,16 +459,13 @@ function filterBySubject(subject, button) {
     if (newActiveState) {
         button.setAttribute('data-active', 'true');
         button.classList.add('dropdown-item-selected');
-        sessionRows.forEach(row => {
-            const subjectCell = row.querySelector('.subject-name');
-            if (subjectCell) {
-                const subjectName = subjectCell.textContent.trim();
-                if (subjectName === subject) {
-                    row.style.display = 'table-row';
-                    row.classList.add('filtered-row');
-                } else {
-                    row.style.display = 'none';
-                }
+        sessionCards.forEach(card => {
+            const subjectName = card.querySelector('.subject-name')?.textContent.trim();
+            if (subjectName === subject) {
+                card.parentElement.classList.remove('d-none');
+                card.classList.add('filtered-card');
+            } else {
+                card.parentElement.classList.add('d-none');
             }
         });
         updateSessionTable(1);
@@ -484,22 +487,22 @@ document.getElementById('prevBtn')?.addEventListener('click', function () {
 document.getElementById('nextBtn')?.addEventListener('click', function () {
     const pageInput = document.getElementById('pageInput');
     let currentPage = parseInt(pageInput.value, 10);
-    const sessionRows = document.querySelectorAll('.session-row');
-    const filteredRows = document.querySelectorAll('.filtered-row');
-    const searchedRows = document.querySelectorAll('.searched-row');
-    const sortedRows = document.querySelectorAll('.sorted-row');
-    const noMatchRows = document.querySelectorAll('.no-match-row');
+    const sessionCards = document.querySelectorAll('.session-h-card');
+    const filteredCards = document.querySelectorAll('.filtered-card');
+    const searchedCards = document.querySelectorAll('.searched-card');
+    const sortedCards = document.querySelectorAll('.sorted-card');
+    const noMatchCards = document.querySelectorAll('.no-match-card');
     let totalPages = 0;
-    if (filteredRows.length > 0) {
-        totalPages = Math.ceil(filteredRows.length / perPage);
-    } else if (searchedRows.length > 0) {
-        totalPages = Math.ceil(searchedRows.length / perPage);
-    } else if (sortedRows.length > 0) {
-        totalPages = Math.ceil(sortedRows.length / perPage);
-    } else if (noMatchRows.length === sessionRows.length) {
+    if (filteredCards.length > 0) {
+        totalPages = Math.ceil(filteredCards.length / perPage);
+    } else if (searchedCards.length > 0) {
+        totalPages = Math.ceil(searchedCards.length / perPage);
+    } else if (sortedCards.length > 0) {
+        totalPages = Math.ceil(sortedCards.length / perPage);
+    } else if (noMatchCards.length === sessionCards.length) {
         totalPages = 1;
-    } else if (sessionRows.length > 0) {
-        totalPages = Math.ceil(sessionRows.length / perPage);
+    } else if (sessionCards.length > 0) {
+        totalPages = Math.ceil(sessionCards.length / perPage);
     }
     if (currentPage < totalPages) {
         pageInput.value = String(currentPage + 1);
@@ -510,17 +513,17 @@ document.getElementById('nextBtn')?.addEventListener('click', function () {
 document.getElementById('sessionSearch')?.addEventListener('input', function () {
     resetFilter();
     const searchTerm = this.value.toLowerCase();
-    const sessionRows = document.querySelectorAll('.session-row');
-    sessionRows.forEach(row => {
-        const sessionTitle = row.querySelector('.session-title').textContent.toLowerCase();
-        const subjectName = row.querySelector('.subject-name').textContent.toLowerCase();
+    const sessionCards = document.querySelectorAll('.session-h-card');
+    sessionCards.forEach(card => {
+        const sessionTitle = card.querySelector('.session-title-text').textContent.toLowerCase();
+        const subjectName = card.querySelector('.subject-name').textContent.toLowerCase();
         if (sessionTitle.includes(searchTerm) || subjectName.includes(searchTerm)) {
-            row.style.display = 'table-row';
-            row.classList.add('searched-row');
+            card.parentElement.classList.remove('d-none');
+            card.classList.add('searched-card');
             document.querySelector('.no-match-msg')?.remove();
         } else {
-            row.style.display = 'none';
-            row.classList.add('no-match-row');
+            card.parentElement.classList.add('d-none');
+            card.classList.add('no-match-card');
         }
     });
     updateSessionTable(1);
@@ -548,28 +551,26 @@ function sortInputs() {
 
 function sortSessions(startDate, endDate) {
     resetFilter();
-    const sessionRows = document.querySelectorAll('.session-row');
+    const sessionCards = document.querySelectorAll('.session-h-card');
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    if (sessionRows) {
-        sessionRows.forEach(row => {
-            const sessionDateCell = row.querySelector('.session-date');
-            if (sessionDateCell) {
-                const t = sessionDateCell.textContent.trim();
-                const sessionDate = new Date(
-                    parseInt(t.slice(7, 11)),
-                    monthNames.indexOf(t.slice(3, 6)),
-                    parseInt(t.slice(0, 2)),
-                    parseInt(t.slice(12, 14)),
-                    parseInt(t.slice(15, 17))
-                );
-                if (sessionDate >= startDate && sessionDate <= endDate) {
-                    row.style.display = 'table-row';
-                    row.classList.add('sorted-row');
-                } else {
-                    row.style.display = 'none';
-                    row.classList.add('no-match-row');
-                }
+    if (sessionCards) {
+        sessionCards.forEach(card => {
+            const sessionDate = card.querySelector('.session-date-value')?.textContent.trim();
+            const sessionDateObj = new Date(
+                parseInt(sessionDate.slice(7, 11)),
+                monthNames.indexOf(sessionDate.slice(3, 6)),
+                parseInt(sessionDate.slice(0, 2)),
+                parseInt(sessionDate.slice(12, 14)),
+                parseInt(sessionDate.slice(15, 17))
+            );
+            if (sessionDateObj >= startDate && sessionDateObj <= endDate) {
+                card.parentElement.classList.remove('d-none');
+                card.classList.add('sorted-card');
+                document.querySelector('.no-match-msg')?.remove();
+            } else {
+                card.parentElement.classList.add('d-none');
+                card.classList.add('no-match-card');
             }
         });
     }
@@ -601,7 +602,6 @@ document.getElementById('sortTableForm').addEventListener('submit', function (ev
     );
 
     sortSessions(startDate, endDate);
-    this.reset();
 });
 
 document.getElementById('sessionForm').addEventListener('submit', async function (event) {
@@ -673,7 +673,7 @@ document.getElementById('sessionForm').addEventListener('submit', async function
             }
             const sessionsDetails = document.querySelector('.sessions-details');
             if (sessionsDetails) {
-                createSessionRow(sessionData);
+                createSessionCard(sessionData);
             }
             showAlert('success', 'Session started successfully!');
             this.reset();
@@ -690,19 +690,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const placeholderElements = document.querySelectorAll('.placeholder-glow');
         if (placeholderElements.length > 0) {
             placeholderElements.forEach(element => {
-                element.style.setProperty('display', 'none', 'important');
+                element.classList.add('d-none');
             });
         }
-        const subjectNameElements = document.querySelectorAll('.subject-name-text');
+        const subjectNameElements = document.querySelectorAll('.subject-name');
         if (subjectNameElements.length > 0) {
             subjectNameElements.forEach(element => {
-                element.style.setProperty('display', 'block', 'important');
+                element.classList.remove('d-none');
             });
+            document.querySelector('main').classList.add('align-items-start');
+            document.querySelector('main').classList.remove('justify-content-between');
         }
         const sessionTitleElements = document.querySelectorAll('.session-title-text');
         if (sessionTitleElements.length > 0) {
             sessionTitleElements.forEach(element => {
-                element.style.setProperty('display', 'block', 'important');
+                element.classList.remove('d-none');
             });
         }
         const progressElements = document.querySelectorAll('.progress');
@@ -711,10 +713,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 element.classList.remove('progress-animation');
             });
         }
-        const sessionDateElements = document.querySelectorAll('.session-date-text');
+        const sessionDateElements = document.querySelectorAll('.session-date');
         if (sessionDateElements.length > 0) {
             sessionDateElements.forEach(element => {
-                element.style.setProperty('display', 'block', 'important');
+                element.classList.remove('d-none');
             });
         }
     }, 700);

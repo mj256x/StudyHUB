@@ -7,7 +7,6 @@
 <div class="no-activities-container">
     <img src="{{ url_for('static', filename='images/NoStudysessions.png') }}" alt="No Study Sessions"
         class="no-activities-img">
-
     <h1 class="no-activities-title">No Sessions Found</h1>
     <p class="no-activities-subtitle">You haven't started any sessions yet. Click the button below to start your
         first
@@ -21,55 +20,61 @@
     </button>
 </div>
 {% else %}
-<div class="sessions-summary-cards-container">
-    <div class="session-summary-card">
-        <div class="summary-content">
-            <span class="summary-title">Total Study Time</span>
-            <span id="total-duration" class="summary-value">
-                <p class="placeholder-glow">
-                    <span class="placeholder col-12"></span>
-                </p>
-            </span>
+<div class="sessions-summary-cards-container row g-3 w-100">
+    <div class="col-12 col-lg-4">
+        <div class="session-summary-card">
+            <div class="summary-content">
+                <span class="summary-title">Total Study Time</span>
+                <span id="total-duration" class="summary-value">
+                    <p class="placeholder-glow">
+                        <span class="placeholder col-12"></span>
+                    </p>
+                </span>
+            </div>
+            <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M14.5 19L16.5 21L21 16.5M21.9851 12.5499C21.995 12.3678 22 12.1845 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.4354 6.33651 21.858 11.7385 21.9966M12 6V12L15.7384 13.8692"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </div>
-        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                d="M14.5 19L16.5 21L21 16.5M21.9851 12.5499C21.995 12.3678 22 12.1845 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.4354 6.33651 21.858 11.7385 21.9966M12 6V12L15.7384 13.8692"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
     </div>
-    <div class="session-summary-card">
-        <div class="summary-content">
-            <span class="summary-title">Total Sessions</span>
-            <span id="total-sessions" class="summary-value">
-                <p class="placeholder-glow">
-                    <span class="placeholder col-12"></span>
-                </p>
-            </span>
+    <div class="col-6 col-lg-4">
+        <div class="session-summary-card">
+            <div class="summary-content">
+                <span class="summary-title">Total Sessions</span>
+                <span id="total-sessions" class="summary-value">
+                    <p class="placeholder-glow">
+                        <span class="placeholder col-12"></span>
+                    </p>
+                </span>
+            </div>
+            <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M20 19V16H7C5.34315 16 4 17.3431 4 19M8.8 22H16.8C17.9201 22 18.4802 22 18.908 21.782C19.2843 21.5903 19.5903 21.2843 19.782 20.908C20 20.4802 20 19.9201 20 18.8V5.2C20 4.07989 20 3.51984 19.782 3.09202C19.5903 2.71569 19.2843 2.40973 18.908 2.21799C18.4802 2 17.9201 2 16.8 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </div>
-        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                d="M20 19V16H7C5.34315 16 4 17.3431 4 19M8.8 22H16.8C17.9201 22 18.4802 22 18.908 21.782C19.2843 21.5903 19.5903 21.2843 19.782 20.908C20 20.4802 20 19.9201 20 18.8V5.2C20 4.07989 20 3.51984 19.782 3.09202C19.5903 2.71569 19.2843 2.40973 18.908 2.21799C18.4802 2 17.9201 2 16.8 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22Z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
     </div>
-    <div class="session-summary-card">
-        <div class="summary-content">
-            <span class="summary-title">Average Session Duration</span>
-            <span id="average-duration" class="summary-value">
-                <p class="placeholder-glow">
-                    <span class="placeholder col-12"></span>
-                </p>
-            </span>
+    <div class="col-6 col-lg-4">
+        <div class="session-summary-card">
+            <div class="summary-content">
+                <span class="summary-title">Average Session Duration</span>
+                <span id="average-duration" class="summary-value">
+                    <p class="placeholder-glow">
+                        <span class="placeholder col-12"></span>
+                    </p>
+                </span>
+            </div>
+            <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 9V13L14 15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
         </div>
-        <svg width="56px" height="42px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-                d="M5 3L2 6M22 6L19 3M6 19L4 21M18 19L20 21M12 9V13L14 15M12 21C14.1217 21 16.1566 20.1571 17.6569 18.6569C19.1571 17.1566 20 15.1217 20 13C20 10.8783 19.1571 8.84344 17.6569 7.34315C16.1566 5.84285 14.1217 5 12 5C9.87827 5 7.84344 5.84285 6.34315 7.34315C4.84285 8.84344 4 10.8783 4 13C4 15.1217 4.84285 17.1566 6.34315 18.6569C7.84344 20.1571 9.87827 21 12 21Z"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
     </div>
 </div>
 <div class="sessions-details">
-    <div class="d-flex flex-column justify-content-center align-items-center gap-3 summary-pomo">
+    <div class="d-flex flex-column justify-content-center align-items-center gap-3">
         <div class="session-summary-card">
             <div class="summary-content filterbytopSubject">
                 <span class="summary-title">Top Subject</span>
@@ -133,71 +138,52 @@
             </div>
         </div>
     </div>
-    <!-- <table class="custom-table">
-        <thead>
-            <tr class="table-main-header">
-                <th>Session <br class="d-none">History</th>
-                <th colspan="2">
-                    <input type="search" placeholder="Search..." class="session-search" id="sessionSearch">
-                </th>
-                <th>
-                    <div class="dropdown">
-                        <button class="subject-filter" id="subjectFilterBtn" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <span>Filter by Subject</span>
-                            <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </button>
-                        <ul class="dropdown-menu subjects-menu">
-                        </ul>
-                    </div>
-                </th>
-            </tr>
-            <tr class="table-secondary-header">
-                <th scope="col" class="subject-th">Subject
-                </th>
-                <th scope="col">Session Name</th>
-                <th scope="col">Duration (minutes)</th>
-                <th scope="col" class="d-flex flex-row justify-content-between align-items-center gap-2">
-                    <span>Date</span>
-                    <button type="button" class="sort-btn" id="sortBtn">
-                        <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none"
+    <div class="sessions-history d-flex flex-column justify-content-center align-items-center gap-4 w-100 h-100 p-4">
+        <div class="s-header d-flex flex-row justify-content-between align-items-center w-100">
+            <span class="fw-bold fs-4" style="color: var(--c-text);">Session History</span>
+            <div class="search-container w-50">
+                <input type="search" placeholder="Search..." class="session-search w-100" id="sessionSearch">
+            </div>
+            <div class="filter-func d-flex flex-row justify-content-center align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="subject-filter w-100 d-flex flex-row justify-content-center align-items-center gap-1"
+                        id="subjectFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span>Filter by Subject</span>
+                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M3.38589 5.66687C2.62955 4.82155 2.25138 4.39889 2.23712 4.03968C2.22473 3.72764 2.35882 3.42772 2.59963 3.22889C2.87684 3 3.44399 3 4.57828 3H19.4212C20.5555 3 21.1227 3 21.3999 3.22889C21.6407 3.42772 21.7748 3.72764 21.7624 4.03968C21.7481 4.39889 21.3699 4.82155 20.6136 5.66687L14.9074 12.0444C14.7566 12.2129 14.6812 12.2972 14.6275 12.3931C14.5798 12.4781 14.5448 12.5697 14.5236 12.6648C14.4997 12.7721 14.4997 12.8852 14.4997 13.1113V18.4584C14.4997 18.6539 14.4997 18.7517 14.4682 18.8363C14.4403 18.911 14.395 18.9779 14.336 19.0315C14.2692 19.0922 14.1784 19.1285 13.9969 19.2012L10.5969 20.5612C10.2293 20.7082 10.0455 20.7817 9.89802 20.751C9.76901 20.7242 9.6558 20.6476 9.583 20.5377C9.49975 20.4122 9.49975 20.2142 9.49975 19.8184V13.1113C9.49975 12.8852 9.49975 12.7721 9.47587 12.6648C9.45469 12.5697 9.41971 12.4781 9.37204 12.3931C9.31828 12.2972 9.2429 12.2129 9.09213 12.0444L3.38589 5.66687Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
                     </button>
-                </th>
-            </tr>
-        </thead>
-        <tbody class="table-body">
+                    <ul class="dropdown-menu subjects-menu">
+                    </ul>
+                </div>
+                <button type="button" class="sort-btn" id="sortBtn">
+                    <svg width="26px" height="26px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.38589 5.66687C2.62955 4.82155 2.25138 4.39889 2.23712 4.03968C2.22473 3.72764 2.35882 3.42772 2.59963 3.22889C2.87684 3 3.44399 3 4.57828 3H19.4212C20.5555 3 21.1227 3 21.3999 3.22889C21.6407 3.42772 21.7748 3.72764 21.7624 4.03968C21.7481 4.39889 21.3699 4.82155 20.6136 5.66687L14.9074 12.0444C14.7566 12.2129 14.6812 12.2972 14.6275 12.3931C14.5798 12.4781 14.5448 12.5697 14.5236 12.6648C14.4997 12.7721 14.4997 12.8852 14.4997 13.1113V18.4584C14.4997 18.6539 14.4997 18.7517 14.4682 18.8363C14.4403 18.911 14.395 18.9779 14.336 19.0315C14.2692 19.0922 14.1784 19.1285 13.9969 19.2012L10.5969 20.5612C10.2293 20.7082 10.0455 20.7817 9.89802 20.751C9.76901 20.7242 9.6558 20.6476 9.583 20.5377C9.49975 20.4122 9.49975 20.2142 9.49975 19.8184V13.1113C9.49975 12.8852 9.49975 12.7721 9.47587 12.6648C9.45469 12.5697 9.41971 12.4781 9.37204 12.3931C9.31828 12.2972 9.2429 12.2129 9.09213 12.0444L3.38589 5.66687Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="s-body row g-2 w-100">
             {% for study_record in sessions %}
-            <tr class="session-row">
-                <td class="subject-name">
-                    <span class="subject-name-text" style="display: none;">{{ study_record[1] }}</span>
-                    <p class="placeholder-glow">
-                        <span class="placeholder col-12"></span>
-                    </p>
-                </td>
-                <td class="session-title">
-                    <div class="d-flex flex-row justify-content-between align-items-center gap-2">
-                        <div class="d-flex flex-column justify-content-center align-items-center gap-2">
-                            <span class="session-title-text" style="display: none;">{{ study_record[3] }}</span>
+            <div class="session-col col-12 col-lg-4">
+                <div class="session-h-card d-flex flex-column align-items-start gap-2 p-3">
+                    <div class="session-title d-flex flex-row justify-content-between align-items-center w-100">
+                        <div class="w-100 d-flex flex-row justify-content-start align-items-center gap-2">
+                            <span class="subject-name justify-content-center align-items-center d-none">
+                                {{ study_record[1]}}
+                            </span>
+                            <span class="session-title-text d-none">
+                                {{ study_record[3] }}
+                            </span>
                             <p class="placeholder-glow">
                                 <span class="placeholder col-12"></span>
                             </p>
-                            {% if session.study_session and session.study_session.id==study_record[2] %}
-                            <span class="active-badge">
-                                <span class="dot active"></span>
-                                <span class="text">Active</span>
-                            </span>
-                            {% endif %}
                         </div>
-                        <div class="d-flex flex-row justify-content-between align-items-center gap-2">
+                        <div class="d-flex flex-row justify-content-center align-items-center">
                             <button type="button" class="rename-btn"
                                 onclick="renameSession('renameModal', '{{ study_record[2] }}', '{{ study_record[3] }}')">
                                 <svg width="22px" height="22px" viewBox="0 0 24 24" fill="none"
@@ -221,8 +207,6 @@
                             </button>
                         </div>
                     </div>
-                </td>
-                <td>
                     <div class="progress position-relative progress-animation" role="progressbar"
                         aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"
                         data-session-full-period="{{ study_record[6] }}" data-session-duration="{{ study_record[4] }}">
@@ -231,36 +215,45 @@
                         </div>
                         <span class="progress-text"></span>
                     </div>
-                </td>
-                <td class="session-date">
-                    <span class="session-date-text" style="display: none;">{{ study_record[5] }}</span>
-                    <p class="placeholder-glow">
-                        <span class="placeholder col-12"></span>
-                    </p>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td>
-                    <button type="button" id="clear-sessions"
-                        class="delete-all-btn text-nowrap {% if session.study_session %}disabled-btn{% endif %}"
-                        data-action="clear_sessions_history" onclick="showModal('deleteAlertModal', this)">
-                        Clear All Sessions
-                    </button>
-                </td>
-                <td colspan="3">
-                    <div class="pagination-controls">
-                        <button id="prevBtn">&lt;</button>
-                        <span>Page <input type="text" id="pageInput" value="1" readonly> of <span
-                                id="totalPages">3</span></span>
-                        <button id="nextBtn">&gt;</button>
+                    <div class="session-date-container w-100">
+                        <div class="session-date d-flex justify-content-start align-items-center gap-2 d-none">
+                            <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 6V12L16 14M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <span class="session-date-value">{{ study_record[5] }}</span>
+                            {% if session.study_session and session.study_session.id==study_record[2] %}
+                            <span class="active-badge ms-auto">
+                                <span class="dot active"></span>
+                                <span class="text">Active</span>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <p class="placeholder-glow">
+                            <span class="placeholder col-12"></span>
+                        </p>
                     </div>
-                </td>
-            </tr>
-        </tfoot>
-    </table> -->
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="s-footer d-flex flex-row justify-content-between align-items-center w-100">
+            <button type="button" id="clear-sessions"
+                class="delete-all-btn text-nowrap {% if session.study_session %}disabled-btn{% endif %}"
+                data-action="clear_sessions_history" onclick="showModal('deleteAlertModal', this)">
+                Clear All Sessions
+            </button>
+            <div class="pagination-controls">
+                <button id="prevBtn">&lt;</button>
+                <span>Page <input type="text" id="pageInput" value="1" readonly> of <span
+                        id="totalPages">3</span></span>
+                <button id="nextBtn">&gt;</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
 {% endblock %}
