@@ -253,6 +253,14 @@ def delete_all_subjects():
         flash('An error occurred while deleting the subjects', 'danger')
     return redirect(url_for('subjects.subjects'))
 
+def update_subject_completion(cursor, subject_id, user_id):
+    if not subject_id:
+        return
+    cursor.execute("SELECT is_completed FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, user_id))
+    files_status = cursor.fetchall()
+    all_completed = bool(files_status) and all(status[0] for status in files_status)
+    cursor.execute("UPDATE subjects SET is_completed = %s WHERE id = %s AND user_id = %s", (all_completed, subject_id, user_id))
+
 # Subject Files Routes
 
 @subjects_bp.route('/subject_files/<int:subject_id>')
@@ -341,6 +349,7 @@ def upload_file(subject_id):
 
         cursor.execute("INSERT INTO files (subject_id, file_name, file_url, user_id, thumbnail_url) VALUES (%s, %s, %s, %s, %s)",
                 (subject_id, file.filename, file_url, session['user_id'], thumbnail_url))
+        cursor.execute("UPDATE subjects SET is_completed = FALSE WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('File uploaded successfully.', 'success')
@@ -357,15 +366,22 @@ def toggle_done(file_id):
     try:
         conn = get_db()
         cursor = conn.cursor()
-        cursor.execute("SELECT is_completed FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
-        file_status = cursor.fetchone()
-        new_status = not file_status[0]
+        cursor.execute("SELECT is_completed, subject_id FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
+        file_record = cursor.fetchone()
+        if not file_record:
+            cursor.close()
+            return jsonify({'success': False, 'message': 'File not found'}), 404
+
+        current_status, subject_id = file_record
+        new_status = not current_status
         cursor.execute("UPDATE files SET is_completed = %s WHERE id = %s AND user_id = %s", (new_status, file_id, session['user_id']))
+        update_subject_completion(cursor, subject_id, session['user_id'])
         conn.commit()
         cursor.close()
+        return jsonify({'success': True, 'new_status': new_status})
     except Exception as e:
         print(f"Error updating file status: {e}")
-    return jsonify({'success': True, 'new_status': new_status})
+        return jsonify({'success': False, 'message': 'Database error'}), 500
 
 @subjects_bp.route('/download_file/<int:file_id>')
 def download_file(file_id):
@@ -424,6 +440,9 @@ def move_file(file_id):
             thumbnail_url = url_for('static', filename='images/word.svg')
             cursor.execute("UPDATE files SET subject_id = %s, file_url = %s, thumbnail_url = %s WHERE id = %s AND user_id = %s",
                         (new_subject_id, new_file_url, thumbnail_url, file_id, session['user_id']))
+            
+        update_subject_completion(cursor, old_subject_id, session['user_id'])
+        update_subject_completion(cursor, new_subject_id, session['user_id'])
         conn.commit()
         cursor.close()
         flash('File moved successfully!', 'success')
@@ -467,6 +486,7 @@ def copy_file(file_id):
             thumbnail_url = url_for('static', filename='images/word.svg')
             cursor.execute("INSERT INTO files (subject_id, file_name, file_url, thumbnail_url, user_id) VALUES (%s, %s, %s, %s, %s)",
                     (new_subject_id, file_name, new_file_url, thumbnail_url, session['user_id']))
+        cursor.execute("UPDATE subjects SET is_completed = FALSE WHERE id = %s AND user_id = %s", (new_subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('File copied successfully!', 'success')
@@ -495,6 +515,7 @@ def delete_file(file_id):
             supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file_name}.jpg"])
         supabase.storage.from_("files").remove([f"{subject_id}/{file_name}"])
         cursor.execute("DELETE FROM files WHERE id = %s AND user_id = %s", (file_id, session['user_id']))
+        update_subject_completion(cursor, subject_id, session['user_id'])
         conn.commit()
         cursor.close()
         flash('File deleted successfully!', 'success')
@@ -517,6 +538,7 @@ def delete_all_files(subject_id):
                 supabase.storage.from_("files").remove([f"{subject_id}/thumb_{file[0]}.jpg"])
             supabase.storage.from_("files").remove([f"{subject_id}/{file[0]}"])
         cursor.execute("DELETE FROM files WHERE subject_id = %s AND user_id = %s", (subject_id, session['user_id']))
+        cursor.execute("UPDATE subjects SET is_completed = FALSE WHERE id = %s AND user_id = %s", (subject_id, session['user_id']))
         conn.commit()
         cursor.close()
         flash('All files deleted successfully!', 'success')
