@@ -136,27 +136,15 @@ function checkTasksCards() {
     const tomorrowCompletedTasks = document.querySelector('.accordion-body.tomorrow-completed-tasks-body');
     if (todayPendingTasks.querySelectorAll('.task-card').length === 0) {
         todayPendingTasks.innerHTML = noTasksMessage();
-        todayPendingTasks.parentElement.classList.remove('show');
-    } else {
-        todayPendingTasks.parentElement.classList.add('show');
     }
     if (todayCompletedTasks.querySelectorAll('.task-card').length === 0) {
         todayCompletedTasks.innerHTML = noTasksMessage();
-        todayCompletedTasks.parentElement.classList.remove('show');
-    } else {
-        todayCompletedTasks.parentElement.classList.add('show');
     }
     if (tomorrowPendingTasks.querySelectorAll('.task-card').length === 0) {
         tomorrowPendingTasks.innerHTML = noTasksMessage();
-        tomorrowPendingTasks.parentElement.classList.remove('show');
-    } else {
-        tomorrowPendingTasks.parentElement.classList.add('show');
     }
     if (tomorrowCompletedTasks.querySelectorAll('.task-card').length === 0) {
         tomorrowCompletedTasks.innerHTML = noTasksMessage();
-        tomorrowCompletedTasks.parentElement.classList.remove('show');
-    } else {
-        tomorrowCompletedTasks.parentElement.classList.add('show');
     }
 }
 

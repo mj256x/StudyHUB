@@ -530,6 +530,11 @@ ul {
     border-right: 2px solid var(--c-border) !important;
 }
 
+.accordion-body .msg {
+    grid-column: span 2 !important;
+}
+
+
 /*===============Cards===============*/
 .card {
     background-color: var(--c-bg-surface) !important;
@@ -939,19 +944,6 @@ main {
 .done-dots-btn:active,
 .done-dots-btn:focus {
     background-color: color-mix(in srgb, var(--c-success) 60%, transparent) !important;
-    border-color: var(--c-success-strong) !important;
-}
-
-.done-btn-active {
-    background-color: color-mix(in srgb, var(--c-success) 50%, transparent) !important;
-    border-color: var(--c-success-strong) !important;
-    transition: all 0.2s linear !important;
-}
-
-.done-btn-active:hover,
-.done-btn-active:active,
-.done-btn-active:focus {
-    background-color: var(--c-success) !important;
     border-color: var(--c-success-strong) !important;
 }
 
@@ -1758,6 +1750,19 @@ main {
     width: 100% !important;
     margin-top: 10px !important;
     color: var(--c-text) !important;
+}
+
+.done-btn-active {
+    background-color: color-mix(in srgb, var(--c-success) 50%, transparent) !important;
+    border-color: var(--c-success-strong) !important;
+    transition: all 0.2s linear !important;
+}
+
+.done-btn-active:hover,
+.done-btn-active:active,
+.done-btn-active:focus {
+    background-color: var(--c-success) !important;
+    border-color: var(--c-success-strong) !important;
 }
 
 /*============End Grouped Classes====================*/

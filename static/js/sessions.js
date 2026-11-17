@@ -539,6 +539,7 @@ function sortInputs() {
         dateFormat: "Y-m-d H:i",
         allowInput: true,
         position: "above",
+        disableMobile: "true",
     });
 
     flatpickr("#end_date", {
@@ -546,6 +547,7 @@ function sortInputs() {
         dateFormat: "Y-m-d H:i",
         allowInput: true,
         position: "above",
+        disableMobile: "true",
     });
 }
 

@@ -415,6 +415,7 @@ document.addEventListener('DOMContentLoaded', function () {
     flatpickr("#deadline", {
         dateFormat: "Y-m-d",
         locale: "en",
+        disableMobile: "true",
         static: false
     });
 
