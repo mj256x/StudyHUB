@@ -24,6 +24,7 @@ def login():
             cursor.close()
         except Exception as e:
             print(f"Database error: {e}")
+            flash('An error occurred during login. Please try again.', 'danger')
             return redirect(url_for('auth.login'))
         
         if user and check_password_hash(user[1], password):
@@ -31,6 +32,7 @@ def login():
             flash('Logged in successfully!', 'success')
             return redirect(url_for('home.index'))
         else:
+            flash('Invalid username or password.', 'danger')
             return redirect(url_for('auth.login'))
         
     return render_template('login.html')
@@ -48,8 +50,10 @@ def register():
             password = request.form['password']
             confirm_password = request.form['confirm_password']
             if not username or not password or not confirm_password or not email:
+                flash('All fields are required.', 'danger')
                 return redirect(url_for('auth.register'))
             if password != confirm_password:
+                flash('Passwords do not match.', 'danger')
                 return redirect(url_for('auth.register'))
             
             password_hash = generate_password_hash(password)
@@ -64,6 +68,7 @@ def register():
             cursor.close()
         except Exception as e:
             print(f"Database error: {e}")
+            flash('An error occurred during registration. Please try again.', 'danger')
             return redirect(url_for('auth.register'))
         flash('Registered successfully! Please log in.', 'success')
         return redirect(url_for('auth.login'))
