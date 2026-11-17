@@ -1,6 +1,5 @@
 venv/
 .env
-images/
 .vscode/
 __pycache__/
 *.pyc
